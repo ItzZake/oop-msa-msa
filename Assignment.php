@@ -17,7 +17,15 @@
     {
         // Code
     }
-
+    function GetDueDate()
+    {
+        return $this->duedate;
+    }
+    function SetDueDate($duedate)
+    {
+        $this->duedate = $duedate;
+        // Code to update due date in database
+    }
     function ResolveRecipients()
     {
         // Code
@@ -31,10 +39,6 @@
     function GetPendingSubmissions()
     {
         // Code 
-    }
-     function MarkLate($childID)
-    {
-        // Code
     }
 
     function FetchWordwallEmbed($url)

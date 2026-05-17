@@ -16,7 +16,7 @@
         // Code to submit progress report for child
     }
 
-    function PublishReport(AdminId)
+    function PublishReport($AdminId)
     {
         // Code to publish progress report for child
     }
@@ -26,9 +26,17 @@
         // Code to export progress report as PDF
     }
 
-    function AddSkillRating(skill, rating)
+    function AddSkillRating($skill, $rating)
     {
         // Code to add skill rating to progress report
+    }
+    function GetProgressReportsByChildId($ChildId)
+    {
+        $Database = Database::getInstance();
+        $sql = "SELECT * FROM ProgressReports WHERE ChildId = ?";
+        $params = [$ChildId];
+        return $Database->fetchAll($sql, $params);
+        // Code to get progress reports for child
     }
 
  }
