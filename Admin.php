@@ -7,12 +7,12 @@
   private $AdminId;
   Private $UserId;
 
-  function ApproveApplication($applicationId)
+  function ApproveApplication($data)
   {
     // Code to approve application
   }
 
-  function RejectApplication($applicationId)
+  function RejectApplication($data)
   {
     // Code to reject application
   }

@@ -71,12 +71,12 @@ require_once 'Child.php';
         }
     }   
 
-    function GetStreakCount(ChildId, CourseId)
+    function GetStreakCount($ChildId, $CourseId)
     {
         // Code to calculate attendance streak count for child in course
     }
 
-    function AutoAssignAbsent(SessionId)
+    function AutoAssignAbsent($SessionId)
     {
         
         // Code to automatically mark absent for children not marked present by end of day
