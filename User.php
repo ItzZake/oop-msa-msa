@@ -38,7 +38,7 @@ abstract class User implements Authenticable
         $this->email = isset($data['email']) ? $data['email'] : $this->email;
         $this->preferredLanguage = isset($data['preferredLanguage']) ? $data['preferredLanguage'] : $this->preferredLanguage;
     }
-
+    
     public function GetRole()
     {
         return $this->role;
@@ -51,6 +51,12 @@ abstract class User implements Authenticable
     public function VerifyPassword($plain, $hash)
     {
         // Code to verify password
+    }
+
+    public function setPassword($password)
+    {
+        // Code to set password
+        $this->password = $this->hasher->Hash($password);
     }
 
     public function LogIn($email, $password): bool
