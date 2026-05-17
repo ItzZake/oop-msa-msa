@@ -53,9 +53,9 @@
             $application->SubmittedAt = date("Y-m-d H:i:s");
             $application->Documents = isset($data['Documents']) ? json_encode($data['Documents']) : null;
             // Code to save application to database
-            $sql-> "INSERT INTO Applications (ParentId, ChildId, CourseId, Status, SubmittedAt, Documents)
+            $sql = "INSERT INTO Applications (ParentId, ChildId, CourseId, Status, SubmittedAt, Documents)
                VALUES (?,?,?,?,?,?)";
-               $params = [$application->ParentId, $application->ChildId, $application->CourseId, $application->Status, $application->SubmittedAt, $application->Documents];
+               $params = [$application->ParentID, $application->ChildId, $application->CourseId, $application->Status, $application->SubmittedAt, $application->Documents];
                $stmt = Database::getInstance()->query($sql, $params);
                if ($stmt && $stmt->rowCount() > 0) {
                  return true;

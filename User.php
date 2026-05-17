@@ -1,9 +1,8 @@
 <?php
 
 require_once("PasswordHasher.php");
-require_once("SessionManager.php");
 
-abstract class User implements Authenticable
+class User
 {
     private $userId;
     private $email;
@@ -13,12 +12,12 @@ abstract class User implements Authenticable
     private $password;
     private $preferredLanguage;
     private $createdAt;
-    private $IsActive;
+    private $isActive;
     private $lastLoginAt;
     private $role;
     private PasswordHasher $hasher;
 
-    public function __construct($userId, $email, $password, $preferredLanguage, $createdAt, $lastLoginAt, $role, $firstName, $lastName)
+    public function __construct($userId, $email, $password, $preferredLanguage = null, $createdAt = null, $lastLoginAt = null, $role = null, $firstName = null, $lastName = null, $isActive = true)
     {
         $this->userId = $userId;
         $this->firstName = $firstName;
@@ -29,80 +28,119 @@ abstract class User implements Authenticable
         $this->createdAt = $createdAt;
         $this->lastLoginAt = $lastLoginAt;
         $this->role = $role;
+        $this->isActive = $isActive;
         $this->hasher = new PasswordHasher();
     }
 
-    public function UpdateProfile($data)
+    public static function fromArray(array $data)
     {
-        // Code to update user profile
+        $isActive = true;
+        if (isset($data['isActive'])) {
+            $isActive = (bool)$data['isActive'];
+        } elseif (isset($data['IsActive'])) {
+            $isActive = (bool)$data['IsActive'];
+        }
+
+        return new self(
+            isset($data['userId']) ? $data['userId'] : null,
+            isset($data['email']) ? $data['email'] : '',
+            isset($data['password']) ? $data['password'] : '',
+            isset($data['preferredLanguage']) ? $data['preferredLanguage'] : null,
+            isset($data['createdAt']) ? $data['createdAt'] : null,
+            isset($data['lastLoginAt']) ? $data['lastLoginAt'] : null,
+            isset($data['role']) ? $data['role'] : null,
+            isset($data['firstName']) ? $data['firstName'] : null,
+            isset($data['lastName']) ? $data['lastName'] : null,
+            $isActive
+        );
+    }
+
+    public function getId()
+    {
+        return $this->userId;
+    }
+
+    public function setId($id)
+    {
+        $this->userId = $id;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function getFirstName()
+    {
+        return $this->firstName;
+    }
+
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+
+    public function getPreferredLanguage()
+    {
+        return $this->preferredLanguage;
+    }
+
+    public function isActive()
+    {
+        return $this->isActive;
+    }
+
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    public function getLastLoginAt()
+    {
+        return $this->lastLoginAt;
+    }
+
+    public function updateProfile($data)
+    {
         $this->email = isset($data['email']) ? $data['email'] : $this->email;
         $this->preferredLanguage = isset($data['preferredLanguage']) ? $data['preferredLanguage'] : $this->preferredLanguage;
+        $this->firstName = isset($data['firstName']) ? $data['firstName'] : $this->firstName;
+        $this->lastName = isset($data['lastName']) ? $data['lastName'] : $this->lastName;
     }
-    
-    public function GetRole()
+
+    public function getRole()
     {
         return $this->role;
     }
 
-    public function SetRole($role)
+    public function setRole($role)
     {
         $this->role = $role;
     }
-    public function VerifyPassword($plain, $hash)
+
+    public function verifyPassword($plain)
     {
-        // Code to verify password
+        return $this->hasher->Verify($plain, $this->password);
     }
 
     public function setPassword($password)
     {
-        // Code to set password
         $this->password = $this->hasher->Hash($password);
     }
 
-    public function LogIn($email, $password): bool
+    public function getPasswordHash()
     {
-        // Code for log in
-
-        if (!$this->IsActive)
-            return false;
-        if ($this->email != $email)
-            return false;
-        if (!this->hasher->verify($password, $this->password))
-            return false;
-        if (this->hasher->NeedsReHash($this->password)) {
-            $this->password = this->hasher->Hash($password);
-        }
-
-        SessionManager::start();
-        SessionManager::Regenerate();
-
-        $this->lastLoginAt = date("Y-m-d H:i:s");
-
-        return true;
+        return $this->password;
     }
 
-    public function Logout(): bool
+    public function markLastLogin()
     {
-        // Code for Log Out
-        SessionManager::Destroy();
-        return true;
+        $this->lastLoginAt = date('Y-m-d H:i:s');
     }
 
-    public function ResetPassword($token, $newPassword): bool
+    public function changePassword($old, $new)
     {
-        if (empty($newPassword) || strlen($newPassword) < 8) {
-            return false;
-        }
-
-        $this->password = $this->hasher->Hash($newPassword);
-
-        return true;
-    }
-
-    public function ChangePassword($old, $new): bool
-    {
-        // code for ChangePassword
-        if (!$this->hasher->Verify($old, $this->password)) {
+        if (!$this->verifyPassword($old)) {
             return false;
         }
 
@@ -110,8 +148,34 @@ abstract class User implements Authenticable
             return false;
         }
 
-        $this->password = $this->hasher->Hash($new);
+        $this->setPassword($new);
         return true;
+    }
+
+    public function resetPassword($newPassword)
+    {
+        if (empty($newPassword) || strlen($newPassword) < 8) {
+            return false;
+        }
+
+        $this->setPassword($newPassword);
+        return true;
+    }
+
+    public function toArray()
+    {
+        return [
+            'userId' => $this->userId,
+            'email' => $this->email,
+            'firstName' => $this->firstName,
+            'lastName' => $this->lastName,
+            'password' => $this->password,
+            'preferredLanguage' => $this->preferredLanguage,
+            'createdAt' => $this->createdAt,
+            'lastLoginAt' => $this->lastLoginAt,
+            'role' => $this->role,
+            'isActive' => $this->isActive,
+        ];
     }
 }
 ?>

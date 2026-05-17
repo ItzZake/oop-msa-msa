@@ -10,40 +10,90 @@ class Database
     private $password = '';
     private $charset = 'utf8mb4';
 
+    private function __construct()
+    {
+        $this->connect();
+    }
 
     public static function getInstance()
     {
-        if (self::$instance == null) {
+        if (self::$instance === null) {
             self::$instance = new Database();
         }
         return self::$instance;
     }
 
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
     public function query($sql, $params = [])
     {
-        // Code to execute a query with parameters
-    }
-    public function Connect()
-    {
+        if (!$this->IsConnected()) {
+            $this->connect();
+        }
 
-        // Code to establish database connection
+        $stmt = $this->connection->prepare($sql);
+        if ($stmt === false) {
+            return false;
+        }
+
+        if (!$stmt->execute($params)) {
+            return false;
+        }
+
+        return $stmt;
     }
-    public function Disconnect()
+
+    public function connect()
     {
-        // Code to close database connection
+        if ($this->IsConnected()) {
+            return;
+        }
+
+        $dsn = "mysql:host={$this->host};dbname={$this->dbname};charset={$this->charset}";
+        $options = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
+        ];
+
+        try {
+            $this->connection = new PDO($dsn, $this->username, $this->password, $options);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('Database connection failed: ' . $exception->getMessage());
+        }
     }
-    public function IsConnected()
+
+    public function disconnect()
     {
-        // Code to check if database connection is active
+        $this->connection = null;
     }
+
+    public function isConnected()
+    {
+        return $this->connection instanceof PDO;
+    }
+
     public function fetchAll($sql, $params = [])
     {
-        // Code to fetch all results from a query
+        $stmt = $this->query($sql, $params);
+        if ($stmt === false) {
+            return [];
+        }
+
+        return $stmt->fetchAll();
     }
 
     public function fetchOne($sql, $params = [])
     {
-        // Code to fetch a single result from a query
+        $stmt = $this->query($sql, $params);
+        if ($stmt === false) {
+            return null;
+        }
+
+        return $stmt->fetch();
     }
 }
 
