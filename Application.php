@@ -3,9 +3,11 @@
  {
    private $ApplicationId;
    private $ChildId;
-   private $ChildId;
+   private $ParentId;
+   private $AdminId;
    private $Status; //Pending, Approved, Rejected
    private $reviewedAt;
+   private $SubmittedAt;
    private $RejectedReason;
    private $Documents;
 
@@ -14,12 +16,12 @@
         // Code to submit application
    }
 
-   function Approve(AdminId)
+   function Approve($data)
    {
         // Code to approve application
    }
 
-   function Reject(AdminId, reason)
+   function Reject($data)
    {
         // Code to reject application with reason
    }

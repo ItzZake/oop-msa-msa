@@ -1,6 +1,6 @@
 <?php
  require_once 'User.php';
-class Child extends User
+class Child
 {
   Private $ChildId;
   private $ParentId;

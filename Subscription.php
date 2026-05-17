@@ -15,26 +15,42 @@
 
     function CalculateNextDue()
     {
-        // Calculate next due date
+        if($this->billingcycle == "Monthly") {
+            $this->duedate = date("Y-m-d", strtotime($this->startdate . ' +1 month'));
+        } elseif ($this->billingcycle == "Quarterly") {
+            $this->duedate = date("Y-m-d", strtotime($this->startdate . ' +3 month'));
+        } elseif ($this->billingcycle == "Annually") {
+            $this->duedate = date("Y-m-d", strtotime($this->startdate . ' +1 year'));
+        }
     }
 
     function MarkOverdue()
     {
-        // Mark overdue assignments
+        if(date("Y-m-d") > $this->duedate) {
+            $this->isoverdue = true;
+            $this->daysoverdue = (strtotime(date("Y-m-d")) - strtotime($this->duedate)) / (60 * 60 * 24);
+        }
     }
 
     function ClearOverdue()
     {
-        // Clear Overdue assignments
+        if($this->status == "paid") {
+            $this->isoverdue = false;
+            $this->daysoverdue = 0;
+        }
     }
 
     function GetTotalAmount()
     {
-        // Code 
+        $total = $this->baseprice;
+        if($this->isoverdue) {
+            $total += $this->daysoverdue * 5; // $5 per day overdue
+        }
+        return $total;
     }
     function GenerateInvoice()
     {
-        // Code
+        // Code to generate invoice for subscription
     }
      function Cancel()
     {

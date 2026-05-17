@@ -8,12 +8,9 @@ class Teacher extends User
   private $UserId;
   private $PhoneNumber;
   private $Qualifications;
-
-  function MarkAttendance(sessionId, childId, status)
-  {
-    // Code to mark attendance for child in session
-  }
-
+  private $Experience;
+  private $Specialization;
+  
   function CreateAssignment(courseId, data)
   {
     // Code to create assignment for course

@@ -7,6 +7,9 @@ abstract class User implements Authenticable
 {
     private $userId;
     private $email;
+
+    private $firstName;
+    private $lastName;
     private $password;
     private $preferredLanguage;
     private $createdAt;
@@ -15,9 +18,11 @@ abstract class User implements Authenticable
     private $role;
     private PasswordHasher $hasher;
 
-    public function __construct($userId, $email, $password, $preferredLanguage, $createdAt, $lastLoginAt, $role)
+    public function __construct($userId, $email, $password, $preferredLanguage, $createdAt, $lastLoginAt, $role, $firstName, $lastName)
     {
         $this->userId = $userId;
+        $this->firstName = $firstName;
+        $this->lastName = $lastName;
         $this->email = $email;
         $this->password = $password;
         $this->preferredLanguage = $preferredLanguage;
@@ -43,7 +48,6 @@ abstract class User implements Authenticable
     {
         $this->role = $role;
     }
-
     public function VerifyPassword($plain, $hash)
     {
         // Code to verify password

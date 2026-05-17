@@ -1,66 +1,104 @@
 <?php
 
   require_once 'User.php';
-  
-  class Parent extends User
+  require_once 'Child.php';
+  require_once 'Course.php';
+  require_once 'Assignment.php';
+  require_once 'Database.php';
+  require_once 'Teacher.php';
+  require_once 'Application.php';
+  class Parents extends User
   {
-   Private $ParentId;
-   Private $UserId;
+   private $ParentId;
+   private $UserId;
    private $PhoneNumber;
-   Private $Address;
+   private $Address;
    private $NotiPreferences; //json
 
-   function AddChild (data)
+   function AddChild ($data)
    {
-        // Code to add child
+     $child = new Child();
+     $child->name = $data['name'];
+     $child->DateofBirth = $data['DateOfBirth'];
+     $child->Gender = $data['Gender'];
+     $child->allergies = isset($data['allergies']) ? $data['allergies'] : null;
+     $child->MedicalNotes = isset($data['MedicalNotes']) ? $data['MedicalNotes'] : null;
+     $child->EmergencyContact = isset($data['EmergencyContact']) ? $data['EmergencyContact'] : null; 
+     $child->ParentId = $this->ParentId;
+     $child->EnrollmentStatus = "pending";
+
+     $sql = "INSERT INTO Children (ParentID, Name, DOB, Gender, Allergies, MedicalNotes, EmergencyContact, EnrollmentStatus)
+      Values (?,?,?,?,?,?,?,?)";
+
+      $params = [$this->ParentId, $child->name, $child->DateofBirth, $child->Gender, $child->allergies, $child->MedicalNotes, $child->EmergencyContact, $child->EnrollmentStatus];
+      $stmt = Database::getInstance()->query($sql, $params);
+      if ($stmt && $stmt->rowCount() > 0) {
+        return true;
+     }
+      return false;
    }
 
-   function EnrollChild(courseId, childId)
+   function EnrollChild($data)
    {
         // Code to enroll child in course
    }
 
-   function SubmitApplication(data)
+   function SubmitApplication($data)
    {
-        // Code to submit application
+            $application = new Application();
+            $application->ParentID = $this->ParentId;
+            $application->ChildId = $data['ChildId'];
+            $application->CourseId = $data['CourseId'];
+            $application->Status = "pending";
+            $application->SubmittedAt = date("Y-m-d H:i:s");
+            $application->Documents = isset($data['Documents']) ? json_encode($data['Documents']) : null;
+            // Code to save application to database
+            $sql-> "INSERT INTO Applications (ParentId, ChildId, CourseId, Status, SubmittedAt, Documents)
+               VALUES (?,?,?,?,?,?)";
+               $params = [$application->ParentId, $application->ChildId, $application->CourseId, $application->Status, $application->SubmittedAt, $application->Documents];
+               $stmt = Database::getInstance()->query($sql, $params);
+               if ($stmt && $stmt->rowCount() > 0) {
+                 return true;
+               }
+               return false; 
    }
 
-   function MakePayment(subId)
+   function MakePayment($subId)
    {
         // Code to make payment
    }
 
-   function RequestEnrollment(ParentId,ChildId)
+   function RequestEnrollment($ParentId,$ChildId)
    {
         // Code to request enrollment for child
    }
 
-   function SubmitAssignment(assignId,data)
+   function SubmitAssignment($assignId,$data)
    {
         // Code to submit assignment
    }
 
-   function SubmitExcuse (childId,sessionId,reason)
+   function SubmitExcuse ($childId,$sessionId,$reason)
    {
         // Code to submit excuse for absence
    }
 
-   function SubmitRSVP(eventId,response)
+   function SubmitRSVP($eventId,$response)
    {
         // Code to submit RSVP for event
    }
 
-   function SignConstentForm (tripId)
+   function SignConstentForm ($tripId)
    {
         // Code to sign consent form for trip
    }
 
-   function UpdateMedicalInfo (childId,data)
+   function UpdateMedicalInfo ($childId,$data)
    {
-        // Code to update medical information for child
+
    }
    
-   function DownloadInVoice (paymentId)
+   function DownloadInVoice ($paymentId)
    {
         // Code to download invoice for payment
    }
@@ -70,7 +108,7 @@
         // Code to get notification preferences
    }
 
-   function SetPrefrences(prefs)
+   function SetPrefrences($prefs)
    {
         // Code to set notification preferences
    }
