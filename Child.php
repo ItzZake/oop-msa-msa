@@ -22,7 +22,7 @@ class Child
     // Code to get courses child is enrolled in
   }
 
-  function GetAttendanceRecords(fromDate, toDate)
+  function GetAttendanceRecords($fromDate, $toDate)
   {
     // Code to get attendance records for child
   }
@@ -47,7 +47,7 @@ class Child
     // Code to get medical alerts for child
   }
 
-  function UpdateStatus(status)
+  function UpdateStatus($status)
   {
     // Code to update enrollment status
   }
