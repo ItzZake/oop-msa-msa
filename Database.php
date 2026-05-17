@@ -43,6 +43,7 @@ class Database
 
     public function fetchOne($sql, $params = [])
     {
+        
         // Code to fetch a single result from a query
     }
 }

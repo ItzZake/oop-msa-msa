@@ -70,7 +70,14 @@ require_once 'Child.php';
            return true;
         }
     }   
-
+    function GetAttendanceByChildId($ChildId, $fromDate, $toDate)
+    {
+        $Database = Database::getInstance();
+        $sql = "SELECT * FROM Attendance WHERE ChildId = ? AND SessionDate BETWEEN ? AND ?";
+        $params = [$ChildId, $fromDate, $toDate];
+        return $Database->fetchAll($sql, $params);
+        // Code to get attendance records for child within date range
+    }
     function GetStreakCount($ChildId, $CourseId)
     {
         // Code to calculate attendance streak count for child in course
