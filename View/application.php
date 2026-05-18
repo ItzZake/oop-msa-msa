@@ -20,7 +20,7 @@ include 'navbar.php';
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="../view/css/styles.css" />
 </head>
 <body>
 
@@ -82,7 +82,7 @@ include 'navbar.php';
   <!-- Toast -->
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
-  <script src="scripts/app.js"></script>
+  <script src="../view/scripts/app.js"></script>
 </body>
 </html>
 

@@ -17,7 +17,7 @@ include 'navbar.php';
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Fredoka+One&display=swap"
 		rel="stylesheet" />
-	<link rel="stylesheet" href="/css/login.css" />
+	<link rel="stylesheet" href="../view/css/login.css" />
 </head>
 
 <body>
@@ -236,7 +236,7 @@ include 'navbar.php';
 		<div id="toast" class="toast" role="alert" aria-live="polite"></div>
 	</main>
 
-	<script src="/scripts/login.js"></script>
+	<script src="../view/scripts/login.js"></script>
 </body>
 
 </html>

@@ -17,7 +17,7 @@ include 'navbar.php';
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contact Us – Wellucation</title>
-  <link rel="stylesheet" href="/css/contact.css" />
+  <link rel="stylesheet" href="../view/css/contact.css" />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
 </head>
 <body>
@@ -237,7 +237,7 @@ include 'navbar.php';
     </div>
   </section>
 
-  <script src="/scripts/Contact.js"></script>
+  <script src="../view/scripts/Contact.js"></script>
 </body>
 </html>
 

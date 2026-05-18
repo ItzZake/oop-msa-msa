@@ -16,6 +16,10 @@ include 'header.php';
 include 'navbar.php';
 ?>
 
+<head>
+	<link rel="stylesheet" href="../view/css/dashboard.css" />
+</head>
+
 <div class="dashboard-layout">
   <aside class="sidebar">
     <div class="dashboard-sidebar-header">

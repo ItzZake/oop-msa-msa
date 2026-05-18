@@ -1,5 +1,5 @@
 <head>
-	<link rel="stylesheet" href="css/navbar.css" />
+	<link rel="stylesheet" href="../view/css/navbar.css" />
 </head>
 <nav class="navbar" id="navbar">
     <div class="container navbar__inner">

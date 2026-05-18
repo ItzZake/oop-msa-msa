@@ -1,5 +1,5 @@
 </head>
-	<link rel="stylesheet" href="css/header.css" />
+	<link rel="stylesheet" href="../view/css/header.css" />
 <body>
 <div class="topbar" id="topbar">
     <div class="container topbar__inner">

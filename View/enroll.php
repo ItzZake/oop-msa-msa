@@ -19,7 +19,8 @@ include 'navbar.php';
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet" />
-	<link rel="stylesheet" href="css/enroll.css" />
+	<link rel="stylesheet" href="../view/css/enroll.css"/>
+	<link rel="stylesheet" href="../view/css/home.css"/>
 </head>
 
 <section class="enroll-hero">
