@@ -1,7 +1,7 @@
 <?php
 session_start();
-$pageTitle = "Login – Wellucation Nursery";
-$currentPage = "login";
+$pageTitle = "Register – Wellucation Nursery";
+$currentPage = "register";
 $pageCss = 'login.css';
 include 'header.php';
 include 'navbar.php';
@@ -15,8 +15,8 @@ include 'navbar.php';
     <div style="position:absolute;bottom:8rem;left:25%;font-size:2.5rem;" class="bounce">🌈</div>
     <div class="login-hero-content">
       <div class="text-center mb-6">
-        <h1 class="login-title">Welcome to Wellucation</h1>
-        <p class="login-subtitle">Sign in to access your account or create a new one</p>
+        <h1 class="login-title">Create your Wellucation account</h1>
+        <p class="login-subtitle">Join us and manage nursery activity smoothly.</p>
       </div>
       <div class="login-card">
         <?php if (isset($_SESSION['error'])): ?>
@@ -30,10 +30,10 @@ include 'navbar.php';
         </div>
         <?php endif; ?>
         <div class="login-tabs" id="loginTabs">
-          <button id="loginTabBtn" class="login-tab active" onclick="switchLoginTab('login')">🔑 Login</button>
-          <button id="registerTabBtn" class="login-tab inactive" onclick="switchLoginTab('register')">➕ Register</button>
+          <button id="loginTabBtn" class="login-tab inactive" onclick="switchLoginTab('login')">🔑 Login</button>
+          <button id="registerTabBtn" class="login-tab active" onclick="switchLoginTab('register')">➕ Register</button>
         </div>
-        <form id="loginForm" class="login-form" method="POST" action="authenticate.php">
+        <form id="loginForm" class="login-form is-hidden" method="POST" action="authenticate.php">
           <div class="form-group"><label class="form-label">Email Address</label><input type="email" name="email" required class="form-input" placeholder="your.email@example.com"></div>
           <div class="form-group"><label class="form-label">Password</label><input type="password" name="password" required class="form-input" placeholder="••••••••"></div>
           <div class="login-helper-row">
@@ -42,9 +42,8 @@ include 'navbar.php';
           </div>
           <button type="submit" class="btn btn-primary login-submit">Sign In →</button>
         </form>
-        <p class="login-footer">Don't have an account? <a href="register.php">Create one</a></p>
-        <form id="registerForm" class="login-form is-hidden" method="POST" action="register_user.php">
-          <input type="hidden" name="redirect" value="login.php">
+        <form id="registerForm" class="login-form" method="POST" action="register_user.php">
+          <input type="hidden" name="redirect" value="register.php">
           <div class="form-group"><label class="form-label">Full Name</label><input type="text" name="fullname" required class="form-input" placeholder="John Doe"></div>
           <div class="form-group"><label class="form-label">Email Address</label><input type="email" name="email" required class="form-input" placeholder="your.email@example.com"></div>
           <div class="form-group"><label class="form-label">Password</label><input type="password" name="password" required class="form-input" placeholder="••••••••"></div>
@@ -57,30 +56,5 @@ include 'navbar.php';
     </div>
   </div>
 </div>
-
-<script>
-function switchLoginTab(tab) {
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    const loginTabBtn = document.getElementById('loginTabBtn');
-    const registerTabBtn = document.getElementById('registerTabBtn');
-
-    if (tab === 'login') {
-        loginForm.style.display = '';
-        registerForm.style.display = 'none';
-        loginTabBtn.classList.add('active');
-        loginTabBtn.classList.remove('inactive');
-        registerTabBtn.classList.add('inactive');
-        registerTabBtn.classList.remove('active');
-    } else {
-        loginForm.style.display = 'none';
-        registerForm.style.display = '';
-        loginTabBtn.classList.add('inactive');
-        loginTabBtn.classList.remove('active');
-        registerTabBtn.classList.add('active');
-        registerTabBtn.classList.remove('inactive');
-    }
-}
-</script>
 
 <?php include 'footer.php'; ?>

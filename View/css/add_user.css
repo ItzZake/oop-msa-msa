@@ -1,4 +1,19 @@
-.add-user-hero__content { max-width:800px; margin:0 auto; }
-.add-user-panel { background:white; border-radius:1.75rem; box-shadow:0 8px 24px rgba(0,0,0,0.07); padding:2rem; }
-.add-user-actions { display:flex; gap:1rem; flex-wrap:wrap; }
-.add-user-actions .btn { flex:1; justify-content:center; }
+.add-user-hero__content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.add-user-panel {
+  background: white;
+  border-radius: 1.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+  padding: 2rem;
+}
+.add-user-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.add-user-actions .btn {
+  flex: 1;
+  justify-content: center;
+}
