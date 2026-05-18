@@ -29,6 +29,18 @@ class Child
     $this->photoPath = $photoPath;
   }
 
+  function __construct($ChildId, $ParentId, $DateOfBirth, $Gender, $allergies = null, $MedicalNotes = null, $EmergencyContact = null, $EnrollmentStatus = 'pending', $PhotoPath = null)
+  {
+    $this->ChildId = $ChildId;
+    $this->ParentId = $ParentId;
+    $this->DateOfBirth = $DateOfBirth;
+    $this->Gender = $Gender;
+    $this->allergies = $allergies;
+    $this->MedicalNotes = $MedicalNotes;
+    $this->EmergencyContact = $EmergencyContact;
+    $this->EnrollmentStatus = $EnrollmentStatus;
+    $this->PhotoPath = $PhotoPath;
+  }
   function GetAge()
   {
     $age = date_diff(date_create($this->dateOfBirth), date_create('today'))->y;
