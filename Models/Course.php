@@ -61,7 +61,50 @@
       return false;
     // Code to check if seats are available in course
    }
-
+	function GetCoursesByAge($age)
+  	{
+      $sql = "SELECT * FROM course WHERE ageMin <= ? AND ageMax >= ? AND isActive = 1";
+      $params = [$age, $age];
+      return Database::getInstance()->fetchAll($sql, $params);
+    	// Code to retrieve courses suitable for a specific age
+  	}
+  function GetCourseById($courseId)
+  {
+      $sql = "SELECT * FROM course WHERE courseID = ? AND isActive = 1";
+      $params = [$courseId];
+      return Database::getInstance()->fetchOne($sql, $params);
+    // Code to retrieve course details by ID
+  }
+   function GetAllActiveCourses()
+  {
+      $sql = "SELECT * FROM course WHERE isActive = 1";
+      return Database::getInstance()->fetchAll($sql);
+      // Code to retrieve all active courses
+  }
+	function GetScheduleforCourses($courseId)
+	{
+	  $sql = "SELECT schedule FROM course WHERE IsActive = 1 AND courseID = ?";
+	  $params = [$courseId];
+	  $result = Database::getInstance()->fetchAll($sql, $params);
+	  return json_decode($result['schedule'], true);
+	// Code to retrieve schedule for a specific courses
+	}
+   function GetAssignedTeacherId($courseId)
+   {
+	  $sql = "SELECT AssignedTeacherId FROM course WHERE courseID = ?";
+	  $params = [$courseId];
+	  $result = Database::getInstance()->fetchOne($sql, $params);
+	  return $result ? $result['AssignedTeacherId'] : null;
+	// Code to retrieve assigned teacher ID for a specific course
+   }
+	}
+   function GetCourseDetails($courseId)
+   {
+      $sql = "SELECT * FROM course WHERE courseID = ?";
+      $params = [$courseId];
+      return Database::getInstance()->fetchOne($sql, $params);
+    // Code to retrieve details of a specific course
+  }
    function Isfull()
    {
       if($this->CurrentEnrollment >= $this->MaxCapacity)
