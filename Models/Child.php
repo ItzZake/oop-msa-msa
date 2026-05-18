@@ -124,5 +124,28 @@ class Child
     $stmt = Database::getInstance()->query($sql, $params);
     return $stmt && $stmt->rowCount() > 0;
   }
+  function GetChildrenByParentId($parentID)
+  {
+	$sql = "SELECT * FROM Child WHERE parentID = ?";
+	$params = [$parentID];
+	$stmt = Database::getInstance()->query($sql, $params);
+	$children = [];
+	if ($stmt && $stmt->rowCount() > 0) {
+	  while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		$children[] = new self(
+		  $data['childID'],
+		  $data['parentID'],
+		  $data['dateOfBirth'],
+		  $data['gender'],
+		  $data['allergies'],
+		  $data['medicalNotes'],
+		  $data['emergencyContact'],
+		  $data['enrollmentStatus'],
+		  $data['photoPath'],
+		  $data['name']
+		);
+	  }
+	}
+}
 }
 ?>
