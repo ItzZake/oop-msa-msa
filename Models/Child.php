@@ -29,24 +29,37 @@ class Child
     $this->photoPath = $photoPath;
   }
 
-  function __construct($ChildId, $ParentId, $DateOfBirth, $Gender, $allergies = null, $MedicalNotes = null, $EmergencyContact = null, $EnrollmentStatus = 'pending', $PhotoPath = null)
-  {
-    $this->ChildId = $ChildId;
-    $this->ParentId = $ParentId;
-    $this->DateOfBirth = $DateOfBirth;
-    $this->Gender = $Gender;
-    $this->allergies = $allergies;
-    $this->MedicalNotes = $MedicalNotes;
-    $this->EmergencyContact = $EmergencyContact;
-    $this->EnrollmentStatus = $EnrollmentStatus;
-    $this->PhotoPath = $PhotoPath;
-  }
   function GetAge()
   {
     $age = date_diff(date_create($this->dateOfBirth), date_create('today'))->y;
     return $age;
   }
-
+  function GetParentID()
+  {
+      return $this->parentID;
+  }
+  function GetChildByID($childID)
+  {
+    $sql = "SELECT * FROM Child WHERE childID = ?";
+    $params = [$childID];
+    $stmt = Database::getInstance()->query($sql, $params);
+    if ($stmt && $stmt->rowCount() > 0) {
+      $data = $stmt->fetch(PDO::FETCH_ASSOC);
+      return new self(
+        $data['childID'],
+        $data['parentID'],
+        $data['dateOfBirth'],
+        $data['gender'],
+        $data['allergies'],
+        $data['medicalNotes'],
+        $data['emergencyContact'],
+        $data['enrollmentStatus'],
+        $data['photoPath'],
+        $data['name']
+      );
+    }
+    return null;
+  }
   function GetEnrollmentCourses()
   {
     $enrollment = new Enrollment();
