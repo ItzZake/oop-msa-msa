@@ -1,4 +1,5 @@
 <?php
+require_once 'Database.php';
  class CourseAssignment
  {
     private $assignmentID;
@@ -12,12 +13,16 @@
 
     function HasConflict($teacherId, $day, $start, $end)
     {
-        // Code
+        $sql = "SELECT COUNT(*) as conflicts FROM CourseAssignments WHERE TeacherID = ? AND DayOfWeek = ? 
+                AND ((StartTime <= ? AND EndTime > ?) OR (StartTime < ? AND EndTime >= ?))";
+        $result = Database::getInstance()->fetchOne($sql, [$teacherId, $day, $start, $start, $end, $end]);
+        return $result && $result['conflicts'] > 0;
     }
 
     function GetTeacherSchedule($teacherID)
     {
-        // Code
+        $sql = "SELECT * FROM CourseAssignments WHERE TeacherID = ? ORDER BY DayOfWeek, StartTime";
+        return Database::getInstance()->fetchAll($sql, [$teacherID]);
     }
  }
 ?>

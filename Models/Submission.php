@@ -22,15 +22,17 @@ require_once 'Assignment.php';
         $this->type = $type;
         $this->content = $content;
         $this->submittedat = date("Y-m-d H:i:s");
-        $this->status = "submitted";
         $this->status = $this->IsLate() ? "late" : "submitted";
+
         $sql = "INSERT INTO Submissions (AssignmentID, ChildID, ParentID, Type, Content, SubmittedAt, Status)
          VALUES (?,?,?,?,?,?,?)";
-         $params = [$this->assignmentID, $this->childID, $this->parentID, $this->type, $this->content, $this->submittedat, $this->status];
-         $stmt = Database::getInstance()->query($sql, $params);
-         if ($stmt && $stmt->rowCount() > 0) {
-           return true;
-    }
+        $params = [$this->assignmentID, $this->childID, $this->parentID, $this->type, $this->content, $this->submittedat, $this->status];
+        $stmt = Database::getInstance()->query($sql, $params);
+        if ($stmt && $stmt->rowCount() > 0) {
+            $this->submissionID = Database::getInstance()->getConnection()->lastInsertId();
+            return true;
+        }
+        return false;
     }
 
     function Grade($grade, $feedback, $teacherID)
@@ -42,31 +44,34 @@ require_once 'Assignment.php';
         $sql = "UPDATE Submissions SET Grade = ?, Feedback = ?, GradedAt = ?, GradedBy = ?, Status = ? WHERE SubmissionID = ?";
         $params = [$this->grade, $this->feedback, $this->gradedat, $this->gradedby, "graded", $this->submissionID];
         $stmt = Database::getInstance()->query($sql, $params);
-        if ($stmt && $stmt->rowCount() > 0) {
-            return true;
-        }
-        // Code
+        return $stmt && $stmt->rowCount() > 0;
     }
 
     function MarkLate()
     {
-        if($this->IsLate())
-        {
+        if ($this->IsLate()) {
             $this->status = "late";
             $sql = "UPDATE Submissions SET Status = ? WHERE SubmissionID = ?";
             $params = [$this->status, $this->submissionID];
             $stmt = Database::getInstance()->query($sql, $params);
-            if ($stmt && $stmt->rowCount() > 0) {
-              return true;
-           }
+            return $stmt && $stmt->rowCount() > 0;
         }
+        return false;
     }
 
     function IsLate()
     {
-        $Assignment = new Assignment();
-        if($Assignment->GetDueDate() < $this->submittedat)
-            return true;
+        if (empty($this->submittedat) || empty($this->assignmentID)) {
+            return false;
+        }
+
+        $sql = "SELECT DueDate FROM Assignments WHERE AssignmentID = ?";
+        $result = Database::getInstance()->fetchOne($sql, [$this->assignmentID]);
+        if (!$result || empty($result['DueDate'])) {
+            return false;
+        }
+
+        return strtotime($this->submittedat) > strtotime($result['DueDate']);
     }
    
  }

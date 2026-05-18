@@ -1,4 +1,5 @@
 <?php
+require_once 'Database.php';
  class Application
  {
    private $ApplicationId;
@@ -11,6 +12,18 @@
    private $RejectedReason;
    private $Documents;
 
+   function __construct($ApplicationId, $ChildId, $ParentId, $AdminId, $Status = 'pending', $reviewedAt, $SubmittedAt, $RejectedReason, $Documents)
+   {
+     $this->ApplicationId = $ApplicationId;
+     $this->ChildId = $ChildId;
+     $this->ParentId = $ParentId;
+     $this->AdminId = $AdminId;
+     $this->Status = $Status;
+     $this->reviewedAt = $reviewedAt;
+     $this->SubmittedAt = $SubmittedAt;
+     $this->RejectedReason = $RejectedReason;
+     $this->Documents = $Documents;
+   }
    function Submit($data)
    {
      $ChildId = $data['ChildId'];
@@ -32,17 +45,30 @@
 
    function Approve($data)
    {
-        // Code to approve application
+        $applicationId = $data['ApplicationId'];
+        $adminId = $data['AdminId'] ?? null;
+        $sql = "UPDATE Applications SET Status = 'approved', ReviewedAt = ?, AdminId = ? WHERE ApplicationId = ?";
+        $params = [date('Y-m-d H:i:s'), $adminId, $applicationId];
+        $stmt = Database::getInstance()->query($sql, $params);
+        return $stmt && $stmt->rowCount() > 0;
    }
 
    function Reject($data)
    {
-        // Code to reject application with reason
+        $applicationId = $data['ApplicationId'];
+        $reason = $data['Reason'] ?? 'Application rejected';
+        $adminId = $data['AdminId'] ?? null;
+        $sql = "UPDATE Applications SET Status = 'rejected', ReviewedAt = ?, RejectedReason = ?, AdminId = ? WHERE ApplicationId = ?";
+        $params = [date('Y-m-d H:i:s'), $reason, $adminId, $applicationId];
+        $stmt = Database::getInstance()->query($sql, $params);
+        return $stmt && $stmt->rowCount() > 0;
    }
 
-   function GetDocuments()
+   function GetDocuments($applicationId)
    {
-        // Code to retrieve application documents
+        $sql = "SELECT Documents FROM Applications WHERE ApplicationId = ?";
+        $result = Database::getInstance()->fetchOne($sql, [$applicationId]);
+        return $result ? json_decode($result['Documents'], true) : [];
    }
  }
 ?>

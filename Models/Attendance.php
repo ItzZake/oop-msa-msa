@@ -80,13 +80,49 @@ require_once 'Child.php';
     }
     function GetStreakCount($ChildId, $CourseId)
     {
-        // Code to calculate attendance streak count for child in course
+        // Get consecutive present days
+        $sql = "SELECT COUNT(*) as streak FROM Attendance 
+                WHERE ChildId = ? AND CourseId = ? AND Status = 'Present'
+                AND SessionDate >= DATE_SUB(CURDATE(), INTERVAL 100 DAY)
+                ORDER BY SessionDate DESC";
+        $params = [$ChildId, $CourseId];
+        $result = Database::getInstance()->fetchOne($sql, $params);
+        
+        return $result['streak'] ?? 0;
     }
 
     function AutoAssignAbsent($SessionId)
     {
+        // Get all enrolled children for this session's course
+        $sql = "SELECT DISTINCT e.ChildId FROM Enrollments e
+                INNER JOIN AttendanceSessions s ON e.CourseId = s.CourseId
+                WHERE s.SessionId = ? AND e.Status = 'Active'
+                AND e.ChildId NOT IN (
+                    SELECT ChildId FROM Attendance WHERE SessionDate = CURDATE() AND CourseId = ?
+                )";
         
-        // Code to automatically mark absent for children not marked present by end of day
+        $sessionSql = "SELECT CourseId FROM AttendanceSessions WHERE SessionId = ?";
+        $sessionData = Database::getInstance()->fetchOne($sessionSql, [$SessionId]);
+        
+        if (!$sessionData) {
+            return ['count' => 0, 'message' => 'Session not found'];
+        }
+        
+        $params = [$SessionId, $sessionData['CourseId']];
+        $unmarked = Database::getInstance()->fetchAll($sql, $params);
+        
+        $count = 0;
+        foreach ($unmarked as $child) {
+            $insertSql = "INSERT INTO Attendance (ChildId, CourseId, SessionDate, Status, MarkedAt, Source) 
+                          VALUES (?, ?, ?, ?, ?, ?)";
+            $insertParams = [$child['ChildId'], $sessionData['CourseId'], date('Y-m-d'), 'Absent', date('Y-m-d H:i:s'), 'Auto'];
+            $stmt = Database::getInstance()->query($insertSql, $insertParams);
+            if ($stmt && $stmt->rowCount() > 0) {
+                $count++;
+            }
+        }
+        
+        return ['count' => $count, 'message' => "Auto-marked {$count} children absent"];
     }
  }
 ?>

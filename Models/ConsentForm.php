@@ -1,7 +1,10 @@
 <?php
+require_once 'Database.php';
 require_once 'Parent.php';
 require_once 'Event.php';
 require_once 'Child.php';
+require_once 'NotificationManager.php';
+require_once 'Notification.php';
  class ConsentForm
  {
     private $consentID;
@@ -31,18 +34,40 @@ require_once 'Child.php';
 
     function SendReminder()
     {
-        // Code
+        require_once 'NotificationManager.php';
+        $notification = new Notification();
+        $sql = "SELECT ParentID, ChildID, EventID FROM ConsentForms WHERE ConsentID = ?";
+        $form = Database::getInstance()->fetchOne($sql, [$this->consentID]);
+        if (!$form) {
+            return false;
+        }
+        $manager = NotificationManager::getInstance();
+        return $manager->NotifyUser($form['ParentID'], 'Please sign the consent form for your child.');
     }
 
-    function IsPending()
-    {
-        if($this->issigned == false)
-            return true;
-        return false;
-    }
     function ExportPDF()
     {
-        // Code 
+        $sql = "SELECT * FROM ConsentForms WHERE ConsentID = ?";
+        $form = Database::getInstance()->fetchOne($sql, [$this->consentID]);
+        if (!$form) {
+            return ['status' => 'error', 'message' => 'Consent form not found'];
+        }
+
+        $fileName = 'consent_form_' . $this->consentID . '_' . date('YmdHis') . '.pdf';
+        $filePath = '/uploads/consents/' . $fileName;
+        if (!is_dir($_SERVER['DOCUMENT_ROOT'] . '/uploads/consents')) {
+            mkdir($_SERVER['DOCUMENT_ROOT'] . '/uploads/consents', 0755, true);
+        }
+
+        $content = "Consent Form ID: {$this->consentID}\n";
+        $content .= "Event ID: {$form['EventID']}\n";
+        $content .= "Parent ID: {$form['ParentID']}\n";
+        $content .= "Child ID: {$form['ChildID']}\n";
+        $content .= "Signed: " . ($form['IsSigned'] ? 'Yes' : 'No') . "\n";
+        $content .= "Signed At: {$form['SignedAt']}\n";
+
+        file_put_contents($_SERVER['DOCUMENT_ROOT'] . $filePath, $content);
+        return ['status' => 'success', 'filepath' => $filePath];
     }
  }
 ?>
