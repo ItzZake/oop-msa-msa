@@ -16,6 +16,7 @@
       <li><a href="payment.php" <?php echo isset($currentPage) && $currentPage == 'payment' ? 'class="active"' : ''; ?>>Payment</a></li>
       <li><a href="messages.php" <?php echo isset($currentPage) && $currentPage == 'messages' ? 'class="active"' : ''; ?>>Messages</a></li>
       <li><a href="login.php" <?php echo isset($currentPage) && $currentPage == 'login' ? 'class="active"' : ''; ?>>Login</a></li>
+      <li><a href="register.php" <?php echo isset($currentPage) && $currentPage == 'register' ? 'class="active"' : ''; ?>>Register</a></li>
     </ul>
     <div class="navbar-actions">
       <a href="enroll.php" class="btn-enroll">🌟 Enroll Now</a>

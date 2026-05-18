@@ -13,7 +13,7 @@
    private $UserId;
    private $PhoneNumber;
    private $Address;
-   private $NotiPreferences; //json
+   private $NotiPreferences; //json	     
 
    public function AddChild ($data)
    {
