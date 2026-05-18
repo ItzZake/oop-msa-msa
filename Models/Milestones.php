@@ -18,7 +18,7 @@ require_once 'Database.php';
     $this->TeacherNote = $note;
     $this->AchivedAt = date('Y-m-d H:i:s');
 
-    $sql = "UPDATE Milestones SET Status = ?, TeacherNote = ?, AchivedAt = ? WHERE MilestoneId = ?";
+    $sql = "UPDATE milestone SET status = ?, teacherNote = ?, achievedAt = ? WHERE milestoneID = ?";
     $params = [$this->Status, $this->TeacherNote, $this->AchivedAt, $this->MilestoneId];
     $stmt = Database::getInstance()->query($sql, $params);
     return $stmt && $stmt->rowCount() > 0;
@@ -26,9 +26,9 @@ require_once 'Database.php';
 
   function MarkinProgress($note)
   {
-    $this->Status = "In Progress";
+    $this->Status = "InProgress";
     $this->TeacherNote = $note;
-    $sql = "UPDATE Milestones SET Status = ?, TeacherNote = ? WHERE MilestoneId = ?";
+    $sql = "UPDATE milestone SET status = ?, teacherNote = ? WHERE milestoneID = ?";
     $params = [$this->Status, $this->TeacherNote, $this->MilestoneId];
     $stmt = Database::getInstance()->query($sql, $params);
     return $stmt && $stmt->rowCount() > 0;
@@ -37,7 +37,7 @@ require_once 'Database.php';
   function GetByDomain($domain)
   {
     $Database = Database::getInstance();
-    $sql = "SELECT * FROM Milestones WHERE Domain = ?";
+    $sql = "SELECT * FROM milestone WHERE domain = ?";
     $params = [$domain];
     return $Database->fetchAll($sql, $params);
     // Code to get milestones by domain
@@ -45,7 +45,7 @@ require_once 'Database.php';
   function GetMilestonesByChildId($ChildId)
   {
     $Database = Database::getInstance();
-    $sql = "SELECT * FROM Milestones WHERE ChildId = ?";
+    $sql = "SELECT * FROM milestone WHERE childID = ?";
     $params = [$ChildId];
     return $Database->fetchAll($sql, $params);
     // Code to get milestones for child

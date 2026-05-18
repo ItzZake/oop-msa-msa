@@ -18,7 +18,7 @@ require_once 'Database.php';
         $this->isActive = 1;
         $this->createdat = date('Y-m-d H:i:s');
 
-        $sql = "INSERT INTO Flags (ChildID, Type, Details, IsActive, CreatedAt) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO flag (childID, type, details, isActive, createdAt) VALUES (?, ?, ?, ?, ?)";
         $params = [$this->childID, $this->type, $this->details, $this->isActive, $this->createdat];
         $stmt = Database::getInstance()->query($sql, $params);
         return $stmt && $stmt->rowCount() > 0;
@@ -29,7 +29,7 @@ require_once 'Database.php';
         $this->isActive = 0;
         $this->clearedby = $adminID;
         $this->clearReason = $reason;
-        $sql = "UPDATE Flags SET IsActive = 0, ClearedBy = ?, ClearReason = ?, ClearedAt = ? WHERE FlagID = ?";
+        $sql = "UPDATE flag SET isActive = 0, clearedBy = ?, clearReason = ?, clearedAt = ? WHERE flagID = ?";
         $params = [$adminID, $reason, date('Y-m-d H:i:s'), $this->flagID];
         $stmt = Database::getInstance()->query($sql, $params);
         return $stmt && $stmt->rowCount() > 0;
@@ -37,7 +37,7 @@ require_once 'Database.php';
 
     function GetActive()
     {
-        $sql = "SELECT * FROM Flags WHERE IsActive = 1";
+        $sql = "SELECT * FROM flag WHERE isActive = 1";
         return Database::getInstance()->fetchAll($sql, []);
     }
  }

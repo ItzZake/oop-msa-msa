@@ -55,16 +55,14 @@ require_once 'Payment.php';
     {
         $amount = $this->GetTotalAmount();
         
-        $sql = "INSERT INTO Payments (SubscriptionID, ParentID, Amount, Gateway, Status, CreatedAt, UpdatedAt)
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO payment (subscriptionID, parentID, amount, gateway, status)
+                VALUES (?, ?, ?, ?, ?)";
         $params = [
             $this->subscriptionID,
             $this->parentID,
             $amount,
             'system',
-            'Pending',
-            date('Y-m-d H:i:s'),
-            date('Y-m-d H:i:s')
+            'Pending'
         ];
         
         $stmt = Database::getInstance()->query($sql, $params);
@@ -88,18 +86,18 @@ require_once 'Payment.php';
     {
         $this->status = 'cancelled';
         
-        $sql = "UPDATE Subscriptions SET Status = 'cancelled' WHERE SubscriptionID = ?";
+        $sql = "UPDATE subscription SET status = 'cancelled' WHERE subscriptionID = ?";
         $params = [$this->subscriptionID];
         $stmt = Database::getInstance()->query($sql, $params);
         
         if ($stmt && $stmt->rowCount() > 0) {
             // Try to refund pending payments
-            $paymentSql = "SELECT * FROM Payments WHERE SubscriptionID = ? AND Status = 'Pending'";
+            $paymentSql = "SELECT * FROM payment WHERE subscriptionID = ? AND status = 'Pending'";
             $paymentParams = [$this->subscriptionID];
             $pendingPayments = Database::getInstance()->fetchAll($paymentSql, $paymentParams);
             
             if (!empty($pendingPayments)) {
-                $refundSql = "UPDATE Payments SET Status = 'Refunded' WHERE SubscriptionID = ? AND Status = 'Pending'";
+                $refundSql = "UPDATE payment SET status = 'Refunded' WHERE subscriptionID = ? AND status = 'Pending'";
                 $refundParams = [$this->subscriptionID];
                 Database::getInstance()->query($refundSql, $refundParams);
             }

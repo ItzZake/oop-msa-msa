@@ -1,16 +1,33 @@
 <?php
- require_once 'User.php';
+require_once 'Database.php';
+require_once 'User.php';
+require_once 'Milestones.php';
 class Child
 {
-  private $ChildId;
-  private $ParentId;
-  private $DateOfBirth;
-  private $Gender;
+  private $childID;
+  private $parentID;
+  private $name;
+  private $dateOfBirth;
+  private $gender;
   private $allergies;
-  private $MedicalNotes;
-  private $EmergencyContact;
-  private $EnrollmentStatus;
-  private $PhotoPath;
+  private $medicalNotes;
+  private $emergencyContact;
+  private $enrollmentStatus;
+  private $photoPath;
+
+  function __construct($childID, $parentID, $dateOfBirth, $gender, $allergies = null, $medicalNotes = null, $emergencyContact = null, $enrollmentStatus = 'Pending', $photoPath = null, $name = null)
+  {
+    $this->childID = $childID;
+    $this->parentID = $parentID;
+    $this->name = $name;
+    $this->dateOfBirth = $dateOfBirth;
+    $this->gender = $gender;
+    $this->allergies = $allergies;
+    $this->medicalNotes = $medicalNotes;
+    $this->emergencyContact = $emergencyContact;
+    $this->enrollmentStatus = $enrollmentStatus;
+    $this->photoPath = $photoPath;
+  }
 
   function __construct($ChildId, $ParentId, $DateOfBirth, $Gender, $allergies = null, $MedicalNotes = null, $EmergencyContact = null, $EnrollmentStatus = 'pending', $PhotoPath = null)
   {
@@ -26,54 +43,49 @@ class Child
   }
   function GetAge()
   {
-    // Code to calculate age from DateOfBirth
-    $Age = date_diff(date_create($this->DateOfBirth), date_create('today'))->y;
-    return $Age;
+    $age = date_diff(date_create($this->dateOfBirth), date_create('today'))->y;
+    return $age;
   }
 
   function GetEnrollmentCourses()
   {
-    $Enrollment = new Enrollment();
-    return $Enrollment->GetEnrollmentsByChildId($this->ChildId);
-    // Code to get courses child is enrolled in
+    $enrollment = new Enrollment();
+    return $enrollment->GetEnrollmentsByChildId($this->childID);
   }
 
   function GetAttendanceRecords($fromDate, $toDate)
   {
-    $Attendance = new Attendance();
-    return $Attendance->GetAttendanceByChildId($this->ChildId, $fromDate, $toDate);
-    // Code to get attendance records for child
+    $attendance = new Attendance();
+    return $attendance->GetAttendanceByChildId($this->childID, $fromDate, $toDate);
   }
 
-  function GetAttendancePrecentage()
+  function GetAttendancePercentage()
   {
-      $Attendance = new Attendance();
-      $records = $Attendance->GetAttendanceByChildId($this->ChildId, '2024-01-01', '2024-12-31');
-      $totalSessions = count($records);
-      $presentCount = 0;
-      foreach ($records as $record) {
-        if ($record['Status'] == 'Present') {
-          $presentCount++;
-        }
+    $attendance = new Attendance();
+    $records = $attendance->GetAttendanceByChildId($this->childID, '2024-01-01', '2024-12-31');
+    $totalSessions = count($records);
+    $presentCount = 0;
+    foreach ($records as $record) {
+      if (($record['status'] ?? $record['Status']) === 'Present') {
+        $presentCount++;
       }
-      if ($totalSessions > 0) {
-        return ($presentCount / $totalSessions) * 100;
-      }
-      return 0;
-    // Code to calculate attendance percentage
+    }
+    if ($totalSessions > 0) {
+      return ($presentCount / $totalSessions) * 100;
+    }
+    return 0;
   }
 
   function GetMilestones()
   {
-    $Milestone = new Milestone();
-    return $Milestone->GetMilestonesByChildId($this->ChildId);
+    $milestones = new Milestones();
+    return $milestones->GetMilestonesByChildId($this->childID);
   }
 
   function GetProgressReports()
   {
-      $ProgressReport = new ProgressReport();
-      return $ProgressReport->GetProgressReportsByChildId($this->ChildId);
-    // Code to get progress reports for child
+    $progressReport = new ProgressReport();
+    return $progressReport->GetProgressReportsByChildId($this->childID);
   }
 
   function GetMedicalAlerts()
@@ -82,27 +94,22 @@ class Child
     if (!empty($this->allergies)) {
       $alerts[] = "Allergies: " . $this->allergies;
     }
-    if (!empty($this->MedicalNotes)) {
-      $alerts[] = "Medical Notes: " . $this->MedicalNotes;
+    if (!empty($this->medicalNotes)) {
+      $alerts[] = "Medical Notes: " . $this->medicalNotes;
     }
-    if (!empty($this->EmergencyContact)) {
-      $alerts[] = "Emergency Contact: " . $this->EmergencyContact;
+    if (!empty($this->emergencyContact)) {
+      $alerts[] = "Emergency Contact: " . $this->emergencyContact;
     }
     return $alerts;
-    // Code to get medical alerts for child
   }
 
   function UpdateStatus($status)
   {
-    $this->EnrollmentStatus = $status;
-    // Code to update enrollment status in database
-    $sql = "UPDATE Children SET EnrollmentStatus = ? WHERE ChildId = ?";
-    $params = [$this->EnrollmentStatus, $this->ChildId];
+    $this->enrollmentStatus = $status;
+    $sql = "UPDATE Child SET enrollmentStatus = ? WHERE childID = ?";
+    $params = [$this->enrollmentStatus, $this->childID];
     $stmt = Database::getInstance()->query($sql, $params);
-    if ($stmt && $stmt->rowCount() > 0) {
-      return true;
-    }
-    return false;
+    return $stmt && $stmt->rowCount() > 0;
   }
 }
 ?>

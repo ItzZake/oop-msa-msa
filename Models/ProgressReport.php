@@ -22,7 +22,7 @@ require_once 'Database.php';
         $this->Status = 'draft';
         $this->CreatedAt = date('Y-m-d H:i:s');
 
-        $sql = "INSERT INTO ProgressReports (ChildId, TeacherId, Period, Observation, SkillRating, Status, CreatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO progressreport (childID, teacherID, period, observation, skillRatings, status, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $params = [$this->ChildId, $this->TeacherId, $this->Period, $this->Observation, $this->SkillRating, $this->Status, $this->CreatedAt];
         $stmt = Database::getInstance()->query($sql, $params);
         return $stmt && $stmt->rowCount() > 0;
@@ -31,7 +31,7 @@ require_once 'Database.php';
     function PublishReport($AdminId)
     {
         $this->PublishedAt = date('Y-m-d H:i:s');
-        $sql = "UPDATE ProgressReports SET Status = 'published', PublishedAt = ?, ReviewedByAdminId = ? WHERE ReportId = ?";
+        $sql = "UPDATE progressreport SET status = 'Published', publishedAt = ?, ReviewedByAdminId = ? WHERE reportID = ?";
         $params = [$this->PublishedAt, $AdminId, $this->ReportId];
         $stmt = Database::getInstance()->query($sql, $params);
         return $stmt && $stmt->rowCount() > 0;
@@ -39,7 +39,7 @@ require_once 'Database.php';
 
     function ExportPDF()
     {
-        $sql = "SELECT * FROM ProgressReports WHERE ReportId = ?";
+        $sql = "SELECT * FROM progressreport WHERE reportID = ?";
         $report = Database::getInstance()->fetchOne($sql, [$this->ReportId]);
         if (!$report) {
             return ['status' => 'error', 'message' => 'Progress report not found'];
@@ -65,11 +65,11 @@ require_once 'Database.php';
 
     function AddSkillRating($skill, $rating)
     {
-        $sql = "SELECT SkillRating FROM ProgressReports WHERE ReportId = ?";
+        $sql = "SELECT skillRatings FROM progressreport WHERE reportID = ?";
         $report = Database::getInstance()->fetchOne($sql, [$this->ReportId]);
         $existing = $report ? json_decode($report['SkillRating'], true) : [];
         $existing[$skill] = $rating;
-        $sql = "UPDATE ProgressReports SET SkillRating = ? WHERE ReportId = ?";
+        $sql = "UPDATE progressreport SET skillRatings = ? WHERE reportID = ?";
         $params = [json_encode($existing), $this->ReportId];
         $stmt = Database::getInstance()->query($sql, $params);
         return $stmt && $stmt->rowCount() > 0;
@@ -77,7 +77,7 @@ require_once 'Database.php';
     function GetProgressReportsByChildId($ChildId)
     {
         $Database = Database::getInstance();
-        $sql = "SELECT * FROM ProgressReports WHERE ChildId = ?";
+        $sql = "SELECT * FROM progressreport WHERE childID = ?";
         $params = [$ChildId];
         return $Database->fetchAll($sql, $params);
         // Code to get progress reports for child

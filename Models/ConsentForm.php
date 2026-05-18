@@ -1,53 +1,47 @@
 <?php
 require_once 'Database.php';
-require_once 'Parent.php';
-require_once 'Event.php';
-require_once 'Child.php';
 require_once 'NotificationManager.php';
-require_once 'Notification.php';
- class ConsentForm
- {
+class ConsentForm
+{
     private $consentID;
     private $eventID;
     private $parentID;
     private $childID;
-    private $issigned;
-    private $signedat;
-    private $sentat;
-    private $ReminderCount;
+    private $isSigned;
+    private $signedAt;
+    private $sentAt;
+    private $reminderCount;
 
-    function Sign($ParentID, $ChildID,&$EventID)
+    function Sign($parentID, $childID, $eventID)
     {
-        $this->issigned = true;
-        $this->signedat = date("Y-m-d H:i:s");
-        $this->parentID = $ParentID;
-        $this->childID = $ChildID;
-        $this->eventID = $EventID;
-        $sql = "INSERT INTO ConsentForms (EventID, ParentID, ChildID, IsSigned, SignedAt)
-         VALUES (?,?,?,?,?)";
-         $params = [$this->eventID, $this->parentID, $this->childID, $this->issigned, $this->signedat];
-         $stmt = Database::getInstance()->query($sql, $params);
-         if ($stmt && $stmt->rowCount() > 0) {
-           return true;
-        }
+        $this->isSigned = 1;
+        $this->signedAt = date("Y-m-d H:i:s");
+        $this->parentID = $parentID;
+        $this->childID = $childID;
+        $this->eventID = $eventID;
+
+        $sql = "INSERT INTO ConsentForm (eventID, parentID, childID, isSigned, signedAt)
+                VALUES (?, ?, ?, ?, ?)";
+        $params = [$this->eventID, $this->parentID, $this->childID, $this->isSigned, $this->signedAt];
+        $stmt = Database::getInstance()->query($sql, $params);
+        return $stmt && $stmt->rowCount() > 0;
     }
 
     function SendReminder()
     {
-        require_once 'NotificationManager.php';
-        $notification = new Notification();
-        $sql = "SELECT ParentID, ChildID, EventID FROM ConsentForms WHERE ConsentID = ?";
+        $sql = "SELECT parentID, childID, eventID FROM ConsentForm WHERE consentID = ?";
         $form = Database::getInstance()->fetchOne($sql, [$this->consentID]);
         if (!$form) {
             return false;
         }
+
         $manager = NotificationManager::getInstance();
-        return $manager->NotifyUser($form['ParentID'], 'Please sign the consent form for your child.');
+        return $manager->NotifyUser($form['parentID'], 'Please sign the consent form for your child.');
     }
 
     function ExportPDF()
     {
-        $sql = "SELECT * FROM ConsentForms WHERE ConsentID = ?";
+        $sql = "SELECT * FROM ConsentForm WHERE consentID = ?";
         $form = Database::getInstance()->fetchOne($sql, [$this->consentID]);
         if (!$form) {
             return ['status' => 'error', 'message' => 'Consent form not found'];
@@ -60,14 +54,14 @@ require_once 'Notification.php';
         }
 
         $content = "Consent Form ID: {$this->consentID}\n";
-        $content .= "Event ID: {$form['EventID']}\n";
-        $content .= "Parent ID: {$form['ParentID']}\n";
-        $content .= "Child ID: {$form['ChildID']}\n";
-        $content .= "Signed: " . ($form['IsSigned'] ? 'Yes' : 'No') . "\n";
-        $content .= "Signed At: {$form['SignedAt']}\n";
+        $content .= "Event ID: {$form['eventID']}\n";
+        $content .= "Parent ID: {$form['parentID']}\n";
+        $content .= "Child ID: {$form['childID']}\n";
+        $content .= "Signed: " . ($form['isSigned'] ? 'Yes' : 'No') . "\n";
+        $content .= "Signed At: {$form['signedAt']}\n";
 
         file_put_contents($_SERVER['DOCUMENT_ROOT'] . $filePath, $content);
         return ['status' => 'success', 'filepath' => $filePath];
     }
- }
+}
 ?>

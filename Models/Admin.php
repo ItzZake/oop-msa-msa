@@ -5,6 +5,7 @@
  require_once 'Settings.php';
  require_once 'Database.php';
  require_once 'Teacher.php';
+ require_once 'Event.php';
  class Admin extends User
  {
   private $AdminId;
@@ -15,12 +16,11 @@
     $applicationId = $data['ApplicationId'];
     $reason = $data['Reason'] ?? 'Application approved';
     
-    $sql = "UPDATE Applications SET Status = 'approved', ApprovedAt = ?, ApprovedByAdminId = ? WHERE ApplicationID = ?";
-    $params = [date('Y-m-d H:i:s'), $this->AdminId, $applicationId];
+    $sql = "UPDATE Application SET status = 'Approved', reviewedAt = ?, rejectionReason = NULL WHERE applicationID = ?";
+    $params = [date('Y-m-d H:i:s'), $applicationId];
     $stmt = Database::getInstance()->query($sql, $params);
     
     if ($stmt && $stmt->rowCount() > 0) {
-        // Send notification to parent
         require_once 'NotificationManager.php';
         $manager = NotificationManager::getInstance();
         $manager->NotifyUser($data['ParentId'], "Your application has been approved");
@@ -36,12 +36,11 @@
     $applicationId = $data['ApplicationId'];
     $reason = $data['Reason'] ?? 'Application rejected';
     
-    $sql = "UPDATE Applications SET Status = 'rejected', RejectedAt = ?, RejectionReason = ?, RejectedByAdminId = ? WHERE ApplicationID = ?";
-    $params = [date('Y-m-d H:i:s'), $reason, $this->AdminId, $applicationId];
+    $sql = "UPDATE Application SET status = 'Rejected', reviewedAt = ?, rejectionReason = ? WHERE applicationID = ?";
+    $params = [date('Y-m-d H:i:s'), $reason, $applicationId];
     $stmt = Database::getInstance()->query($sql, $params);
     
     if ($stmt && $stmt->rowCount() > 0) {
-        // Send notification to parent
         require_once 'NotificationManager.php';
         $manager = NotificationManager::getInstance();
         $manager->NotifyUser($data['ParentId'], "Your application was rejected. Reason: {$reason}");
@@ -77,29 +76,29 @@
     $filename = "report_" . $type . "_" . date('Y-m-d_H-i-s') . ".csv";
     $filepath = "/uploads/reports/" . $filename;
     
-    // Ensure directory exists
     if (!is_dir($_SERVER['DOCUMENT_ROOT'] . '/uploads/reports')) {
         mkdir($_SERVER['DOCUMENT_ROOT'] . '/uploads/reports', 0755, true);
     }
     
     switch($type) {
         case 'attendance':
-            $sql = "SELECT c.Name, a.Status, a.SessionDate FROM AttendanceRecords a 
-                    INNER JOIN Children c ON a.ChildId = c.ChildId
-                    WHERE a.SessionDate BETWEEN ? AND ?";
+            $sql = "SELECT c.name AS Name, a.status AS Status, a.sessionDate AS SessionDate FROM Attendance a 
+                    INNER JOIN Child c ON a.childID = c.childID
+                    WHERE a.sessionDate BETWEEN ? AND ?";
             $params = [$filters['from'], $filters['to']];
             break;
         case 'payments':
-            $sql = "SELECT p.PaymentID, p.Amount, p.Status, p.CreatedAt, u.Name FROM Payments p
-                    INNER JOIN Users u ON p.ParentID = u.UserId
-                    WHERE p.CreatedAt BETWEEN ? AND ?";
+            $sql = "SELECT p.paymentID AS PaymentID, p.amount AS Amount, p.status AS Status, p.paidAt AS PaidAt, CONCAT(u.firstname, ' ', u.Lastname) AS Name FROM Payment p
+                    INNER JOIN Parent par ON p.parentID = par.parentID
+                    INNER JOIN User u ON par.userID = u.userID
+                    WHERE p.paidAt BETWEEN ? AND ?";
             $params = [$filters['from'], $filters['to']];
             break;
         case 'enrollments':
-            $sql = "SELECT c.Name, co.Name as CourseName, e.Status, e.EnrolledAt FROM Enrollments e
-                    INNER JOIN Children c ON e.ChildId = c.ChildId
-                    INNER JOIN Courses co ON e.CourseId = co.CourseId
-                    WHERE e.EnrolledAt BETWEEN ? AND ?";
+            $sql = "SELECT c.name AS Name, co.name as CourseName, e.status AS Status, e.enrolledAt AS EnrolledAt FROM Enrollment e
+                    INNER JOIN Child c ON e.childID = c.childID
+                    INNER JOIN Course co ON e.courseID = co.courseID
+                    WHERE e.enrolledAt BETWEEN ? AND ?";
             $params = [$filters['from'], $filters['to']];
             break;
         default:
@@ -130,7 +129,7 @@
   function CreateTimeTable($data, $TeacherId)
   {
     $jSON = json_encode($data);
-    $sql = "UPDATE Teachers SET AssignedTimetable=? WHERE TeacherId=?";
+    $sql = "UPDATE Teacher SET Assignedtimetable=? WHERE teacherID=?";
     $params = [$jSON, $TeacherId];
     $stmt = Database::getInstance()->query($sql, $params);
     if ($stmt && $stmt->rowCount() > 0) {
@@ -142,7 +141,7 @@
   function EditTimeTable($TeacherID, $data)
   {
     $jSON = json_encode($data);
-    $sql = "UPDATE Teachers SET AssignedTimetable=? WHERE TeacherId=?";
+    $sql = "UPDATE Teacher SET Assignedtimetable=? WHERE teacherID=?";
     $params = [$jSON, $TeacherID];
     $stmt = Database::getInstance()->query($sql, $params);
     if ($stmt && $stmt->rowCount() > 0) {
@@ -153,14 +152,19 @@
 
   function CreateARRrule($data)
   {
-    $sql = "INSERT INTO ARRules (AssetId, TriggerCondition, TargetAction, IsActive, CreatedAt) 
-            VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO ARRule (courseID, assetID, object1, object2, object3, displayName, description, confidenceThreshold, isActive, createdBy) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $params = [
-        $data['AssetId'],
-        json_encode($data['TriggerCondition']),
-        json_encode($data['TargetAction']),
-        isset($data['IsActive']) ? (int)$data['IsActive'] : 1,
-        date('Y-m-d H:i:s')
+        $data['courseID'],
+        $data['assetID'],
+        $data['object1'],
+        $data['object2'],
+        $data['object3'] ?? null,
+        $data['displayName'],
+        $data['description'] ?? null,
+        $data['confidenceThreshold'] ?? 0.8,
+        isset($data['isActive']) ? (int)$data['isActive'] : 1,
+        $this->AdminId
     ];
     
     $stmt = Database::getInstance()->query($sql, $params);
@@ -175,7 +179,7 @@
   {
     $Course = new Course();
     $Course->Edit($courseId, $data);
-     $sql = "UPDATE Teachers SET AssignedCourses=CONCAT(IFNULL(AssignedCourses, ''), ?) WHERE TeacherId=?";
+     $sql = "UPDATE Teacher SET AssignedCourses=CONCAT(IFNULL(AssignedCourses, ''), ?) WHERE teacherID=?";
      $params = [','.$courseId, $teacherId];
      $stmt = Database::getInstance()->query($sql, $params);
      if ($stmt && $stmt->rowCount() > 0) {
@@ -193,12 +197,13 @@
 
   function CreateStaffProfile($data)
   {
-      $Name = $data['Name'];
+      $firstName = $data['FirstName'] ?? ($data['Name'] ?? '');
+      $lastName = $data['LastName'] ?? '';
       $Email = $data['Email'];
       $Password = password_hash($data['Password'], PASSWORD_DEFAULT);
       $Role = $data['Role'];
-      $sql = "INSERT INTO Users (Name, Email, Password, Role) VALUES (?,?,?,?)";
-      $params = [$Name, $Email, $Password, $Role];
+      $sql = "INSERT INTO User (firstname, Lastname, email, passwordHash, Role) VALUES (?,?,?,?,?)";
+      $params = [$firstName, $lastName, $Email, $Password, $Role];
       $stmt = Database::getInstance()->query($sql, $params);
       if ($stmt && $stmt->rowCount() > 0) {
         return true;
@@ -208,25 +213,20 @@
 
   function ViewDashboard()
   {
-    // Get enrollment count
-    $enrollSql = "SELECT COUNT(*) as count FROM Enrollments WHERE Status = 'Active'";
+    $enrollSql = "SELECT COUNT(*) as count FROM Enrollment WHERE status = 'Active'";
     $enrollments = Database::getInstance()->fetchOne($enrollSql)['count'];
     
-    // Get active courses
-    $coursesSql = "SELECT COUNT(*) as count FROM Courses WHERE IsActive = 1";
+    $coursesSql = "SELECT COUNT(*) as count FROM Course WHERE isActive = 1";
     $courses = Database::getInstance()->fetchOne($coursesSql)['count'];
     
-    // Get pending applications
-    $appSql = "SELECT COUNT(*) as count FROM Applications WHERE Status = 'pending'";
+    $appSql = "SELECT COUNT(*) as count FROM Application WHERE status = 'Pending'";
     $pendingApps = Database::getInstance()->fetchOne($appSql)['count'];
     
-    // Get revenue (completed payments)
-    $revenueSql = "SELECT SUM(Amount) as total FROM Payments WHERE Status = 'Completed'";
+    $revenueSql = "SELECT SUM(amount) as total FROM Payment WHERE status = 'Paid'";
     $revenue = Database::getInstance()->fetchOne($revenueSql)['total'] ?? 0;
     
-    // Get attendance rate
-    $attendanceSql = "SELECT COUNT(CASE WHEN Status = 'Present' THEN 1 END) as present,
-                              COUNT(*) as total FROM AttendanceRecords";
+    $attendanceSql = "SELECT COUNT(CASE WHEN status = 'Present' THEN 1 END) as present,
+                              COUNT(*) as total FROM Attendance";
     $attendance = Database::getInstance()->fetchOne($attendanceSql);
     $attendanceRate = $attendance['total'] > 0 ? ($attendance['present'] / $attendance['total']) * 100 : 0;
     
@@ -244,7 +244,7 @@
 
   function ClearFlag($flagId,$reason)
   {
-    $sql = "UPDATE Flags SET Status = 'resolved', ResolvedAt = ?, ResolvedByAdminId = ?, ResolutionNotes = ? WHERE FlagID = ?";
+    $sql = "UPDATE Flag SET isActive = 0, clearedAt = ?, clearedBy = ?, clearReason = ? WHERE flagID = ?";
     $params = [date('Y-m-d H:i:s'), $this->AdminId, $reason, $flagId];
     $stmt = Database::getInstance()->query($sql, $params);
     
