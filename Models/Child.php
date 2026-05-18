@@ -2,16 +2,28 @@
  require_once 'User.php';
 class Child
 {
-  Private $ChildId;
+  private $ChildId;
   private $ParentId;
   private $DateOfBirth;
   private $Gender;
-  Private $allergies;
-  Private $MedicalNotes;
+  private $allergies;
+  private $MedicalNotes;
   private $EmergencyContact;
   private $EnrollmentStatus;
-  Private $PhotoPath;
+  private $PhotoPath;
 
+  function __construct($ChildId, $ParentId, $DateOfBirth, $Gender, $allergies = null, $MedicalNotes = null, $EmergencyContact = null, $EnrollmentStatus = 'pending', $PhotoPath = null)
+  {
+    $this->ChildId = $ChildId;
+    $this->ParentId = $ParentId;
+    $this->DateOfBirth = $DateOfBirth;
+    $this->Gender = $Gender;
+    $this->allergies = $allergies;
+    $this->MedicalNotes = $MedicalNotes;
+    $this->EmergencyContact = $EmergencyContact;
+    $this->EnrollmentStatus = $EnrollmentStatus;
+    $this->PhotoPath = $PhotoPath;
+  }
   function GetAge()
   {
     // Code to calculate age from DateOfBirth

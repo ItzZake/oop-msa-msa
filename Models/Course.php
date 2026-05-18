@@ -80,30 +80,37 @@
 
    function GetEnrolledChildren()
    {
-      Database::getInstance()->fetchAll("SELECT * FROM Enrollments WHERE CourseId = ?", [$this->courseId]);
-    // Code to get list of children enrolled in course
+      $sql = "SELECT c.* FROM Children c 
+              INNER JOIN Enrollments e ON c.ChildId = e.ChildId 
+              WHERE e.CourseId = ? AND e.Status = 'Active'";
+      $params = [$this->courseId];
+      return Database::getInstance()->fetchAll($sql, $params);
    }
 
    function GetAssignedTeacher()
    {
-      Database::getInstance()->fetchOne("SELECT * FROM Teachers WHERE TeacherId = ?", [$this->AssignedTeacherId]);
-    // Code to get teacher assigned to course
+      if (!$this->AssignedTeacherId) {
+         return null;
+      }
+      $sql = "SELECT * FROM Teachers WHERE TeacherId = ?";
+      $params = [$this->AssignedTeacherId];
+      return Database::getInstance()->fetchOne($sql, $params);
    }
 
    function GetAttendanceSessions()
    {
-      Database::getInstance()->fetchAll("SELECT * FROM AttendanceSessions WHERE CourseId = ?", [$this->courseId]);
-      // Code to get attendance sessions for course
+      $sql = "SELECT * FROM AttendanceSessions WHERE CourseId = ? ORDER BY SessionDate DESC";
+      $params = [$this->courseId];
+      return Database::getInstance()->fetchAll($sql, $params);
    }
 
    function AddToWaitlist($CourseId, $childID, $ParentID)
    {
-      if($this->Isfull())
-      {
+      if ($this->Isfull()) {
         $WaitlistEntry = new Waitlist();
-        // Code to add child to waitlist for course
-        $WaitlistEntry->AssignWaitlist($CourseId, $childID, $ParentID);
+        return $WaitlistEntry->AssignWaitlist($CourseId, $childID, $ParentID);
       }
+      return false;
    }
   }
 ?>

@@ -1,4 +1,7 @@
 <?php
+
+require_once 'ISubject.php';
+require_once 'Payment.php';
  class Subscription
  {
     private $subscriptionID;
@@ -50,11 +53,67 @@
     }
     function GenerateInvoice()
     {
-        // Code to generate invoice for subscription
+        $amount = $this->GetTotalAmount();
+        
+        $sql = "INSERT INTO Payments (SubscriptionID, ParentID, Amount, Gateway, Status, CreatedAt, UpdatedAt)
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $params = [
+            $this->subscriptionID,
+            $this->parentID,
+            $amount,
+            'system',
+            'Pending',
+            date('Y-m-d H:i:s'),
+            date('Y-m-d H:i:s')
+        ];
+        
+        $stmt = Database::getInstance()->query($sql, $params);
+        if ($stmt && $stmt->rowCount() > 0) {
+            $paymentId = Database::getInstance()->getConnection()->lastInsertId();
+            return [
+                'status' => 'success',
+                'message' => 'Invoice generated successfully',
+                'paymentId' => $paymentId,
+                'amount' => $amount
+            ];
+        }
+        
+        return [
+            'status' => 'error',
+            'message' => 'Failed to generate invoice'
+        ];
     }
-     function Cancel()
+
+    function Cancel()
     {
-        // Code
+        $this->status = 'cancelled';
+        
+        $sql = "UPDATE Subscriptions SET Status = 'cancelled' WHERE SubscriptionID = ?";
+        $params = [$this->subscriptionID];
+        $stmt = Database::getInstance()->query($sql, $params);
+        
+        if ($stmt && $stmt->rowCount() > 0) {
+            // Try to refund pending payments
+            $paymentSql = "SELECT * FROM Payments WHERE SubscriptionID = ? AND Status = 'Pending'";
+            $paymentParams = [$this->subscriptionID];
+            $pendingPayments = Database::getInstance()->fetchAll($paymentSql, $paymentParams);
+            
+            if (!empty($pendingPayments)) {
+                $refundSql = "UPDATE Payments SET Status = 'Refunded' WHERE SubscriptionID = ? AND Status = 'Pending'";
+                $refundParams = [$this->subscriptionID];
+                Database::getInstance()->query($refundSql, $refundParams);
+            }
+            
+            return [
+                'status' => 'success',
+                'message' => 'Subscription cancelled successfully'
+            ];
+        }
+        
+        return [
+            'status' => 'error',
+            'message' => 'Failed to cancel subscription'
+        ];
     }
  }
 ?>
