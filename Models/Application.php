@@ -1,74 +1,68 @@
 <?php
 require_once 'Database.php';
- class Application
- {
-   private $ApplicationId;
-   private $ChildId;
-   private $ParentId;
-   private $AdminId;
-   private $Status; //Pending, Approved, Rejected
-   private $reviewedAt;
-   private $SubmittedAt;
-   private $RejectedReason;
-   private $Documents;
+class Application
+{
+    private $applicationID;
+    private $childID;
+    private $parentID;
+    private $status; // Pending, Approved, Rejected
+    private $reviewedAt;
+    private $submittedAt;
+    private $rejectionReason;
+    private $documents;
 
-   function __construct($ApplicationId, $ChildId, $ParentId, $AdminId, $Status = 'pending', $reviewedAt, $SubmittedAt, $RejectedReason, $Documents)
-   {
-     $this->ApplicationId = $ApplicationId;
-     $this->ChildId = $ChildId;
-     $this->ParentId = $ParentId;
-     $this->AdminId = $AdminId;
-     $this->Status = $Status;
-     $this->reviewedAt = $reviewedAt;
-     $this->SubmittedAt = $SubmittedAt;
-     $this->RejectedReason = $RejectedReason;
-     $this->Documents = $Documents;
-   }
-   function Submit($data)
-   {
-     $ChildId = $data['ChildId'];
-     $ParentId = $data['ParentId'];
-     $CourseId = $data['CourseId'];
-     $Documents = isset($data['Documents']) ? json_encode($data['Documents']) : null;
-     $Status = "pending";
-     $SubmittedAt = date("Y-m-d H:i:s");
-     $sql = "INSERT INTO Applications (ChildId, ParentId, CourseId, Status, SubmittedAt, Documents)
-     VALUES (?,?,?,?,?,?)";
-     $params = [$ChildId, $ParentId, $CourseId, $Status, $SubmittedAt, $Documents];
-     $stmt = Database::getInstance()->query($sql, $params);
-     if ($stmt && $stmt->rowCount() > 0) {
-           return true;
-     }
-     return false;
-        // Code to submit application
-   }
+    function __construct($applicationID = null, $childID = null, $parentID = null, $status = 'Pending', $reviewedAt = null, $submittedAt = null, $rejectionReason = null, $documents = null)
+    {
+        $this->applicationID = $applicationID;
+        $this->childID = $childID;
+        $this->parentID = $parentID;
+        $this->status = $status;
+        $this->reviewedAt = $reviewedAt;
+        $this->submittedAt = $submittedAt;
+        $this->rejectionReason = $rejectionReason;
+        $this->documents = $documents;
+    }
 
-   function Approve($data)
-   {
+    function Submit($data)
+    {
+        $childID = $data['ChildId'];
+        $parentID = $data['ParentId'];
+        $documents = isset($data['Documents']) ? json_encode($data['Documents']) : null;
+        $status = 'Pending';
+        $submittedAt = date("Y-m-d H:i:s");
+
+        $sql = "INSERT INTO Application (parentID, childID, status, reviewedAt, rejectionReason, documents)
+                VALUES (?, ?, ?, ?, ?, ?)";
+        $params = [$parentID, $childID, $status, null, null, $documents];
+        $stmt = Database::getInstance()->query($sql, $params);
+
+        return $stmt && $stmt->rowCount() > 0;
+    }
+
+    function Approve($data)
+    {
         $applicationId = $data['ApplicationId'];
-        $adminId = $data['AdminId'] ?? null;
-        $sql = "UPDATE Applications SET Status = 'approved', ReviewedAt = ?, AdminId = ? WHERE ApplicationId = ?";
-        $params = [date('Y-m-d H:i:s'), $adminId, $applicationId];
+        $sql = "UPDATE Application SET status = 'Approved', reviewedAt = ?, rejectionReason = NULL WHERE applicationID = ?";
+        $params = [date('Y-m-d H:i:s'), $applicationId];
         $stmt = Database::getInstance()->query($sql, $params);
         return $stmt && $stmt->rowCount() > 0;
-   }
+    }
 
-   function Reject($data)
-   {
+    function Reject($data)
+    {
         $applicationId = $data['ApplicationId'];
         $reason = $data['Reason'] ?? 'Application rejected';
-        $adminId = $data['AdminId'] ?? null;
-        $sql = "UPDATE Applications SET Status = 'rejected', ReviewedAt = ?, RejectedReason = ?, AdminId = ? WHERE ApplicationId = ?";
-        $params = [date('Y-m-d H:i:s'), $reason, $adminId, $applicationId];
+        $sql = "UPDATE Application SET status = 'Rejected', reviewedAt = ?, rejectionReason = ? WHERE applicationID = ?";
+        $params = [date('Y-m-d H:i:s'), $reason, $applicationId];
         $stmt = Database::getInstance()->query($sql, $params);
         return $stmt && $stmt->rowCount() > 0;
-   }
+    }
 
-   function GetDocuments($applicationId)
-   {
-        $sql = "SELECT Documents FROM Applications WHERE ApplicationId = ?";
+    function GetDocuments($applicationId)
+    {
+        $sql = "SELECT documents FROM Application WHERE applicationID = ?";
         $result = Database::getInstance()->fetchOne($sql, [$applicationId]);
-        return $result ? json_decode($result['Documents'], true) : [];
-   }
- }
+        return $result ? json_decode($result['documents'], true) : [];
+    }
+}
 ?>

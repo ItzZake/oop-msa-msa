@@ -17,7 +17,7 @@
     {
         $this->status = 'published';
         
-        $sql = "UPDATE Assignments SET Status = 'published', CreatedAt = ? WHERE AssignmentID = ?";
+        $sql = "UPDATE assignment SET status = 'Published', createdAt = ? WHERE assignmentID = ?";
         $params = [date('Y-m-d H:i:s'), $this->assignmentID];
         $stmt = Database::getInstance()->query($sql, $params);
         
@@ -54,32 +54,32 @@
     function ResolveRecipients()
     {
         // Get children enrolled in the course
-        $sql = "SELECT DISTINCT u.UserId, u.Email, c.ChildId 
-                FROM Children c
-                INNER JOIN Enrollments e ON c.ChildId = e.ChildId
-                INNER JOIN Parents p ON c.ParentId = p.ParentId
-                INNER JOIN Users u ON p.UserId = u.UserId
-                WHERE e.CourseId = ? AND e.Status = 'Active'";
+        $sql = "SELECT DISTINCT u.userID, u.email, c.childID 
+                FROM child c
+                INNER JOIN enrollment e ON c.childID = e.childID
+                INNER JOIN parent p ON c.parentID = p.parentID
+                INNER JOIN user u ON p.userID = u.userID
+                WHERE e.courseID = ? AND e.status = 'Active'";
         $params = [$this->courseID];
         return Database::getInstance()->fetchAll($sql, $params);
     }
 
     function GetSubmissions()
     {
-        $sql = "SELECT s.*, c.Name as ChildName FROM Submissions s
-                INNER JOIN Children c ON s.ChildId = c.ChildId
-                WHERE s.AssignmentID = ?
-                ORDER BY s.SubmittedAt DESC";
+        $sql = "SELECT s.*, c.name as ChildName FROM submission s
+                INNER JOIN child c ON s.childID = c.childID
+                WHERE s.assignmentID = ?
+                ORDER BY s.submittedAt DESC";
         $params = [$this->assignmentID];
         return Database::getInstance()->fetchAll($sql, $params);
     }
 
     function GetPendingSubmissions()
     {
-        $sql = "SELECT s.*, c.Name as ChildName FROM Submissions s
-                INNER JOIN Children c ON s.ChildId = c.ChildId
-                WHERE s.AssignmentID = ? AND s.Status = 'pending'
-                ORDER BY s.SubmittedAt ASC";
+        $sql = "SELECT s.*, c.name as ChildName FROM submission s
+                INNER JOIN child c ON s.childID = c.childID
+                WHERE s.assignmentID = ? AND s.status = 'Submitted'
+                ORDER BY s.submittedAt ASC";
         $params = [$this->assignmentID];
         return Database::getInstance()->fetchAll($sql, $params);
     }
@@ -179,9 +179,9 @@
     {
         if ($this->assignmentID) {
             // Update existing assignment
-            $sql = "UPDATE Assignments SET Title=?, Instructions=?, DueDate=?, 
-                    WordwallEmbedCode=?, AttachmentPath=?, Status=?, TargetTags=? 
-                    WHERE AssignmentID=?";
+            $sql = "UPDATE assignment SET title=?, instructions=?, dueDate=?, 
+                    wordwallEmbedCode=?, attachmentPath=?, status=?, targetTags=? 
+                    WHERE assignmentID=?";
             $params = [
                 $this->title,
                 $this->instructions,
@@ -196,8 +196,8 @@
             return $stmt && $stmt->rowCount() > 0;
         } else {
             // Insert new assignment
-            $sql = "INSERT INTO Assignments (TeacherId, CourseId, Title, Instructions, DueDate, 
-                    WordwallEmbedCode, AttachmentPath, Status, CreatedAt, TargetTags) 
+            $sql = "INSERT INTO assignment (teacherID, courseID, title, instructions, dueDate, 
+                    wordwallEmbedCode, attachmentPath, status, createdAt, targetTags) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $params = [
                 $this->teacherID,

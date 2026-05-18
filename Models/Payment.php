@@ -35,23 +35,21 @@ class Payment
      */
     private function loadPaymentFromDatabase($paymentId)
     {
-        $sql = "SELECT * FROM Payments WHERE PaymentID = ?";
+        $sql = "SELECT * FROM Payment WHERE paymentID = ?";
         $params = [$paymentId];
         $result = Database::getInstance()->fetchOne($sql, $params);
 
         if ($result) {
-            $this->paymentId = $result['PaymentID'];
-            $this->subscriptionId = $result['SubscriptionID'];
-            $this->amount = $result['Amount'];
-            $this->parentId = $result['ParentID'];
-            $this->gateway = $result['Gateway'];
-            $this->gatewayTXId = $result['GatewayTXID'];
-            $this->status = $result['Status'];
-            $this->paidAt = $result['PaidAt'];
-            $this->invoicePath = $result['InvoicePath'];
-            $this->createdAt = $result['CreatedAt'];
-            $this->updatedAt = $result['UpdatedAt'];
-            $this->loadLineItems();
+            $this->paymentId = $result['paymentID'];
+            $this->subscriptionId = $result['subscriptionID'];
+            $this->amount = $result['amount'];
+            $this->parentId = $result['parentID'];
+            $this->gateway = $result['gateway'];
+            $this->gatewayTXId = $result['gatewayTxID'];
+            $this->status = $result['status'];
+            $this->paidAt = $result['paidAt'];
+            $this->invoicePath = $result['invoicePath'];
+            $this->lineItems = $result['lineItems'] ? json_decode($result['lineItems'], true) : [];
         }
     }
 
@@ -60,9 +58,13 @@ class Payment
      */
     private function loadLineItems()
     {
-        $sql = "SELECT * FROM PaymentLineItems WHERE PaymentID = ?";
-        $params = [$this->paymentId];
-        $this->lineItems = Database::getInstance()->fetchAll($sql, $params) ?? [];
+        if (!$this->paymentId) {
+            $this->lineItems = [];
+            return;
+        }
+
+        $result = Database::getInstance()->fetchOne("SELECT lineItems FROM Payment WHERE paymentID = ?", [$this->paymentId]);
+        $this->lineItems = $result && $result['lineItems'] ? json_decode($result['lineItems'], true) : [];
     }
 
     /**
@@ -121,8 +123,9 @@ class Payment
      */
     private function CreatePaymentRecord($paymentData, $result)
     {
-        $sql = "INSERT INTO Payments (SubscriptionID, ParentID, Amount, Gateway, Status, CreatedAt, UpdatedAt) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $lineItems = isset($paymentData['items']) && is_array($paymentData['items']) ? json_encode($paymentData['items']) : null;
+        $sql = "INSERT INTO Payment (subscriptionID, parentID, amount, gateway, status, lineItems) 
+                VALUES (?, ?, ?, ?, ?, ?)";
         
         $params = [
             $paymentData['subscriptionId'] ?? null,
@@ -130,20 +133,12 @@ class Payment
             $paymentData['amount'],
             $this->gateway,
             'Pending',
-            date('Y-m-d H:i:s'),
-            date('Y-m-d H:i:s')
+            $lineItems
         ];
 
         $stmt = Database::getInstance()->query($sql, $params);
         if ($stmt && $stmt->rowCount() > 0) {
             $this->paymentId = Database::getInstance()->getConnection()->lastInsertId();
-        }
-
-        // Store line items if provided
-        if (isset($paymentData['items']) && is_array($paymentData['items'])) {
-            foreach ($paymentData['items'] as $item) {
-                $this->AddLineItem($item['description'] ?? '', $item['price'] ?? 0);
-            }
         }
     }
 
@@ -186,14 +181,14 @@ class Payment
      */
     public function MarkPaid($gatewayTXId = null, $paidAt = null)
     {
-        $this->status = 'Completed';
+        $this->status = 'Paid';
         $this->paidAt = $paidAt ?? date('Y-m-d H:i:s');
         if ($gatewayTXId) {
             $this->gatewayTXId = $gatewayTXId;
         }
 
-        $sql = "UPDATE Payments SET Status = 'Completed', GatewayTXID = ?, PaidAt = ?, UpdatedAt = ? WHERE PaymentID = ?";
-        $params = [$this->gatewayTXId, $this->paidAt, date('Y-m-d H:i:s'), $this->paymentId];
+        $sql = "UPDATE Payment SET status = 'Paid', gatewayTxID = ?, paidAt = ? WHERE paymentID = ?";
+        $params = [$this->gatewayTXId, $this->paidAt, $this->paymentId];
         $stmt = Database::getInstance()->query($sql, $params);
 
         return $stmt && $stmt->rowCount() > 0;
@@ -206,8 +201,8 @@ class Payment
     {
         $this->status = 'Failed';
 
-        $sql = "UPDATE Payments SET Status = 'Failed', UpdatedAt = ? WHERE PaymentID = ?";
-        $params = [date('Y-m-d H:i:s'), $this->paymentId];
+        $sql = "UPDATE Payment SET status = 'Failed' WHERE paymentID = ?";
+        $params = [$this->paymentId];
         $stmt = Database::getInstance()->query($sql, $params);
 
         if ($stmt && $stmt->rowCount() > 0) {
@@ -228,8 +223,8 @@ class Payment
     {
         $this->status = 'Refunded';
 
-        $sql = "UPDATE Payments SET Status = 'Refunded', UpdatedAt = ? WHERE PaymentID = ?";
-        $params = [date('Y-m-d H:i:s'), $this->paymentId];
+        $sql = "UPDATE Payment SET status = 'Refunded' WHERE paymentID = ?";
+        $params = [$this->paymentId];
         $stmt = Database::getInstance()->query($sql, $params);
 
         if ($stmt && $stmt->rowCount() > 0) {
@@ -249,17 +244,17 @@ class Payment
     private function UpdatePaymentStatus($reference, $paymentStatus, $transactionStatus = null)
     {
         $statusMap = [
-            'completed' => 'Completed',
+            'completed' => 'Paid',
             'pending' => 'Pending',
             'failed' => 'Failed',
-            'cancelled' => 'Cancelled',
+            'cancelled' => 'Failed',
             'refunded' => 'Refunded'
         ];
 
-        $newStatus = $statusMap[$paymentStatus] ?? 'Unknown';
+        $newStatus = $statusMap[$paymentStatus] ?? 'Pending';
 
-        $sql = "UPDATE Payments SET Status = ?, UpdatedAt = ? WHERE PaymentID = ?";
-        $params = [$newStatus, date('Y-m-d H:i:s'), $this->paymentId];
+        $sql = "UPDATE Payment SET status = ? WHERE paymentID = ?";
+        $params = [$newStatus, $this->paymentId];
         Database::getInstance()->query($sql, $params);
     }
 
@@ -327,7 +322,7 @@ class Payment
         $filePath = $_SERVER['DOCUMENT_ROOT'] . $invoicePath;
         file_put_contents($filePath, $content);
 
-        $sql = "UPDATE Payments SET InvoicePath = ? WHERE PaymentID = ?";
+        $sql = "UPDATE Payment SET invoicePath = ? WHERE paymentID = ?";
         $params = [$invoicePath, $this->paymentId];
         $stmt = Database::getInstance()->query($sql, $params);
 
@@ -344,24 +339,24 @@ class Payment
      */
     public function AddLineItem($description, $amount)
     {
+        $item = [
+            'description' => $description,
+            'amount' => $amount
+        ];
+
         if (!$this->paymentId) {
-            $this->lineItems[] = [
-                'description' => $description,
-                'amount' => $amount
-            ];
+            $this->lineItems[] = $item;
             return true;
         }
 
-        $sql = "INSERT INTO PaymentLineItems (PaymentID, Description, Amount) 
-                VALUES (?, ?, ?)";
-        $params = [$this->paymentId, $description, $amount];
+        $currentItems = $this->lineItems ?? [];
+        $currentItems[] = $item;
+        $sql = "UPDATE Payment SET lineItems = ? WHERE paymentID = ?";
+        $params = [json_encode($currentItems), $this->paymentId];
         $stmt = Database::getInstance()->query($sql, $params);
 
         if ($stmt && $stmt->rowCount() > 0) {
-            $this->lineItems[] = [
-                'description' => $description,
-                'amount' => $amount
-            ];
+            $this->lineItems = $currentItems;
             return true;
         }
 
@@ -392,7 +387,7 @@ class Payment
      */
     public static function GetPaymentsBySubscription($subscriptionId)
     {
-        $sql = "SELECT * FROM Payments WHERE SubscriptionID = ? ORDER BY CreatedAt DESC";
+        $sql = "SELECT * FROM Payment WHERE subscriptionID = ? ORDER BY paymentID DESC";
         $params = [$subscriptionId];
         return Database::getInstance()->fetchAll($sql, $params);
     }
@@ -402,7 +397,7 @@ class Payment
      */
     public static function GetPaymentsByParent($parentId)
     {
-        $sql = "SELECT * FROM Payments WHERE ParentID = ? ORDER BY CreatedAt DESC";
+        $sql = "SELECT * FROM Payment WHERE parentID = ? ORDER BY paymentID DESC";
         $params = [$parentId];
         return Database::getInstance()->fetchAll($sql, $params);
     }
@@ -412,7 +407,7 @@ class Payment
      */
     public static function GetPaymentByReference($reference)
     {
-        $sql = "SELECT * FROM Payments WHERE PaymentID = ? OR GatewayTXID = ?";
+        $sql = "SELECT * FROM Payment WHERE paymentID = ? OR gatewayTxID = ?";
         $params = [$reference, $reference];
         return Database::getInstance()->fetchOne($sql, $params);
     }

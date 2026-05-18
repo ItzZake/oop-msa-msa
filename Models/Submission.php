@@ -24,7 +24,7 @@ require_once 'Assignment.php';
         $this->submittedat = date("Y-m-d H:i:s");
         $this->status = $this->IsLate() ? "late" : "submitted";
 
-        $sql = "INSERT INTO Submissions (AssignmentID, ChildID, ParentID, Type, Content, SubmittedAt, Status)
+        $sql = "INSERT INTO submission (assignmentID, childID, parentID, type, content, submittedAt, status)
          VALUES (?,?,?,?,?,?,?)";
         $params = [$this->assignmentID, $this->childID, $this->parentID, $this->type, $this->content, $this->submittedat, $this->status];
         $stmt = Database::getInstance()->query($sql, $params);
@@ -41,7 +41,7 @@ require_once 'Assignment.php';
         $this->feedback = $feedback;
         $this->gradedat = date("Y-m-d H:i:s");
         $this->gradedby = $teacherID;
-        $sql = "UPDATE Submissions SET Grade = ?, Feedback = ?, GradedAt = ?, GradedBy = ?, Status = ? WHERE SubmissionID = ?";
+        $sql = "UPDATE submission SET grade = ?, feedback = ?, gradedAt = ?, gradedBy = ?, status = ? WHERE submissionID = ?";
         $params = [$this->grade, $this->feedback, $this->gradedat, $this->gradedby, "graded", $this->submissionID];
         $stmt = Database::getInstance()->query($sql, $params);
         return $stmt && $stmt->rowCount() > 0;
@@ -51,7 +51,7 @@ require_once 'Assignment.php';
     {
         if ($this->IsLate()) {
             $this->status = "late";
-            $sql = "UPDATE Submissions SET Status = ? WHERE SubmissionID = ?";
+            $sql = "UPDATE submission SET status = ? WHERE submissionID = ?";
             $params = [$this->status, $this->submissionID];
             $stmt = Database::getInstance()->query($sql, $params);
             return $stmt && $stmt->rowCount() > 0;
@@ -65,7 +65,7 @@ require_once 'Assignment.php';
             return false;
         }
 
-        $sql = "SELECT DueDate FROM Assignments WHERE AssignmentID = ?";
+        $sql = "SELECT dueDate FROM assignment WHERE assignmentID = ?";
         $result = Database::getInstance()->fetchOne($sql, [$this->assignmentID]);
         if (!$result || empty($result['DueDate'])) {
             return false;

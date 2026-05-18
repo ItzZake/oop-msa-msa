@@ -29,7 +29,7 @@
       $Price = $data['Price'];
       $Schedule = json_encode($data['Schedule']);
       $IsActive = true;
-      $sql = "INSERT INTO Courses (Name, Description, AgeMin, AgeMax, MaxCapacity, Price, Schedule, IsActive)
+      $sql = "INSERT INTO course (name, description, ageMin, ageMax, maxCapacity, price, schedule, isActive)
        VALUES (?,?,?,?,?,?,?,?)";
        $params = [$Name, $Description, $AgeMin, $AgeMax, $MaxCapacity, $Price, $Schedule, $IsActive];
        $stmt = Database::getInstance()->query($sql, $params);
@@ -47,7 +47,7 @@
       $Price = $data['Price'];
       $Schedule = json_encode($data['Schedule']);
       $IsActive = isset($data['IsActive']) ? (bool)$data['IsActive'] : true;
-      $sql = "UPDATE Courses SET Name=?, Description=?, AgeMin=?, AgeMax=?, MaxCapacity=?, Price=?, Schedule=?, IsActive=? WHERE CourseId=?";
+      $sql = "UPDATE course SET name=?, description=?, ageMin=?, ageMax=?, maxCapacity=?, price=?, schedule=?, isActive=? WHERE courseID=?";
        $params = [$Name, $Description, $AgeMin, $AgeMax, $MaxCapacity, $Price, $Schedule, $IsActive, $courseId];
        $stmt = Database::getInstance()->query($sql, $params);
        if ($stmt && $stmt->rowCount() > 0) {
@@ -80,9 +80,9 @@
 
    function GetEnrolledChildren()
    {
-      $sql = "SELECT c.* FROM Children c 
-              INNER JOIN Enrollments e ON c.ChildId = e.ChildId 
-              WHERE e.CourseId = ? AND e.Status = 'Active'";
+      $sql = "SELECT c.* FROM child c 
+              INNER JOIN enrollment e ON c.childID = e.childID 
+              WHERE e.courseID = ? AND e.status = 'Active'";
       $params = [$this->courseId];
       return Database::getInstance()->fetchAll($sql, $params);
    }
@@ -92,14 +92,14 @@
       if (!$this->AssignedTeacherId) {
          return null;
       }
-      $sql = "SELECT * FROM Teachers WHERE TeacherId = ?";
+      $sql = "SELECT * FROM teacher WHERE teacherID = ?";
       $params = [$this->AssignedTeacherId];
       return Database::getInstance()->fetchOne($sql, $params);
    }
 
    function GetAttendanceSessions()
    {
-      $sql = "SELECT * FROM AttendanceSessions WHERE CourseId = ? ORDER BY SessionDate DESC";
+      $sql = "SELECT * FROM attendance WHERE courseID = ? ORDER BY sessionDate DESC";
       $params = [$this->courseId];
       return Database::getInstance()->fetchAll($sql, $params);
    }

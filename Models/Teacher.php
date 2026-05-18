@@ -19,13 +19,13 @@ class Teacher extends User
   
   public function CreateAssignment($courseId, $data)
   {
-    $sql = "INSERT INTO Assignments (CourseId, Title, Description, DueDate, CreatedBy, CreatedAt) VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO assignment (courseID, teacherID, title, instructions, dueDate, createdAt) VALUES (?, ?, ?, ?, ?, ?)";
     $params = [
       $courseId,
+      $this->getTeacherId(),
       $data['Title'],
       $data['Description'],
       $data['DueDate'],
-      $this->UserId,
       date('Y-m-d H:i:s')
     ];
     $stmt = Database::getInstance()->query($sql, $params);
@@ -34,21 +34,31 @@ class Teacher extends User
 
   public function GradeSubmission($assignId, $childId, $grade)
   {
-    $sql = "UPDATE Submissions SET Grade = ?, Status = 'graded', GradedAt = ? WHERE AssignmentId = ? AND ChildId = ?";
+    $sql = "UPDATE submission SET grade = ?, status = 'Graded', gradedAt = ? WHERE assignmentID = ? AND childID = ?";
     $params = [$grade, date('Y-m-d H:i:s'), $assignId, $childId];
     $stmt = Database::getInstance()->query($sql, $params);
     return $stmt && $stmt->rowCount() > 0;
   }
 
+  public function setTeacherId($teacherId)
+  {
+    $this->TeacherId = $teacherId;
+  }
+
+  public function getTeacherId()
+  {
+    return $this->TeacherId;
+  }
+
   public function SubmitProgressReport($childId, $data)
   {
     $report = new ProgressReport();
-    return $report->SubmitReport(array_merge($data, ['ChildId' => $childId, 'TeacherId' => $this->UserId]));
+    return $report->SubmitReport(array_merge($data, ['ChildId' => $childId, 'TeacherId' => $this->getTeacherId()]));
   }
 
   public function MarkMilestone($childId, $milestoneId, $status)
   {
-    $sql = "UPDATE Milestones SET Status = ?, UpdatedAt = ? WHERE MilestoneID = ? AND ChildID = ?";
+    $sql = "UPDATE milestone SET status = ?, achievedAt = ? WHERE milestoneID = ? AND childID = ?";
     $params = [$status, date('Y-m-d H:i:s'), $milestoneId, $childId];
     $stmt = Database::getInstance()->query($sql, $params);
     return $stmt && $stmt->rowCount() > 0;
@@ -56,27 +66,27 @@ class Teacher extends User
 
   public function ActivateARModel()
   {
-    $sql = "UPDATE Teachers SET ARModelEnabled = 1 WHERE UserId = ?";
-    $stmt = Database::getInstance()->query($sql, [$this->UserId]);
+    $sql = "UPDATE teacher SET ARModelEnabled = 1 WHERE userID = ?";
+    $stmt = Database::getInstance()->query($sql, [$this->getId()]);
     return $stmt && $stmt->rowCount() > 0;
   }
 
   public function ViewTimeTable()
   {
-    $sql = "SELECT * FROM CourseAssignments WHERE TeacherID = ? ORDER BY DayOfWeek, StartTime";
-    return Database::getInstance()->fetchAll($sql, [$this->UserId]);
+    $sql = "SELECT * FROM courseassignment WHERE teacherID = ? ORDER BY DayOfWeek, StartTime";
+    return Database::getInstance()->fetchAll($sql, [$this->getTeacherId()]);
   }
 
   public function SendMessage($parentId, $content)
   {
     $msg = new Message();
-    return $msg->Send(['SenderID' => $this->UserId, 'RecipientID' => $parentId, 'Content' => $content]);
+    return $msg->Send(['SenderID' => $this->getId(), 'RecipientID' => $parentId, 'Content' => $content]);
   }
 
   public function FillOverdueForm($parentId, $childId, $data)
   {
-    $sql = "INSERT INTO OverdueForms (TeacherID, ParentID, ChildID, Notes, CreatedAt) VALUES (?, ?, ?, ?, ?)";
-    $params = [$this->UserId, $parentId, $childId, $data['Notes'] ?? '', date('Y-m-d H:i:s')];
+    $sql = "INSERT INTO overdueforms (TeacherID, ParentID, ChildID, Notes, CreatedAt) VALUES (?, ?, ?, ?, ?)";
+    $params = [$this->getTeacherId(), $parentId, $childId, $data['Notes'] ?? '', date('Y-m-d H:i:s')];
     $stmt = Database::getInstance()->query($sql, $params);
     return $stmt && $stmt->rowCount() > 0;
   }
@@ -92,7 +102,7 @@ class Teacher extends User
       mkdir($_SERVER['DOCUMENT_ROOT'] . $uploadDir, 0755, true);
     }
 
-    $fileName = uniqid('arasset_' . $this->UserId . '_') . '_' . basename($file['name']);
+    $fileName = uniqid('arasset_' . $this->getId() . '_') . '_' . basename($file['name']);
     $filePath = $uploadDir . $fileName;
 
     if (move_uploaded_file($file['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . $filePath)) {
@@ -103,7 +113,7 @@ class Teacher extends User
         $filePath,
         $file['type'] ?? pathinfo($file['name'], PATHINFO_EXTENSION),
         isset($file['size']) ? round($file['size'] / 1024, 2) : 0,
-        $this->UserId,
+        $this->getId(),
         date('Y-m-d H:i:s')
       ];
       $stmt = Database::getInstance()->query($sql, $params);

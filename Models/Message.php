@@ -11,7 +11,7 @@
 
     function Send($data)
     {
-        $sql = "INSERT INTO Messages (SenderID, RecipientID, Content, IsRead, SentAt) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO message (senderID, recipientID, content, isRead, sentAt) VALUES (?, ?, ?, ?, ?)";
         $params = [
             $data['SenderID'],
             $data['RecipientID'],
@@ -25,7 +25,7 @@
 
     function MarkRead($messageID)
     {
-        $sql = "UPDATE Messages SET IsRead = 1, ReadAt = ? WHERE MessageID = ?";
+        $sql = "UPDATE message SET isRead = 1, readAt = ? WHERE messageID = ?";
         $params = [date('Y-m-d H:i:s'), $messageID];
         $stmt = Database::getInstance()->query($sql, $params);
         return $stmt && $stmt->rowCount() > 0;
@@ -33,16 +33,16 @@
 
     function GetThread($userA, $userB)
     {
-        $sql = "SELECT * FROM Messages WHERE 
-                (SenderID = ? AND RecipientID = ?) OR (SenderID = ? AND RecipientID = ?) 
-                ORDER BY SentAt ASC";
+        $sql = "SELECT * FROM message WHERE 
+                (senderID = ? AND recipientID = ?) OR (senderID = ? AND recipientID = ?) 
+                ORDER BY sentAt ASC";
         $params = [$userA, $userB, $userB, $userA];
         return Database::getInstance()->fetchAll($sql, $params);
     }
 
     function GetUnread($userID)
     {
-        $sql = "SELECT * FROM Messages WHERE RecipientID = ? AND IsRead = 0 ORDER BY SentAt DESC";
+        $sql = "SELECT * FROM message WHERE recipientID = ? AND isRead = 0 ORDER BY sentAt DESC";
         return Database::getInstance()->fetchAll($sql, [$userID]);
     }
    

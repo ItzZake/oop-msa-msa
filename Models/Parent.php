@@ -17,10 +17,10 @@
 
    public function AddChild ($data)
    {
-     $child = new Child(null, $this->ParentId, $data['DateOfBirth'], $data['Gender'], $data['allergies'] ?? null, $data['MedicalNotes'] ?? null, $data['EmergencyContact'] ?? null, 'pending', $data['PhotoPath'] ?? null); 
-     $sql = "INSERT INTO Children (ParentID, Name, DOB, Gender, Allergies, MedicalNotes, EmergencyContact, EnrollmentStatus)
-      Values (?,?,?,?,?,?,?,?)";
-     $params = [$this->ParentId, $data['Name'], $data['DateOfBirth'], $data['Gender'], $data['allergies'] ?? null, $data['MedicalNotes'] ?? null, $data['EmergencyContact'] ?? null, 'pending'];
+     $child = new Child(null, $this->ParentId, $data['DateOfBirth'], $data['Gender'], $data['allergies'] ?? null, $data['MedicalNotes'] ?? null, $data['EmergencyContact'] ?? null, 'Pending', $data['PhotoPath'] ?? null); 
+     $sql = "INSERT INTO Child (parentID, name, dateOfBirth, gender, allergies, medicalNotes, emergencyContact, enrollmentStatus)
+      VALUES (?,?,?,?,?,?,?,?)";
+     $params = [$this->ParentId, $data['Name'], $data['DateOfBirth'], $data['Gender'], $data['allergies'] ?? null, $data['MedicalNotes'] ?? null, $data['EmergencyContact'] ?? null, 'Pending'];
       $stmt = Database::getInstance()->query($sql, $params);
       if ($stmt && $stmt->rowCount() > 0) {
         return true;
@@ -34,7 +34,7 @@
         $courseId = $data['CourseId'];
         
         // Verify course exists and has availability
-        $courseSql = "SELECT * FROM Courses WHERE CourseId = ?";
+        $courseSql = "SELECT * FROM Course WHERE courseID = ?";
         $course = Database::getInstance()->fetchOne($courseSql, [$courseId]);
         
         if (!$course) {
@@ -42,17 +42,17 @@
         }
         
         // Check if course has available seats
-        $enrollmentSql = "SELECT COUNT(*) as count FROM Enrollments WHERE CourseId = ? AND Status = 'Active'";
+        $enrollmentSql = "SELECT COUNT(*) as count FROM Enrollment WHERE courseID = ? AND status = 'Active'";
         $enrollment = Database::getInstance()->fetchOne($enrollmentSql, [$courseId]);
         
-        if ($enrollment['count'] >= $course['MaxCapacity']) {
+        if ($enrollment['count'] >= $course['maxCapacity']) {
             return ['status' => 'error', 'message' => 'Course is full', 'code' => 'COURSE_FULL'];
         }
         
         // Create enrollment
-        $sql = "INSERT INTO Enrollments (ChildId, CourseId, ParentId, Status, EnrolledAt) 
-                VALUES (?, ?, ?, ?, ?)";
-        $params = [$childId, $courseId, $this->ParentId, 'Active', date('Y-m-d H:i:s')];
+        $sql = "INSERT INTO Enrollment (childID, courseID, enrolledAt, status, isWaitlisted) 
+                VALUES (?, ?, ?, ?, 0)";
+        $params = [$childId, $courseId, date('Y-m-d H:i:s'), 'Active'];
         $stmt = Database::getInstance()->query($sql, $params);
         
         if ($stmt && $stmt->rowCount() > 0) {
@@ -64,10 +64,9 @@
 
    function SubmitApplication($data)
    {
-            $application = new Application(null, $data['ChildId'], $this->ParentId, null, 'pending', null, date('Y-m-d H:i:s'), null, isset($data['Documents']) ? json_encode($data['Documents']) : null);
-            $sql = "INSERT INTO Applications (ParentId, ChildId, CourseId, Status, SubmittedAt, Documents)
+               $sql = "INSERT INTO Application (parentID, childID, status, reviewedAt, rejectionReason, documents)
                VALUES (?,?,?,?,?,?)";
-               $params = [$this->ParentId, $data['ChildId'], $data['CourseId'], 'pending', date('Y-m-d H:i:s'), isset($data['Documents']) ? json_encode($data['Documents']) : null];
+               $params = [$this->ParentId, $data['ChildId'], 'Pending', null, null, isset($data['Documents']) ? json_encode($data['Documents']) : null];
                $stmt = Database::getInstance()->query($sql, $params);
                if ($stmt && $stmt->rowCount() > 0) {
                  return true;
@@ -80,7 +79,7 @@
         require_once 'PaymentProcessor.php';
         
         // Get subscription details
-        $subSql = "SELECT * FROM Subscriptions WHERE SubscriptionID = ?";
+        $subSql = "SELECT * FROM Subscription WHERE subscriptionID = ?";
         $subscription = Database::getInstance()->fetchOne($subSql, [$subId]);
         
         if (!$subscription) {
@@ -89,13 +88,13 @@
         
         // Prepare payment data
         $paymentData = [
-            'amount' => $subscription['BasePrice'],
+            'amount' => $subscription['basePrice'],
             'subscriptionId' => $subId,
             'parentId' => $this->ParentId,
             'customerEmail' => $this->getEmail(),
             'customerPhone' => $this->PhoneNumber,
             'customerName' => $this->getFirstName() . ' ' . $this->getLastName(),
-            'description' => $subscription['PlanName'] . ' subscription'
+            'description' => $subscription['planName'] . ' subscription'
         ];
         
         // Process payment using default gateway
@@ -103,18 +102,18 @@
         return $processor->processPayment($processor->getDefaultGateway(), $paymentData);
    }
 
-   function RequestEnrollment($ParentId,$ChildId)
+   function RequestEnrollment($ParentId, $ChildId, $CourseId)
    {
-        $sql = "INSERT INTO EnrollmentRequests (ParentId, ChildId, Status, RequestedAt) 
-                VALUES (?, ?, ?, ?)";
-        $params = [$ParentId, $ChildId, 'pending', date('Y-m-d H:i:s')];
+        $sql = "INSERT INTO Waitlist (parentID, childID, courseID, addedAt, status) 
+                VALUES (?, ?, ?, ?, 'Waiting')";
+        $params = [$ParentId, $ChildId, $CourseId, date('Y-m-d H:i:s')];
         $stmt = Database::getInstance()->query($sql, $params);
-        
+
         if ($stmt && $stmt->rowCount() > 0) {
-            return ['status' => 'success', 'message' => 'Enrollment request submitted'];
+            return ['status' => 'success', 'message' => 'Waitlist request submitted'];
         }
-        
-        return ['status' => 'error', 'message' => 'Failed to submit enrollment request'];
+
+        return ['status' => 'error', 'message' => 'Failed to submit waitlist request'];
    }
 
    function SubmitAssignment($assignId,$data)
@@ -122,9 +121,9 @@
         $childId = $data['ChildId'];
         $submissionPath = $data['SubmissionPath'] ?? null;
         
-        $sql = "INSERT INTO Submissions (AssignmentID, ChildId, SubmissionPath, Status, SubmittedAt) 
-                VALUES (?, ?, ?, ?, ?)";
-        $params = [$assignId, $childId, $submissionPath, 'submitted', date('Y-m-d H:i:s')];
+        $sql = "INSERT INTO submission (assignmentID, childID, parentID, type, content, photoPath, submittedAt, status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $params = [$assignId, $childId, $this->ParentId, 'Text', $submissionPath, null, date('Y-m-d H:i:s'), 'Submitted'];
         $stmt = Database::getInstance()->query($sql, $params);
         
         if ($stmt && $stmt->rowCount() > 0) {
@@ -134,19 +133,19 @@
         return ['status' => 'error', 'message' => 'Failed to submit assignment'];
    }
 
-   function SubmitExcuse ($childId,$sessionId,$reason)
+   function SubmitExcuse ($childId,$sessionDate,$reason)
    {
-        // Verify attendance record exists
-        $attSql = "SELECT * FROM AttendanceRecords WHERE ChildId = ? AND SessionId = ? AND Status = 'Absent'";
-        $attendance = Database::getInstance()->fetchOne($attSql, [$childId, $sessionId]);
+        // Verify attendance record exists for the absent session
+        $attSql = "SELECT * FROM Attendance WHERE childID = ? AND sessionDate = ? AND status = 'Absent'";
+        $attendance = Database::getInstance()->fetchOne($attSql, [$childId, $sessionDate]);
         
         if (!$attendance) {
             return ['status' => 'error', 'message' => 'No absent record found for this session'];
         }
         
-        $sql = "INSERT INTO Excuses (ChildId, SessionId, Reason, Status, SubmittedAt, ParentId) 
+        $sql = "INSERT INTO Excuse (childID, parentID, sessionDate, reason, status, submittedAt) 
                 VALUES (?, ?, ?, ?, ?, ?)";
-        $params = [$childId, $sessionId, $reason, 'pending', date('Y-m-d H:i:s'), $this->ParentId];
+        $params = [$childId, $this->ParentId, $sessionDate, $reason, 'Pending', date('Y-m-d H:i:s')];
         $stmt = Database::getInstance()->query($sql, $params);
         
         if ($stmt && $stmt->rowCount() > 0) {
@@ -156,44 +155,48 @@
         return ['status' => 'error', 'message' => 'Failed to submit excuse'];
    }
 
-   function SubmitRSVP($eventId,$response)
+   function SubmitRSVP($eventId, $childId, $response)
    {
-        // Validate response value
-        if (!in_array($response, ['attending', 'not_attending', 'maybe'])) {
+        $map = [
+            'attending' => 'Confirmed',
+            'not_attending' => 'Declined',
+            'maybe' => 'Pending'
+        ];
+
+        if (!isset($map[$response])) {
             return ['status' => 'error', 'message' => 'Invalid RSVP response'];
         }
-        
-        $sql = "INSERT INTO RSVPs (EventId, ParentId, Response, SubmittedAt) 
-                VALUES (?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE Response = VALUES(Response), SubmittedAt = VALUES(SubmittedAt)";
-        $params = [$eventId, $this->ParentId, $response, date('Y-m-d H:i:s')];
+
+        $sql = "INSERT INTO EventRSVP (eventID, parentID, childID, response, respondedAt) 
+                VALUES (?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE response = VALUES(response), respondedAt = VALUES(respondedAt)";
+        $params = [$eventId, $this->ParentId, $childId, $map[$response], date('Y-m-d H:i:s')];
         $stmt = Database::getInstance()->query($sql, $params);
-        
+
         if ($stmt && $stmt->rowCount() > 0) {
             return ['status' => 'success', 'message' => 'RSVP submitted successfully'];
         }
-        
+
         return ['status' => 'error', 'message' => 'Failed to submit RSVP'];
    }
 
    function SignConstentForm ($tripId)
    {
-        $sql = "UPDATE ConsentForms SET SignedAt = ?, SignedByParentId = ?, Status = 'signed' 
-                WHERE EventId = ? AND ParentId = ?";
-        $params = [date('Y-m-d H:i:s'), $this->ParentId, $tripId, $this->ParentId];
+        $sql = "UPDATE ConsentForm SET signedAt = ?, isSigned = 1 WHERE eventID = ? AND parentID = ?";
+        $params = [date('Y-m-d H:i:s'), $tripId, $this->ParentId];
         $stmt = Database::getInstance()->query($sql, $params);
-        
+
         if ($stmt && $stmt->rowCount() > 0) {
             return ['status' => 'success', 'message' => 'Consent form signed successfully'];
         }
-        
+
         return ['status' => 'error', 'message' => 'Failed to sign consent form'];
    }
 
    function UpdateMedicalInfo ($childId,$data)
    {
-        $sql = "UPDATE Children SET Allergies = ?, MedicalNotes = ?, EmergencyContact = ? 
-                WHERE ChildId = ? AND ParentId = ?";
+        $sql = "UPDATE child SET allergies = ?, medicalNotes = ?, emergencyContact = ? 
+                WHERE childID = ? AND parentID = ?";
         $params = [
             $data['allergies'] ?? null,
             $data['medicalNotes'] ?? null,
@@ -212,23 +215,22 @@
    
    function DownloadInVoice ($paymentId)
    {
-        $sql = "SELECT * FROM Payments WHERE PaymentID = ? AND ParentID = ?";
+        $sql = "SELECT * FROM Payment WHERE paymentID = ? AND parentID = ?";
         $payment = Database::getInstance()->fetchOne($sql, [$paymentId, $this->ParentId]);
-        
+
         if (!$payment) {
             return ['status' => 'error', 'message' => 'Payment not found'];
         }
-        
-        // Check if invoice exists
-        if (!$payment['InvoicePath'] || !file_exists($_SERVER['DOCUMENT_ROOT'] . $payment['InvoicePath'])) {
+
+        if (!$payment['invoicePath'] || !file_exists($_SERVER['DOCUMENT_ROOT'] . $payment['invoicePath'])) {
             return ['status' => 'error', 'message' => 'Invoice not available'];
         }
-        
+
         return [
             'status' => 'success',
-            'invoicePath' => $payment['InvoicePath'],
-            'amount' => $payment['Amount'],
-            'paidAt' => $payment['PaidAt']
+            'invoicePath' => $payment['invoicePath'],
+            'amount' => $payment['amount'],
+            'paidAt' => $payment['paidAt']
         ];
    }
    
