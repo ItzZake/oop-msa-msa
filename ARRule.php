@@ -13,7 +13,7 @@
     private $isactive;
     private $createdby;
 
-    function Evaluate(detectedobjects[])
+    function Evaluate($detectedobjects)
     {
         // Code
     }

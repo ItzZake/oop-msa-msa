@@ -12,7 +12,7 @@
    private $InvoicePath;
    private $LineItems; 
 
-   function ProcessWebHook(Payload)
+   function ProcessWebHook($Payload)
    {
      // Code to process payment gateway webhook payload and update payment status accordingly
    }
@@ -32,7 +32,7 @@
         // Code to generate PDF invoice
    }
 
-   function AddLineItem(Description, Amount)
+   function AddLineItem($Description, $Amount)
    {
         // Code to add line item to payment
    }

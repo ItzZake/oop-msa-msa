@@ -35,7 +35,6 @@
         }
         // Publish Event
     }
-
     function Cancel($Reason, $EventID)
     {
         $this->iscancelled = true;
@@ -47,7 +46,6 @@
         }
         // Cancel Event with Reason
     }
-
     function GetAttendeeList()
     {
         // Get attendee list of said event

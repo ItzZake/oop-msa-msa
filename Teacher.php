@@ -10,6 +10,8 @@ class Teacher extends User
   private $Qualifications;
   private $Experience;
   private $Specialization;
+  private $AssignedCourses; //array of courseIds
+  private $AssignedTimetable; //json
   
   public function CreateAssignment($courseId, $data)
   {
