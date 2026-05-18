@@ -19,6 +19,41 @@
    private $Schedule; //json
    private $IsActive;
 
+   function Create($data)
+   {
+      $Name = $data['Name'];
+      $Description = $data['Description'];
+      $AgeMin = $data['AgeMin'];
+      $AgeMax = $data['AgeMax'];
+      $MaxCapacity = $data['MaxCapacity'];
+      $Price = $data['Price'];
+      $Schedule = json_encode($data['Schedule']);
+      $IsActive = true;
+      $sql = "INSERT INTO Courses (Name, Description, AgeMin, AgeMax, MaxCapacity, Price, Schedule, IsActive)
+       VALUES (?,?,?,?,?,?,?,?)";
+       $params = [$Name, $Description, $AgeMin, $AgeMax, $MaxCapacity, $Price, $Schedule, $IsActive];
+       $stmt = Database::getInstance()->query($sql, $params);
+       if ($stmt && $stmt->rowCount() > 0) {
+         return true;
+      }
+   }
+   function Edit($courseId, $data)
+   {
+      $Name = $data['Name'];
+      $Description = $data['Description'];
+      $AgeMin = $data['AgeMin'];
+      $AgeMax = $data['AgeMax'];
+      $MaxCapacity = $data['MaxCapacity'];
+      $Price = $data['Price'];
+      $Schedule = json_encode($data['Schedule']);
+      $IsActive = isset($data['IsActive']) ? (bool)$data['IsActive'] : true;
+      $sql = "UPDATE Courses SET Name=?, Description=?, AgeMin=?, AgeMax=?, MaxCapacity=?, Price=?, Schedule=?, IsActive=? WHERE CourseId=?";
+       $params = [$Name, $Description, $AgeMin, $AgeMax, $MaxCapacity, $Price, $Schedule, $IsActive, $courseId];
+       $stmt = Database::getInstance()->query($sql, $params);
+       if ($stmt && $stmt->rowCount() > 0) {
+         return true;
+      }
+   }
    function CheckSeats()
    {
       if($this->CurrentEnrollment < $this->MaxCapacity)
