@@ -1,0 +1,18 @@
+.application-panel {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 2rem;
+}
+.application-hero__content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.application-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.application-submit {
+  width: 100%;
+  justify-content: center;
+}

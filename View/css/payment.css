@@ -1,0 +1,30 @@
+.payment-hero {
+  padding: 3rem 0;
+  background: linear-gradient(135deg, #fff0f7, #eff6ff);
+  position: relative;
+  overflow: hidden;
+}
+.payment-panel {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  text-align: center;
+}
+.payment-icon {
+  font-size: 4rem;
+  opacity: 0.3;
+  margin-bottom: 1rem;
+}
+.payment-title {
+  color: var(--gray-700);
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+}
+.payment-copy {
+  color: var(--gray-600);
+  margin-bottom: 1.5rem;
+}
+.payment-note {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+}
