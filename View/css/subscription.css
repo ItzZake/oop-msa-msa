@@ -1,0 +1,12 @@
+.page-hero__content { max-width:800px; margin:0 auto; }
+.plans-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5rem; max-width:1000px; margin:0 auto; }
+.plan-card--subscription { background:white; border-radius:1.5rem; padding:1.5rem; text-align:center; }
+.plan-card--subscription .plan-title { color:var(--gray-700); font-weight:900; margin-bottom:0.5rem; }
+.plan-card--subscription .plan-title--pink { color:var(--pink); }
+.plan-card--subscription .plan-price { font-size:1.75rem; font-weight:900; margin-bottom:1rem; }
+.plan-card--subscription .plan-price span { font-size:0.75rem; color:var(--gray-600); }
+.plan-card--subscription .plan-period { color:var(--gray-600); font-size:0.875rem; }
+.plan-badge-popular { background:linear-gradient(135deg,var(--pink),#EC4899); color:white; padding:0.5rem 1rem; border-radius:0.5rem; font-size:0.75rem; font-weight:900; display:inline-block; margin-bottom:0.75rem; }
+.plan-border-gray { border-top:4px solid var(--gray-300); }
+.plan-border-pink { border-top:4px solid var(--pink); transform:scale(1.05); }
+.plan-border-green { border-top:4px solid var(--green); }

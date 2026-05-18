@@ -1,0 +1,7 @@
+.settings-panel { background:white; border-radius:1.5rem; padding:2rem; }
+.settings-group { margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--gray-200); }
+.settings-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.settings-meta { font-size:0.875rem; color:var(--gray-600); }
+.settings-toggle { width:1.25rem; height:1.25rem; cursor:pointer; }
+.settings-action-row { display:flex; gap:1rem; flex-wrap:wrap; }
+.settings-action-row .btn { flex:1; justify-content:center; }
