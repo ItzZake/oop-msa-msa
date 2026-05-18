@@ -97,7 +97,7 @@
 	  return $result ? $result['AssignedTeacherId'] : null;
 	// Code to retrieve assigned teacher ID for a specific course
    }
-	}
+	
    function GetCourseDetails($courseId)
    {
       $sql = "SELECT * FROM course WHERE courseID = ?";
