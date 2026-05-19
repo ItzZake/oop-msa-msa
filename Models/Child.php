@@ -181,5 +181,29 @@ class Child
 	}
 	return $children;
 }
+
+// Static method to add a child (typically for admin users)
+static function AddChild($data)
+{
+    $sql = "INSERT INTO Child (parentID, name, dateOfBirth, gender, allergies, medicalNotes, emergencyContact, enrollmentStatus, photoPath) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $params = [
+        $data['parentID'] ?? null,
+        $data['Name'] ?? $data['name'] ?? '',
+        $data['DateOfBirth'] ?? $data['dateOfBirth'] ?? '',
+        $data['Gender'] ?? $data['gender'] ?? '',
+        $data['allergies'] ?? null,
+        $data['MedicalNotes'] ?? $data['medicalNotes'] ?? null,
+        $data['EmergencyContact'] ?? $data['emergencyContact'] ?? null,
+        $data['enrollmentStatus'] ?? 'Active',
+        $data['PhotoPath'] ?? $data['photoPath'] ?? null
+    ];
+    
+    $stmt = Database::getInstance()->query($sql, $params);
+    if ($stmt && $stmt->rowCount() > 0) {
+        return Database::getInstance()->getConnection()->lastInsertId();
+    }
+    return false;
+}
 }
 ?>

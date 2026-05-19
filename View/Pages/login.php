@@ -86,7 +86,6 @@ session_start();
       </div>
 
       <div class="navbar__right">
-        <a href="enroll.html" class="btn-enroll btn-enroll--desktop">🌟 Enroll Now</a>
         <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
           <svg class="icon-menu" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
           <svg class="icon-close hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -100,17 +99,9 @@ session_start();
       <a href="contact.html" class="nav-link" data-path="/contact">📞 Contact Us</a>
       <a href="profiles.html" class="nav-link" data-path="/profiles">👤 Profiles</a>
       <a href="dashboard.html" class="nav-link" data-path="/dashboard">📊 Dashboard</a>
-      <a href="attendance.html" class="nav-link" data-path="/attendance">📅 Attendance</a>
-      <a href="reports.html" class="nav-link" data-path="/reports">📋 Reports</a>
-      <a href="assignments.html" class="nav-link" data-path="/assignments">📝 Assignments</a>
       <a href="login.html"  class="nav-link active" data-path="/login">🔐 Login</a>
       <a href="payment.html" class="nav-link" data-path="/payment">💳 Payment</a>
       <a href="subscription.html" class="nav-link" data-path="/subscription">⭐ Subscription</a>
-      <a href="excuse.html" class="nav-link" data-path="/excuse">🙋 Excuse</a>
-      <a href="messages.html" class="nav-link" data-path="/messages">💬 Messages</a>
-      <a href="application.html" class="nav-link" data-path="/application">📄 Application</a>
-      <a href="settings.html" class="nav-link" data-path="/settings">⚙️ Settings</a>
-      <a href="enroll.html" class="btn-enroll btn-enroll--mobile">🌟 Enroll Now</a>
     </div>
   </nav>
 

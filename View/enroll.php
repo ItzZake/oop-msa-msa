@@ -7,6 +7,11 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 ?>
+<?php
+include 'header.php';
+include 'navbar.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,20 +21,19 @@ if (empty($_SESSION['csrf_token'])) {
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet" />
-	<link rel="stylesheet" href="../css/enroll.css"/>
-	<link rel="stylesheet" href="../css/navbar.css"/>
+	<link rel="stylesheet" href="../view/css/enroll.css"/>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
+
 </head>
-<body>
-<?php
-include 'header.php';
-include 'navbar.php';
-?>
+<body></body>
 	
 	<section class="enroll-hero">
 		<div class="container enroll-hero__content text-center">
-			<span class="page-badge enroll-badge">🌟 Enrollment</span>
-			<h1 class="page-hero__title">Join the Wellucation Family</h1>
-			<p class="page-hero__subtitle">Start your child's journey towards a bright future. Fill out the form below to apply for enrollment.</p>
+			<span class="enroll-badge">🌟 Enrollment</span>
+			<h1 class="enroll-section-title">Join the Wellucation Family</h1>
+			<p class="page-hero__context">Start your child's journey towards a bright future. Fill out the form below to apply for enrollment.</p>
 		</div>
 	</section>
 	
@@ -81,6 +85,6 @@ include 'navbar.php';
 	</section>
 
 	<?php include 'footer.php'; ?>
-	<script src="scripts/enroll-form.js"></script>
+	<script src="../scripts/enroll-form.js"></script>
 </body>
 </html>

@@ -123,6 +123,11 @@ class User
         $this->role = $role;
     }
 
+    public function setActive($active)
+    {
+        $this->isActive = (bool) $active;
+    }
+
     public function verifyPassword($plain)
     {
         return $this->hasher->Verify($plain, $this->password);
@@ -183,4 +188,3 @@ class User
         ];
     }
 }
-?>
