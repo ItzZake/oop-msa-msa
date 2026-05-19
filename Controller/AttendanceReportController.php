@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Attendance.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Attendance.php';
 
 $child_id   = (int) ($_GET['child_id']   ?? 0);
 $date_from  = htmlspecialchars($_GET['date_from'] ?? '');

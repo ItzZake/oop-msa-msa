@@ -74,6 +74,51 @@ require_once 'Database.php';
         $stmt = Database::getInstance()->query($sql, $params);
         return $stmt && $stmt->rowCount() > 0;
     }
+
+    function InsertReport($childId, $observations, $ratings, $status)
+    {
+        $this->ChildId = $childId;
+        $this->TeacherId = $_SESSION['user_id'] ?? null;
+        $this->Period = date('Y-m-d');
+        $this->Observation = $observations;
+        $this->SkillRating = json_encode(['rating' => $ratings]);
+        $this->Status = $status;
+        $this->CreatedAt = date('Y-m-d H:i:s');
+
+        $sql = "INSERT INTO progressreport (childID, teacherID, period, observation, skillRatings, status, dueDate, createdAt)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $params = [$this->ChildId, $this->TeacherId, $this->Period, $this->Observation, $this->SkillRating, $this->Status, date('Y-m-d', strtotime('+7 days')), $this->CreatedAt];
+        $stmt = Database::getInstance()->query($sql, $params);
+        return $stmt && $stmt->rowCount() > 0;
+    }
+
+    function GetPublishedReportsByChild($childId)
+    {
+        $sql = "SELECT * FROM progressreport WHERE childID = ? AND status = 'Published'";
+        return Database::getInstance()->fetchAll($sql, [$childId]);
+    }
+
+    function GetOverdueReports($today)
+    {
+        $queries = [
+            "SELECT * FROM ProgressReport WHERE dueDate < ? AND status IN ('Draft','Pending Review')",
+            "SELECT * FROM ProgressReport WHERE due_date < ? AND status IN ('Draft','Pending Review')",
+        ];
+
+        foreach ($queries as $sql) {
+            try {
+                $rows = Database::getInstance()->fetchAll($sql, [$today]);
+                if (!empty($rows)) {
+                    return $rows;
+                }
+            } catch (\Throwable $e) {
+                continue;
+            }
+        }
+
+        return [];
+    }
+
     function GetProgressReportsByChildId($ChildId)
     {
         $Database = Database::getInstance();

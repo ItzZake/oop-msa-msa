@@ -17,6 +17,7 @@ class Event
 
     function Publish($Data)
     {
+        $this->adminID = $Data['adminID'] ?? ($_SESSION['user_id'] ?? 0);
         $this->title = $Data['title'];
         $this->description = $Data['description'];
         $this->eventDate = $Data['eventdate'];
@@ -26,11 +27,23 @@ class Event
         $this->isFieldTrip = $Data['isfieldtrip'];
         $this->rsvpDeadline = $Data['rsvpdeadline'];
 
-        $sql = "INSERT INTO Event (adminID, title, description, eventDate, location, capacity, targetTag, isFieldTrip, rsvpDeadline)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $params = [$this->adminID, $this->title, $this->description, $this->eventDate, $this->location, $this->capacity, $this->targetTag, $this->isFieldTrip, $this->rsvpDeadline];
+        $sql = "INSERT INTO Event (adminID, title, description, eventDate, location, capacity, targetTag, isFieldTrip, isCancelled, rsvpDeadline)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $params = [$this->adminID, $this->title, $this->description, $this->eventDate, $this->location, $this->capacity, $this->targetTag, $this->isFieldTrip, 0, $this->rsvpDeadline];
         $stmt = Database::getInstance()->query($sql, $params);
         return $stmt && $stmt->rowCount() > 0;
+    }
+
+    function CreateEvent($adminID, $title, $eventDate, $description, $targetTag)
+    {
+        $sql = "INSERT INTO Event (adminID, title, description, eventDate, location, capacity, targetTag, isFieldTrip, isCancelled, rsvpDeadline)
+                VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, ?)";
+        $params = [$adminID, $title, $description, $eventDate, '', 0, $targetTag, $eventDate];
+        $stmt = Database::getInstance()->query($sql, $params);
+        if ($stmt && $stmt->rowCount() > 0) {
+            return Database::getInstance()->getConnection()->lastInsertId();
+        }
+        return false;
     }
 
     function Cancel($Reason, $EventID)
@@ -106,6 +119,20 @@ class Event
         return ['status' => 'success', 'filepath' => $filepath];
     }
 
+    function GetConfirmedEventsByDate($date)
+    {
+        $sql = "SELECT DISTINCT e.* FROM Event e
+                INNER JOIN EventRSVP r ON e.eventID = r.eventID
+                WHERE e.eventDate = ? AND e.isCancelled = 0 AND LOWER(r.response) = 'yes'";
+        return Database::getInstance()->fetchAll($sql, [$date]);
+    }
+
+    function GetEventsByDateRange($startDate, $endDate)
+    {
+        $sql = "SELECT * FROM Event WHERE eventDate BETWEEN ? AND ? AND isCancelled = 0";
+        return Database::getInstance()->fetchAll($sql, [$startDate, $endDate]);
+    }
+
     function ScheduleReminders()
     {
         require_once 'NotificationManager.php';
@@ -159,6 +186,14 @@ class Event
         }
 
         return ['status' => 'error', 'message' => 'Failed to upload photo'];
+    }
+
+    function InsertGalleryPhoto($eventID, $photoPath, $caption = '')
+    {
+        $sql = "INSERT INTO EventGallery (eventID, photoPath, caption, uploadedAt) VALUES (?, ?, ?, ?)";
+        $params = [$eventID, $photoPath, $caption, date('Y-m-d H:i:s')];
+        $stmt = Database::getInstance()->query($sql, $params);
+        return $stmt && $stmt->rowCount() > 0;
     }
 }
 ?>

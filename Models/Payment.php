@@ -238,9 +238,49 @@ class Payment
         return false;
     }
 
-    /**
-     * Update payment status based on gateway response
-     */
+    public function GetTotalRevenue()
+    {
+        $sql = "SELECT SUM(amount) AS totalRevenue FROM Payment WHERE status = 'Paid'";
+        $result = Database::getInstance()->fetchOne($sql);
+        return $result ? (float) $result['totalRevenue'] : 0;
+    }
+
+    public function GetReportByDateRange($startDate, $endDate)
+    {
+        $sql = "SELECT * FROM Payment WHERE createdAt BETWEEN ? AND ?";
+        return Database::getInstance()->fetchAll($sql, [$startDate, $endDate]);
+    }
+
+    public function GetTransactionsByParentId($parentId)
+    {
+        return Database::getInstance()->fetchAll("SELECT * FROM Payment WHERE parentID = ? ORDER BY paidAt DESC", [$parentId]);
+    }
+
+    public function GetOverdueByDueDate()
+    {
+        $sql = "SELECT p.* FROM Payment p
+                INNER JOIN Subscription s ON p.subscriptionID = s.subscriptionID
+                WHERE p.status != 'Paid' AND s.dueDate < CURDATE()";
+        $rows = Database::getInstance()->fetchAll($sql);
+        $results = [];
+        foreach ($rows as $row) {
+            $results[] = new self($row['paymentID']);
+        }
+        return $results;
+    }
+
+    public function GetAggregateRevenue()
+    {
+        $sql = "SELECT SUM(amount) AS totalRevenue FROM Payment WHERE status = 'Paid'";
+        $result = Database::getInstance()->fetchOne($sql);
+        return $result ? (float) $result['totalRevenue'] : 0;
+    }
+
+    public function GetSubscriptionId()
+    {
+        return $this->subscriptionId;
+    }
+
     private function UpdatePaymentStatus($reference, $paymentStatus, $transactionStatus = null)
     {
         $statusMap = [

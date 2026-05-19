@@ -1,9 +1,9 @@
 <?php
 // Triggered by cron job — no session needed
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Assignment.php';
-require_once '/../Models/Notification.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Assignment.php';
+require_once __DIR__ . '/../Models/Notification.php';
 
 $Assignment = new Assignment();
 $now        = date('Y-m-d H:i:s');

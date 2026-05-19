@@ -1,9 +1,9 @@
 <?php
 // Triggered by cron job — no session needed
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Attendance.php';
-require_once '/../Models/Notification.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Attendance.php';
+require_once __DIR__ . '/../Models/Notification.php';
 
 $ABSENCE_THRESHOLD = 3; // escalate after 3 consecutive absences
 

@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Attendance.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Attendance.php';
 
 $admin_id = (int) ($_GET['admin_id'] ?? 0);
 

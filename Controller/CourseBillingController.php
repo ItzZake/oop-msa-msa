@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Enrollment.php';
-require_once '/../Models/Invoice.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Enrollment.php';
+require_once __DIR__ . '/../Models/Invoice.php';
 
 $enrollment_id = (int) ($_POST['enrollment_id'] ?? 0);
 

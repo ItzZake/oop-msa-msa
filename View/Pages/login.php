@@ -6,7 +6,7 @@
   <title>Login Wellucation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Fredoka+One&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="login.css" />
+  <link rel="stylesheet" href="../css/login.css" />
 </head>
 <body>
 
@@ -346,6 +346,6 @@
     </div>
   </footer>
 
-  <script src="login.js"></script>
+  <script src="../scripts/login.js"></script>
 </body>
 </html>

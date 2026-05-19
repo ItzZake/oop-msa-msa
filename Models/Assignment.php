@@ -219,5 +219,86 @@
         }
         return false;
     }
+
+    function Insert($teacherId, $title, $instructions, $dueDate, $targetTags = [], $attachmentPath = null)
+    {
+        $this->teacherID = $teacherId;
+        $this->title = $title;
+        $this->instructions = $instructions;
+        $this->duedate = $dueDate;
+        $this->targettags = is_array($targetTags) ? json_encode($targetTags) : $targetTags;
+        $this->attachmentpath = $attachmentPath;
+        $this->status = 'Published';
+
+        $sql = "INSERT INTO assignment (teacherID, title, instructions, dueDate, wordwallEmbedCode, attachmentPath, status, createdAt, targetTags)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $params = [
+            $this->teacherID,
+            $this->title,
+            $this->instructions,
+            $this->duedate,
+            $this->wordwallembedcode,
+            $this->attachmentpath,
+            $this->status,
+            date('Y-m-d H:i:s'),
+            $this->targettags
+        ];
+        $stmt = Database::getInstance()->query($sql, $params);
+        if ($stmt && $stmt->rowCount() > 0) {
+            return Database::getInstance()->getConnection()->lastInsertId();
+        }
+        return false;
+    }
+
+    function SaveGrade($submissionId, $grade, $feedback)
+    {
+        $sql = "UPDATE submission SET grade = ?, feedback = ?, status = 'Graded', gradedAt = ? WHERE submissionID = ?";
+        $params = [$grade, $feedback, date('Y-m-d H:i:s'), $submissionId];
+        $stmt = Database::getInstance()->query($sql, $params);
+        return $stmt && $stmt->rowCount() > 0;
+    }
+
+    function CreateRecipientRecord($assignmentId, $recipientIds)
+    {
+        if (!is_array($recipientIds) || empty($recipientIds)) {
+            return false;
+        }
+        foreach ($recipientIds as $childId) {
+            $sql = "INSERT INTO assignment_recipients (assignmentID, childID, assignedAt) VALUES (?, ?, ?)";
+            $params = [$assignmentId, $childId, date('Y-m-d H:i:s')];
+            Database::getInstance()->query($sql, $params);
+        }
+        return true;
+    }
+
+    function SaveEmbedCode($assignmentId, $embedCode)
+    {
+        $sql = "UPDATE assignment SET wordwallEmbedCode = ? WHERE assignmentID = ?";
+        $stmt = Database::getInstance()->query($sql, [$embedCode, $assignmentId]);
+        return $stmt && $stmt->rowCount() > 0;
+    }
+
+    function GetDueSoon()
+    {
+        $sql = "SELECT * FROM assignment WHERE dueDate BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY) AND status = 'Published'";
+        return Database::getInstance()->fetchAll($sql);
+    }
+
+    function GetOverdueUnsubmitted()
+    {
+        $sql = "SELECT a.* FROM assignment a
+                LEFT JOIN submission s ON a.assignmentID = s.assignmentID
+                WHERE a.dueDate < CURDATE() AND a.status = 'Published'
+                GROUP BY a.assignmentID
+                HAVING COUNT(s.submissionID) = 0";
+        return Database::getInstance()->fetchAll($sql);
+    }
+
+    function SetStatusLate($assignmentId)
+    {
+        $sql = "UPDATE assignment SET status = 'Late' WHERE assignmentID = ?";
+        $stmt = Database::getInstance()->query($sql, [$assignmentId]);
+        return $stmt && $stmt->rowCount() > 0;
+    }
  }
 ?>
