@@ -6,9 +6,6 @@ $currentPage = "about";
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
-
-include 'header.php';
-include 'navbar.php';
 ?>
 
 <!DOCTYPE html>
@@ -19,11 +16,16 @@ include 'navbar.php';
   <title>About Us – Wellucation</title>
   <link rel="stylesheet" href="../view/css/Home.css" />
   <link rel="stylesheet" href="../view/css/About.css" />
+  <link rel="stylesheet" href="../view/css/navbar.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
 </head>
 <body>
+<?php
+include 'header.php';
+include 'navbar.php';
+?>
   <!-- ══════════════ MAIN CONTENT ══════════════ -->
   <main class="main-content">
 
@@ -366,7 +368,7 @@ include 'navbar.php';
 
   </main>
 
-  <script src="../view/scripts/About.js"></script>
+  <script src="scripts/About.js"></script>
 </body>
 </html>
 

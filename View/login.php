@@ -32,6 +32,19 @@ include 'navbar.php';
 			<p class="login-hero__subtitle">Sign in to access your account or create a new one</p>
 
 			<div class="login-card">
+				<!-- Error/Success Messages -->
+				<?php if (isset($_SESSION["error"]) && !empty($_SESSION["error"])): ?>
+					<div class="alert alert-error" role="alert">
+						<?php echo htmlspecialchars($_SESSION["error"]); unset($_SESSION["error"]); ?>
+					</div>
+				<?php endif; ?>
+				
+				<?php if (isset($_SESSION["message"]) && !empty($_SESSION["message"])): ?>
+					<div class="alert alert-success" role="alert">
+						<?php echo htmlspecialchars($_SESSION["message"]); unset($_SESSION["message"]); ?>
+					</div>
+				<?php endif; ?>
+
 				<!-- Tabs -->
 				<div class="tabs">
 					<button class="tab-btn tab-btn--active" id="tabLogin" data-tab="login">
@@ -57,7 +70,7 @@ include 'navbar.php';
 
 				<!-- Login Form -->
 				<div class="tab-panel tab-panel--active" id="panelLogin">
-					<form id="loginForm" novalidate>
+					<form id="loginForm" method="POST" action="../Controller/Login.php" novalidate>
 						<div class="field">
 							<label class="field__label" for="loginEmail">Email Address</label>
 							<div class="field__wrap">
@@ -67,7 +80,7 @@ include 'navbar.php';
 									<rect width="20" height="16" x="2" y="4" rx="2" />
 									<path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
 								</svg>
-								<input id="loginEmail" class="field__input" type="email"
+								<input id="loginEmail" class="field__input" type="email" name="email"
 									placeholder="your.email@example.com" required />
 							</div>
 						</div>
@@ -82,7 +95,7 @@ include 'navbar.php';
 									<path d="M7 11V7a5 5 0 0 1 10 0v4" />
 								</svg>
 								<input id="loginPassword" class="field__input field__input--padded-right"
-									type="password" placeholder="••••••••" required />
+									type="password" name="password" placeholder="••••••••" required />
 								<button type="button" class="field__eye" id="toggleLoginPw"
 									aria-label="Toggle password visibility">
 									<svg class="eye-icon eye-on" xmlns="http://www.w3.org/2000/svg" width="18"
@@ -127,9 +140,9 @@ include 'navbar.php';
 
 				<!-- Register Form -->
 				<div class="tab-panel" id="panelRegister">
-					<form id="registerForm" novalidate>
+					<form id="registerForm" method="POST" action="../Controller/Register.php" novalidate>
 						<div class="field">
-							<label class="field__label" for="regName">Full Name</label>
+							<label class="field__label" for="regFirstName">First Name</label>
 							<div class="field__wrap">
 								<svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
 									viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -137,7 +150,22 @@ include 'navbar.php';
 									<circle cx="12" cy="8" r="5" />
 									<path d="M20 21a8 8 0 1 0-16 0" />
 								</svg>
-								<input id="regName" class="field__input" type="text" placeholder="John Doe" required />
+								<input id="regFirstName" class="field__input" type="text" name="firstName" 
+									placeholder="John" required />
+							</div>
+						</div>
+
+						<div class="field">
+							<label class="field__label" for="regLastName">Last Name</label>
+							<div class="field__wrap">
+								<svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+									viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+									stroke-linecap="round" stroke-linejoin="round">
+									<circle cx="12" cy="8" r="5" />
+									<path d="M20 21a8 8 0 1 0-16 0" />
+								</svg>
+								<input id="regLastName" class="field__input" type="text" name="lastName" 
+									placeholder="Doe" required />
 							</div>
 						</div>
 
@@ -150,7 +178,7 @@ include 'navbar.php';
 									<rect width="20" height="16" x="2" y="4" rx="2" />
 									<path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
 								</svg>
-								<input id="regEmail" class="field__input" type="email"
+								<input id="regEmail" class="field__input" type="email" name="email"
 									placeholder="your.email@example.com" required />
 							</div>
 						</div>
@@ -164,7 +192,7 @@ include 'navbar.php';
 									<rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
 									<path d="M7 11V7a5 5 0 0 1 10 0v4" />
 								</svg>
-								<input id="regPassword" class="field__input field__input--padded-right" type="password"
+								<input id="regPassword" class="field__input field__input--padded-right" type="password" name="password"
 									placeholder="••••••••" required />
 								<button type="button" class="field__eye" id="toggleRegPw"
 									aria-label="Toggle password visibility">
@@ -197,8 +225,8 @@ include 'navbar.php';
 									<rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
 									<path d="M7 11V7a5 5 0 0 1 10 0v4" />
 								</svg>
-								<input id="regConfirm" class="field__input" type="password" placeholder="••••••••"
-									required />
+								<input id="regConfirm" class="field__input" type="password" name="confirm_password" 
+									placeholder="••••••••" required />
 							</div>
 						</div>
 

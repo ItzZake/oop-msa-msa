@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="css/profiles.css"/>
 <section class="page-hero">
   <div class="page-hero__content">
     <span class="page-badge page-badge--pink">👥 User Profiles</span>

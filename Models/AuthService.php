@@ -33,6 +33,11 @@ class AuthService implements Authenticable
 			throw new RuntimeException('Email is already registered.');
 		}
 
+		// Default to 'en' if no preferred language specified
+		if (empty($preferredLanguage)) {
+			$preferredLanguage = 'en';
+		}
+
 		$user = new User(
 			null,
 			$email,
