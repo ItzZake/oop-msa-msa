@@ -11,8 +11,8 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 }
 
 // ── Define variables ──────────────────────────────────────────────────────────
-$firstName = $lastName = $email = $password = $confirmPassword = "";
-$firstName_err = $lastName_err = $email_err = $password_err = $confirmPassword_err = "";
+$firstName = $lastName = $email = $password = $confirmPassword = $role = "";
+$firstName_err = $lastName_err = $email_err = $password_err = $confirmPassword_err = $role_err = "";
 
 // ── Validate First Name ───────────────────────────────────────────────────────
 $input_firstName = trim($_POST["firstName"] ?? "");
@@ -46,6 +46,16 @@ if (empty($input_email)) {
     $email = $input_email;
 }
 
+// ── Validate Role ─────────────────────────────────────────────────────────────
+$input_role = trim($_POST["role"] ?? "");
+if (empty($input_role)) {
+    $role_err = "Please select an account type.";
+} elseif (!in_array($input_role, ['parent', 'teacher', 'admin'])) {
+    $role_err = "Invalid account type selected.";
+} else {
+    $role = $input_role;
+}
+
 // ── Validate Password ─────────────────────────────────────────────────────────
 $input_password = $_POST["password"] ?? "";
 if (empty($input_password)) {
@@ -68,14 +78,14 @@ if (empty($input_confirm)) {
 
 // ── If no errors, call AuthService to register ───────────────────────────────
 if (empty($firstName_err) && empty($lastName_err) && empty($email_err)
-    && empty($password_err) && empty($confirmPassword_err)) {
+    && empty($role_err) && empty($password_err) && empty($confirmPassword_err)) {
 
     require_once '../Models/AuthService.php';
 
     $authService = new AuthService();
 
     try {
-        $authService->register($email, $password, "parent", $firstName, $lastName);
+        $authService->register($email, $password, $role, $firstName, $lastName);
         $_SESSION["message"] = "Account created successfully! Please sign in.";
         header("Location: ../View/login.php");
         exit;
@@ -89,7 +99,7 @@ if (empty($firstName_err) && empty($lastName_err) && empty($email_err)
 
 // ── Return errors to view ────────────────────────────────────────────────────
 $_SESSION["error"] = implode(" | ", array_filter([
-    $firstName_err, $lastName_err, $email_err, $password_err, $confirmPassword_err
+    $firstName_err, $lastName_err, $email_err, $role_err, $password_err, $confirmPassword_err
 ]));
 header("Location: ../View/login.php");
 exit;
