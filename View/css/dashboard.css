@@ -3,6 +3,9 @@
 ════════════════════════════════════════════ */
 :root {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 	--font-size: 16px;
 	--background: #ffffff;
 	--foreground: #0a0a0f;
@@ -26,6 +29,7 @@
 	--dash-bg: #f8fafc;
 	--sidebar-w: 14rem;
 	--sidebar-w-collapsed: 4rem;
+<<<<<<< HEAD
 =======
   --font-size: 16px;
   --background: #ffffff;
@@ -51,6 +55,8 @@
   --sidebar-w: 14rem;
   --sidebar-w-collapsed: 4rem;
 >>>>>>> a3eeb7a807ff6846867cdae85fc117a43345afe5
+=======
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 }
 
 /* ════════════════════════════════════════════
@@ -60,6 +66,9 @@
 *::before,
 *::after {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
@@ -1118,6 +1127,7 @@ a {
 	padding: 0.25rem 0.625rem;
 	border-radius: 9999px;
 	white-space: nowrap;
+<<<<<<< HEAD
 =======
   box-sizing: border-box;
   margin: 0;
@@ -2056,6 +2066,12 @@ a {
 /* Alerts */
 .alerts-card {
 <<<<<<< HEAD
+=======
+}
+
+/* Alerts */
+.alerts-card {
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 	background: #fff;
 	border-radius: 1.5rem;
 	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
@@ -2108,6 +2124,7 @@ a {
 	font-size: 0.7rem;
 	color: #9ca3af;
 	margin-top: 0.2rem;
+<<<<<<< HEAD
 =======
   background: #fff;
   border-radius: 1.5rem;
@@ -2162,11 +2179,16 @@ a {
   color: #9ca3af;
   margin-top: 0.2rem;
 >>>>>>> a3eeb7a807ff6846867cdae85fc117a43345afe5
+=======
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 }
 
 /* Quick Actions */
 .quick-actions {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 	margin-top: 1rem;
 	padding-top: 1rem;
 	border-top: 1px solid #f3f4f6;
@@ -2207,6 +2229,7 @@ a {
 }
 .qa-btn__emoji {
 	font-size: 1.25rem;
+<<<<<<< HEAD
 =======
   margin-top: 1rem;
   padding-top: 1rem;
@@ -2249,11 +2272,16 @@ a {
 .qa-btn__emoji {
   font-size: 1.25rem;
 >>>>>>> a3eeb7a807ff6846867cdae85fc117a43345afe5
+=======
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 }
 
 /* ── PLACEHOLDER SECTIONS ── */
 .placeholder-section {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 	padding: 4rem 1rem;
 }
 .placeholder-inner {
@@ -2270,6 +2298,7 @@ a {
 .placeholder-inner p {
 	font-size: 0.875rem;
 	color: #9ca3af;
+<<<<<<< HEAD
 =======
   padding: 4rem 1rem;
 }
@@ -2288,11 +2317,16 @@ a {
   font-size: 0.875rem;
   color: #9ca3af;
 >>>>>>> a3eeb7a807ff6846867cdae85fc117a43345afe5
+=======
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 }
 
 /* ── ANIMATIONS ── */
 @keyframes fadeUp {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 	from {
 		opacity: 0;
 		transform: translateY(16px);
@@ -2304,6 +2338,7 @@ a {
 }
 .animate-fade-up {
 	animation: fadeUp 0.45s ease both;
+<<<<<<< HEAD
 =======
   from {
     opacity: 0;
@@ -2317,6 +2352,8 @@ a {
 .animate-fade-up {
   animation: fadeUp 0.45s ease both;
 >>>>>>> a3eeb7a807ff6846867cdae85fc117a43345afe5
+=======
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 }
 
 /* ════════════════════════════════════════════
@@ -2324,6 +2361,9 @@ a {
 ════════════════════════════════════════════ */
 .footer {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 	background: linear-gradient(135deg, var(--blue) 0%, #0d47a1 100%);
 	color: #fff;
 }
@@ -2495,6 +2535,7 @@ a {
 	display: flex;
 	align-items: center;
 	gap: 0.375rem;
+<<<<<<< HEAD
 =======
   background: linear-gradient(135deg, var(--blue) 0%, #0d47a1 100%);
   color: #fff;
@@ -2668,4 +2709,6 @@ a {
   align-items: center;
   gap: 0.375rem;
 >>>>>>> a3eeb7a807ff6846867cdae85fc117a43345afe5
+=======
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 }

@@ -10,6 +10,7 @@ require_once '../Models/Course.php';
 //     exit('Forbidden - Admin access required');
 // }
 
+<<<<<<< HEAD
 // Display form for GET request
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $pageTitle = "Add User – Wellucation Nursery";
@@ -64,11 +65,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     </section>
     <?php
     include 'footer.php';
+=======
+require_once __DIR__ . '/../Controller/DashboardController.php';
+$controller = new DashboardController();
+
+function flashError(string $message, array $old = []) {
+    $_SESSION['error'] = $message;
+    $_SESSION['old'] = $old;
+    header('Location: add_user.php');
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
     exit;
 }
 
 // Process POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+<<<<<<< HEAD
     $name = htmlspecialchars($_POST['name'] ?? '');
     $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
     $role = htmlspecialchars($_POST['role'] ?? '');
@@ -103,5 +114,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['message'] = "User $name added successfully!";
     header('Location: dashboard.php');
     exit;
+=======
+    $name = getPost('name');
+    $email = getPost('email');
+    $role = getPost('role');
+    $class = getPost('class');
+
+    $dob = getPost('dob');
+    $gender = getPost('gender');
+    $allergies = getPost('allergies');
+    $emergencyContact = getPost('emergency_contact');
+    $parentName = getPost('parent_name');
+    $parentEmail = getPost('parent_email');
+    $parentPhone = getPost('parent_phone');
+    $parentAddress = getPost('parent_address');
+
+    $teacherPhone = getPost('teacher_phone');
+    $specialization = getPost('specialization');
+    $qualifications = getPost('qualifications');
+
+    $parentProfilePhone = getPost('parent_profile_phone');
+    $parentProfileAddress = getPost('parent_profile_address');
+
+    $old = [
+        'name' => $name,
+        'email' => $email,
+        'role' => $role,
+        'class' => $class,
+        'dob' => $dob,
+        'gender' => $gender,
+        'allergies' => $allergies,
+        'emergency_contact' => $emergencyContact,
+        'parent_name' => $parentName,
+        'parent_email' => $parentEmail,
+        'parent_phone' => $parentPhone,
+        'parent_address' => $parentAddress,
+        'teacher_phone' => $teacherPhone,
+        'specialization' => $specialization,
+        'qualifications' => $qualifications,
+        'parent_profile_phone' => $parentProfilePhone,
+        'parent_profile_address' => $parentProfileAddress
+    ];
+
+    if (!$name || !$email || !$role) {
+        flashError('Please fill in all required fields.', $old);
+    }
+
+    if (strlen($name) < 2) {
+        flashError('Name must be at least 2 characters.', $old);
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        flashError('Please enter a valid email address.', $old);
+    }
+
+    if ($role === 'Student') {
+        if (!$dob || !$gender || !$parentName || !$parentEmail || !$parentPhone) {
+            flashError('Student entries require the child date of birth and parent contact details.', $old);
+        }
+        if (!filter_var($parentEmail, FILTER_VALIDATE_EMAIL)) {
+            flashError('Please enter a valid parent email address.', $old);
+        }
+    }
+
+    if ($role === 'Teacher' && !$specialization) {
+        flashError('Please add a teacher specialization.', $old);
+    }
+
+    if ($role === 'Parent' && !$parentProfilePhone) {
+        flashError('Please add a phone number for the parent profile.', $old);
+    }
+
+    try {
+        $controller->addUser($_POST);
+        $_SESSION['message'] = "User $name added successfully!";
+        header('Location: dashboard.php');
+        exit;
+    } catch (Exception $e) {
+        error_log('Add user failed: ' . $e->getMessage());
+        flashError('Unable to create the user. Please try again. ' . $e->getMessage(), $old);
+    }
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 }
 ?>

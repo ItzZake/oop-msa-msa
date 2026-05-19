@@ -1,8 +1,14 @@
 <?php
 require_once __DIR__ . '/Database.php';
 require_once __DIR__ . '/User.php';
+<<<<<<< HEAD
 // Avoid including higher-level model files (Admin/Teacher/Parent)
 // which may pull in view files and produce output before headers.
+=======
+require_once __DIR__ . '/Parent.php';
+require_once __DIR__ . '/Teacher.php';
+require_once __DIR__ . '/Admin.php';
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 
 class UserRepository {
     public function findByEmail(string $email): ?User

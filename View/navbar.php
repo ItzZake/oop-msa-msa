@@ -42,10 +42,13 @@
             <a href="payment.php"      class="nav-dropdown__item" role="menuitem">💳 Payment</a>
             <a href="subscription.php" class="nav-dropdown__item" role="menuitem">⭐ Subscription</a>
 <<<<<<< HEAD
+<<<<<<< HEAD
             <a href="messages.php"     class="nav-dropdown__item" role="menuitem">💬 Messages</a>
             <a href="application.php"  class="nav-dropdown__item" role="menuitem">📄 Application</a>
 =======
 >>>>>>> a3eeb7a807ff6846867cdae85fc117a43345afe5
+=======
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
             <a href="settings.php"     class="nav-dropdown__item" role="menuitem">⚙️ Settings</a>
           </div>
         </div>
