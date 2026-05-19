@@ -114,7 +114,6 @@
       <a href="/messages" class="nav-link" data-path="/messages">💬 Messages</a>
       <a href="/application" class="nav-link" data-path="/application">📄 Application</a>
       <a href="/settings" class="nav-link" data-path="/settings">⚙️ Settings</a>
-      <a href="/enroll" class="btn-enroll btn-enroll--mobile">🌟 Enroll Now</a>
     </div>
   </nav>
 

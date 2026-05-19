@@ -49,7 +49,7 @@ if (empty($email_err) && empty($password_err)) {
         // Check if parent is logging in for the first time
         if ($role === "parent" && empty($lastLoginAt)) {
             // First time login for parent - redirect to enroll page
-            header("Location: ../View/enroll.php");
+            header("Location: ../View/Index.php");
         } elseif ($role === "admin") {
             header("Location: ../View/dashboard.php");
         } elseif ($role === "teacher") {

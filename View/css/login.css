@@ -799,3 +799,56 @@ img { display: block; max-width: 100%; }
   opacity: 1;
   transform: translateY(0);
 }
+
+/* --------------------------------------------
+   ACCOUNT TYPE SELECTOR (Strategy Pattern UI)
+-------------------------------------------- */
+.account-type-selector {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+
+.account-btn {
+  flex: 1;
+  max-width: 180px;
+  padding: 0.75rem 1rem;
+  border: 2px solid #E0E0E0;
+  background: #fff;
+  border-radius: 0.5rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.account-btn:hover {
+  border-color: #1565C0;
+  color: #1565C0;
+  box-shadow: 0 2px 8px rgba(21, 101, 192, 0.15);
+}
+
+.account-btn--active {
+  border-color: #E91E8C;
+  background: linear-gradient(135deg, rgba(233, 30, 140, 0.1), rgba(21, 101, 192, 0.1));
+  color: #E91E8C;
+  box-shadow: 0 4px 12px rgba(233, 30, 140, 0.2);
+}
+
+.role-fields {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 1.5rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 480px) {
+  .account-type-selector {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .account-btn { max-width: 100%; }
+}

@@ -10,6 +10,19 @@
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&display=swap"
       rel="stylesheet"
     />
+    <script>
+      (function () {
+        try {
+          var path = location.pathname;
+          var baseHref = path.substring(0, path.lastIndexOf("/") + 1) || "/";
+          var b = document.createElement("base");
+          b.href = baseHref;
+          document.head.appendChild(b);
+        } catch (e) {
+          /* noop */
+        }
+      })();
+    </script>
   </head>
   <body>
     <!-- ══════════════ TOP BAR ══════════════ -->
@@ -195,21 +208,6 @@
                 role="menuitem"
                 >📊 Dashboard</a
               >
-              <a
-                href="attendance.html"
-                class="nav-dropdown__item"
-                role="menuitem"
-                >📅 Attendance</a
-              >
-              <a href="reports.html" class="nav-dropdown__item" role="menuitem"
-                >📋 Reports</a
-              >
-              <a
-                href="assignments.html"
-                class="nav-dropdown__item"
-                role="menuitem"
-                >📝 Assignments</a
-              >
               <div class="nav-dropdown__divider"></div>
               <a href="payment.html" class="nav-dropdown__item" role="menuitem"
                 >💳 Payment</a
@@ -241,7 +239,7 @@
 
         <!-- Right side -->
         <div class="navbar__right">
-          <a href="/enroll" class="btn-enroll btn-enroll--desktop"
+          <a href="enroll.html" class="btn-enroll btn-enroll--desktop"
             >🌟 Enroll Now</a
           >
           <button
@@ -324,7 +322,7 @@
         <a href="settings.html" class="nav-link" data-path="/settings"
           >⚙️ Settings</a
         >
-        <a href="/enroll" class="btn-enroll btn-enroll--mobile"
+        <a href="enroll.html" class="btn-enroll btn-enroll--mobile"
           >🌟 Enroll Now</a
         >
       </div>

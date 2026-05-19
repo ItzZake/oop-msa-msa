@@ -1,6 +1,7 @@
 <?php
-// FR-01 — Parent Registration & Profile
+// FR-01 — Registration with Strategy Pattern
 // Handles POST from View/login.php (register tab)
+// Uses strategy pattern for role-specific registration logic
 
 session_start();
 
@@ -10,97 +11,118 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit;
 }
 
+// ── Require strategy classes ──────────────────────────────────────────────────
+require_once '../Models/RegistrationContext.php';
+require_once '../Models/ParentRegistrationStrategy.php';
+require_once '../Models/TeacherRegistrationStrategy.php';
+
 // ── Define variables ──────────────────────────────────────────────────────────
 $firstName = $lastName = $email = $password = $confirmPassword = $role = "";
-$firstName_err = $lastName_err = $email_err = $password_err = $confirmPassword_err = $role_err = "";
+$phoneNumber = $address = $qualifications = $department = "";
+$allErrors = [];
 
-// ── Validate First Name ───────────────────────────────────────────────────────
-$input_firstName = trim($_POST["firstName"] ?? "");
-if (empty($input_firstName)) {
-    $firstName_err = "Please enter your first name.";
-} elseif (!filter_var($input_firstName, FILTER_VALIDATE_REGEXP, ["options" => ["regexp" => "/^[a-zA-Z\s]+$/"]])) {
-    $firstName_err = "First name may only contain letters.";
-} elseif (strlen($input_firstName) < 2) {
-    $firstName_err = "First name must be at least 2 characters.";
-} else {
-    $firstName = $input_firstName;
+// ── Get input values ──────────────────────────────────────────────────────────
+$firstName = trim($_POST["firstName"] ?? "");
+$lastName = trim($_POST["lastName"] ?? "");
+$email = trim($_POST["email"] ?? "");
+$password = $_POST["password"] ?? "";
+$confirmPassword = $_POST["confirm_password"] ?? "";
+$role = trim($_POST["role"] ?? "");
+$phoneNumber = trim($_POST["phone_number"] ?? "");
+$address = trim($_POST["address"] ?? "");
+$qualifications = trim($_POST["qualifications"] ?? "");
+$department = trim($_POST["department"] ?? "");
+
+// ── Validate common fields ───────────────────────────────────────────────────
+if (empty($firstName)) {
+    $allErrors[] = "First name is required.";
+} elseif (strlen($firstName) < 2) {
+    $allErrors[] = "First name must be at least 2 characters.";
 }
 
-// ── Validate Last Name ────────────────────────────────────────────────────────
-$input_lastName = trim($_POST["lastName"] ?? "");
-if (empty($input_lastName)) {
-    $lastName_err = "Please enter your last name.";
-} elseif (!filter_var($input_lastName, FILTER_VALIDATE_REGEXP, ["options" => ["regexp" => "/^[a-zA-Z\s]+$/"]])) {
-    $lastName_err = "Last name may only contain letters.";
-} else {
-    $lastName = $input_lastName;
+if (empty($lastName)) {
+    $allErrors[] = "Last name is required.";
+} elseif (strlen($lastName) < 2) {
+    $allErrors[] = "Last name must be at least 2 characters.";
 }
 
-// ── Validate Email ────────────────────────────────────────────────────────────
-$input_email = trim($_POST["email"] ?? "");
-if (empty($input_email)) {
-    $email_err = "Please enter your email address.";
-} elseif (!filter_var($input_email, FILTER_VALIDATE_EMAIL)) {
-    $email_err = "Please enter a valid email address.";
-} else {
-    $email = $input_email;
+if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $allErrors[] = "Please enter a valid email address.";
 }
 
-// ── Validate Role ─────────────────────────────────────────────────────────────
-$input_role = trim($_POST["role"] ?? "");
-if (empty($input_role)) {
-    $role_err = "Please select an account type.";
-} elseif (!in_array($input_role, ['parent', 'teacher', 'admin'])) {
-    $role_err = "Invalid account type selected.";
-} else {
-    $role = $input_role;
+if (empty($password) || strlen($password) < 8) {
+    $allErrors[] = "Password must be at least 8 characters.";
 }
 
-// ── Validate Password ─────────────────────────────────────────────────────────
-$input_password = $_POST["password"] ?? "";
-if (empty($input_password)) {
-    $password_err = "Please enter a password.";
-} elseif (strlen($input_password) < 8) {
-    $password_err = "Password must be at least 8 characters.";
-} else {
-    $password = $input_password;
+if ($password !== $confirmPassword) {
+    $allErrors[] = "Passwords do not match.";
 }
 
-// ── Validate Confirm Password ─────────────────────────────────────────────────
-$input_confirm = $_POST["confirm_password"] ?? "";
-if (empty($input_confirm)) {
-    $confirmPassword_err = "Please confirm your password.";
-} elseif ($input_confirm !== $password) {
-    $confirmPassword_err = "Passwords do not match.";
-} else {
-    $confirmPassword = $input_confirm;
+if (empty($role) || !in_array($role, ['parent', 'teacher'])) {
+    $allErrors[] = "Please select a valid account type.";
 }
 
-// ── If no errors, call AuthService to register ───────────────────────────────
-if (empty($firstName_err) && empty($lastName_err) && empty($email_err)
-    && empty($role_err) && empty($password_err) && empty($confirmPassword_err)) {
-
-    require_once '../Models/AuthService.php';
-
-    $authService = new AuthService();
-
+// ── If common validation passes, use appropriate strategy ─────────────────────
+if (empty($allErrors)) {
     try {
-        $authService->register($email, $password, $role, $firstName, $lastName);
+        $registrationContext = null;
+
+        // Create the appropriate strategy based on role
+        if ($role === 'parent') {
+            $registrationContext = RegistrationContext::createParentStrategy(
+                $email,
+                $password,
+                $firstName,
+                $lastName,
+                $phoneNumber ?: null,
+                $address ?: null
+            );
+        } elseif ($role === 'teacher') {
+            $registrationContext = RegistrationContext::createTeacherStrategy(
+                $email,
+                $password,
+                $firstName,
+                $lastName,
+                $qualifications ?: null,
+                $department ?: null
+            );
+        }
+
+        if (!$registrationContext) {
+            throw new RuntimeException("Could not create registration strategy.");
+        }
+
+        // Validate using the strategy
+        $strategyErrors = $registrationContext->validate();
+        if (!empty($strategyErrors)) {
+            $allErrors = array_merge($allErrors, $strategyErrors);
+            throw new RuntimeException(implode(" | ", $allErrors));
+        }
+
+        // Register using the strategy
+        $registrationContext->register($email, $password, $firstName, $lastName);
+
+        // Set success message
         $_SESSION["message"] = "Account created successfully! Please sign in.";
+        
+        // Redirect based on strategy
+        $redirectUrl = $registrationContext->getRedirectUrl();
+        header("Location: " . $redirectUrl);
+        exit;
+
+    } catch (RuntimeException $e) {
+        $_SESSION["error"] = $e->getMessage();
         header("Location: ../View/login.php");
         exit;
-    } catch (RuntimeException $e) {
-        // Email already registered or DB error
-        $_SESSION["error"] = $e->getMessage();
+    } catch (Exception $e) {
+        $_SESSION["error"] = "Registration failed: " . $e->getMessage();
         header("Location: ../View/login.php");
         exit;
     }
 }
 
-// ── Return errors to view ────────────────────────────────────────────────────
-$_SESSION["error"] = implode(" | ", array_filter([
-    $firstName_err, $lastName_err, $email_err, $role_err, $password_err, $confirmPassword_err
-]));
+// ── Return errors to view ─────────────────────────────────────────────────────
+$_SESSION["error"] = implode(" | ", $allErrors);
 header("Location: ../View/login.php");
 exit;
 ?>
