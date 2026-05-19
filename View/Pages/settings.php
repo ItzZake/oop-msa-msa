@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Account Settings</title>
-  <link rel="stylesheet" href="settings.css" />
+  <link rel="stylesheet" href="../css/settings.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700;900&display=swap" rel="stylesheet" />
 </head>
@@ -277,6 +277,6 @@
     <span id="toastMsg"></span>
   </div>
 
-  <script src="settings.js"></script>
+  <script src="../scripts/settings.js"></script>
 </body>
 </html>
