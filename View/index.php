@@ -12,7 +12,6 @@ $pageCss = 'index.css';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wellucation – Learn. Play. Grow</title>
   <link rel="stylesheet" href="../view/css/Home.css" />
-  <link rel="stylesheet" href="../view/css/navbar.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
@@ -49,8 +48,8 @@ include 'navbar.php';
             creativity is sparked, and every child is guided to thrive — academically, socially, and emotionally.
           </p>
           <div class="hero__actions">
-            <a href="/enroll" class="btn-enroll btn-hero-primary">🌟 Enroll Now</a>
-            <a href="/about" class="btn-hero-secondary">Learn More →</a>
+            <a href="../View/enroll.php" class="btn-enroll btn-hero-primary">🌟 Enroll Now</a>
+            <a href="../View/about.php" class="btn-hero-secondary">Learn More →</a>
           </div>
           <div class="hero__stats">
             <div class="hero__stat">
