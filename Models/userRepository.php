@@ -29,8 +29,8 @@ class UserRepository {
     private function fetchUserRowByEmail(string $email): ?array
     {
         $queries = [
-            ["SELECT * FROM Users WHERE email = ?", [$email]],
             ["SELECT * FROM User WHERE email = ?", [$email]],
+            ["SELECT * FROM Users WHERE email = ?", [$email]],
         ];
 
         return $this->executeUserRowQueries($queries);
@@ -39,8 +39,8 @@ class UserRepository {
     private function fetchUserRowById(int $userId): ?array
     {
         $queries = [
-            ["SELECT * FROM Users WHERE userId = ?", [$userId]],
             ["SELECT * FROM User WHERE userID = ?", [$userId]],
+            ["SELECT * FROM Users WHERE userId = ?", [$userId]],
         ];
 
         return $this->executeUserRowQueries($queries);
@@ -78,7 +78,7 @@ class UserRepository {
 
     private function insert(User $user): bool
     {
-        $sql = "INSERT INTO Users (email, password, firstName, lastName, preferredLanguage, createdAt, lastLoginAt, role, isActive)
+        $sql = "INSERT INTO User (email, passwordHash, firstname, Lastname, preferredLanguage, createdAt, lastLoginAt, Role, isActive)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $params = [
@@ -89,7 +89,7 @@ class UserRepository {
             $user->getPreferredLanguage(),
             $user->getCreatedAt(),
             $user->getLastLoginAt(),
-            $user->getRole(),
+            ucfirst($user->getRole()),
             $user->isActive() ? 1 : 0
         ];
 
@@ -108,7 +108,7 @@ class UserRepository {
 
     private function update(User $user): bool
     {
-        $sql = "UPDATE Users SET email = ?, password = ?, firstName = ?, lastName = ?, preferredLanguage = ?, createdAt = ?, lastLoginAt = ?, role = ?, isActive = ? WHERE userId = ?";
+        $sql = "UPDATE User SET email = ?, passwordHash = ?, firstname = ?, Lastname = ?, preferredLanguage = ?, createdAt = ?, lastLoginAt = ?, Role = ?, isActive = ? WHERE userID = ?";
 
         $params = [
             $user->getEmail(),
@@ -118,7 +118,7 @@ class UserRepository {
             $user->getPreferredLanguage(),
             $user->getCreatedAt(),
             $user->getLastLoginAt(),
-            $user->getRole(),
+            ucfirst($user->getRole()),
             $user->isActive() ? 1 : 0,
             $user->getId()
         ];
@@ -137,10 +137,10 @@ class UserRepository {
             'preferredLanguage' => $row['preferredLanguage'] ?? $row['PreferredLanguage'] ?? $row['preferredlanguage'] ?? null,
             'createdAt' => $row['createdAt'] ?? $row['CreatedAt'] ?? null,
             'lastLoginAt' => $row['lastLoginAt'] ?? $row['LastLoginAt'] ?? null,
-            'role' => $row['role'] ?? $row['Role'] ?? null,
+            'role' => strtolower($row['role'] ?? $row['Role'] ?? ''),
             'firstName' => $row['firstName'] ?? $row['firstname'] ?? $row['FirstName'] ?? null,
             'lastName' => $row['lastName'] ?? $row['Lastname'] ?? $row['LastName'] ?? null,
-            'isActive' => $row['isActive'] ?? $row['IsActive'] ?? $row['isActive'] ?? 1,
+            'isActive' => $row['isActive'] ?? $row['IsActive'] ?? 1,
         ];
 
         if ($role === 'teacher') {

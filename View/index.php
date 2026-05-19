@@ -3,8 +3,6 @@ session_start();
 $pageTitle = "Wellucation – Learn. Play. Grow";
 $currentPage = "home";
 $pageCss = 'index.css';
-include 'header.php';
-include 'navbar.php';
 ?>
 
 <!DOCTYPE html>
@@ -14,11 +12,16 @@ include 'navbar.php';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wellucation – Learn. Play. Grow</title>
   <link rel="stylesheet" href="../view/css/Home.css" />
+  <link rel="stylesheet" href="../view/css/navbar.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
 </head>
 <body>
+<?php
+include 'header.php';
+include 'navbar.php';
+?>
 
   <!-- ══════════════ TOP BAR ══════════════ -->
   
@@ -178,7 +181,7 @@ include 'navbar.php';
 
   <!-- ══════════════ FOOTER ══════════════ -->
 
-  <script src="/scripts/Home.js"></script>
+  <script src="scripts/Home.js"></script>
 </body>
 </html>
 
