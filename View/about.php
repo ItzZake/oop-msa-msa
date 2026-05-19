@@ -1,7 +1,7 @@
 <?php
 session_start();
-$pageTitle = "Application – Wellucation Nursery";
-$currentPage = "application";
+$pageTitle = "About Us – Wellucation Nursery";
+$currentPage = "about";
 
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
