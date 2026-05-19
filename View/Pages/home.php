@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login Wellucation</title>
+  <title>Wellucation – Learn. Play. Grow</title>
+  <link rel="stylesheet" href="../css/Home.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Fredoka+One&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="login.css" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
 </head>
 <body>
 
   <!-- ══════════════ TOP BAR ══════════════ -->
-  <div class="topbar">
+  <div class="topbar" id="topbar">
     <div class="container topbar__inner">
       <div class="topbar__left">
         <span class="topbar__item">
@@ -44,6 +45,8 @@
   <!-- ══════════════ NAVBAR ══════════════ -->
   <nav class="navbar" id="navbar">
     <div class="container navbar__inner">
+
+      <!-- Logo -->
       <a href="Home.html" class="navbar__logo">
         <div class="navbar__logo-img">
           <img src="logo.jpeg" alt="Wellucation" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'font-size:1.5rem\'>🌟</span>';" />
@@ -54,12 +57,14 @@
         </div>
       </a>
 
+      <!-- Desktop Links: 4 main + dropdown -->
       <div class="navbar__links" id="navLinks">
-        <a href="Home.html" class="nav-link" data-path="/">Home</a>
+        <a href="Home.html" class="nav-link active" data-path="/">Home</a>
         <a href="About.html" class="nav-link" data-path="/about">About Us</a>
         <a href="contact.html" class="nav-link" data-path="/contact">Contact Us</a>
-        <a href="login.html" class="nav-link active" data-path="/login">Login</a>
+        <a href="Login.html" class="nav-link" data-path="/login">Login</a>
 
+        <!-- More dropdown -->
         <div class="nav-dropdown" id="moreDropdown">
           <button class="nav-link nav-dropdown__trigger" id="moreBtn" aria-expanded="false" aria-haspopup="true">
             More
@@ -82,8 +87,9 @@
         </div>
       </div>
 
+      <!-- Right side -->
       <div class="navbar__right">
-        <a href="enroll.html" class="btn-enroll btn-enroll--desktop">🌟 Enroll Now</a>
+        <a href="/enroll" class="btn-enroll btn-enroll--desktop">🌟 Enroll Now</a>
         <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
           <svg class="icon-menu" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
           <svg class="icon-close hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -91,156 +97,180 @@
       </div>
     </div>
 
+    <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-      <a href="index.html"  class="nav-link" data-path="/">🏠 Home</a>
-      <a href="about.html"  class="nav-link" data-path="/about">ℹ️ About Us</a>
-      <a href="contact.html" class="nav-link" data-path="/contact">📞 Contact Us</a>
-      <a href="profiles.html" class="nav-link" data-path="/profiles">👤 Profiles</a>
-      <a href="dashboard.html" class="nav-link" data-path="/dashboard">📊 Dashboard</a>
-      <a href="attendance.html" class="nav-link" data-path="/attendance">📅 Attendance</a>
-      <a href="reports.html" class="nav-link" data-path="/reports">📋 Reports</a>
-      <a href="assignments.html" class="nav-link" data-path="/assignments">📝 Assignments</a>
-      <a href="login.html"  class="nav-link active" data-path="/login">🔐 Login</a>
-      <a href="payment.html" class="nav-link" data-path="/payment">💳 Payment</a>
-      <a href="subscription.html" class="nav-link" data-path="/subscription">⭐ Subscription</a>
-      <a href="excuse.html" class="nav-link" data-path="/excuse">🙋 Excuse</a>
-      <a href="messages.html" class="nav-link" data-path="/messages">💬 Messages</a>
-      <a href="application.html" class="nav-link" data-path="/application">📄 Application</a>
-      <a href="settings.html" class="nav-link" data-path="/settings">⚙️ Settings</a>
-      <a href="enroll.html" class="btn-enroll btn-enroll--mobile">🌟 Enroll Now</a>
+      <a href="/" class="nav-link active" data-path="/">🏠 Home</a>
+      <a href="/about" class="nav-link" data-path="/about">ℹ️ About Us</a>
+      <a href="/contact" class="nav-link" data-path="/contact">📞 Contact Us</a>
+      <a href="/profiles" class="nav-link" data-path="/profiles">👤 Profiles</a>
+      <a href="/dashboard" class="nav-link" data-path="/dashboard">📊 Dashboard</a>
+      <a href="/attendance" class="nav-link" data-path="/attendance">📅 Attendance</a>
+      <a href="/reports" class="nav-link" data-path="/reports">📋 Reports</a>
+      <a href="/assignments" class="nav-link" data-path="/assignments">📝 Assignments</a>
+      <a href="/login" class="nav-link" data-path="/login">🔐 Login</a>
+      <a href="/payment" class="nav-link" data-path="/payment">💳 Payment</a>
+      <a href="/subscription" class="nav-link" data-path="/subscription">⭐ Subscription</a>
+      <a href="/excuse" class="nav-link" data-path="/excuse">🙋 Excuse</a>
+      <a href="/messages" class="nav-link" data-path="/messages">💬 Messages</a>
+      <a href="/application" class="nav-link" data-path="/application">📄 Application</a>
+      <a href="/settings" class="nav-link" data-path="/settings">⚙️ Settings</a>
+      <a href="/enroll" class="btn-enroll btn-enroll--mobile">🌟 Enroll Now</a>
     </div>
   </nav>
 
-  <!-- ══════════════ MAIN LOGIN CONTENT ══════════════ -->
-  <main class="login-hero">
-    <!-- Decorative corner emojis -->
-    <span class="login-hero__deco login-hero__deco--1">⭐</span>
-    <span class="login-hero__deco login-hero__deco--2">🌈</span>
+  <!-- ══════════════ MAIN CONTENT ══════════════ -->
+  <main class="main-content" id="mainContent">
 
-    <div class="login-hero__inner reveal">
-      <h1 class="login-hero__title">Welcome to Wellucation</h1>
-      <p class="login-hero__subtitle">Sign in to access your account or create a new one</p>
-
-      <div class="login-card">
-        <!-- Tabs -->
-        <div class="tabs">
-          <button class="tab-btn tab-btn--active" id="tabLogin" data-tab="login">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></svg>
-            Login
-          </button>
-          <button class="tab-btn" id="tabRegister" data-tab="register">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
-            Register
-          </button>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero__bg-shapes">
+        <div class="hero__shape hero__shape--1"></div>
+        <div class="hero__shape hero__shape--2"></div>
+        <div class="hero__shape hero__shape--3"></div>
+      </div>
+      <div class="container hero__inner">
+        <div class="hero__content">
+          <div class="hero__badge">🎉 Now Enrolling for 2026–2027</div>
+          <h1 class="hero__title">
+            Where Little Minds
+            <span class="hero__title-highlight">Blossom &amp; Grow</span>
+          </h1>
+          <p class="hero__desc">
+            Wellucation is a nurturing early childhood learning community where curiosity is celebrated,
+            creativity is sparked, and every child is guided to thrive — academically, socially, and emotionally.
+          </p>
+          <div class="hero__actions">
+            <a href="/enroll" class="btn-enroll btn-hero-primary">🌟 Enroll Now</a>
+            <a href="/about" class="btn-hero-secondary">Learn More →</a>
+          </div>
+          <div class="hero__stats">
+            <div class="hero__stat">
+              <span class="hero__stat-num">500+</span>
+              <span class="hero__stat-label">Happy Kids</span>
+            </div>
+            <div class="hero__stat-divider"></div>
+            <div class="hero__stat">
+              <span class="hero__stat-num">15+</span>
+              <span class="hero__stat-label">Years of Excellence</span>
+            </div>
+            <div class="hero__stat-divider"></div>
+            <div class="hero__stat">
+              <span class="hero__stat-num">98%</span>
+              <span class="hero__stat-label">Parent Satisfaction</span>
+            </div>
+          </div>
         </div>
-
-        <!-- Login Form -->
-        <div class="tab-panel tab-panel--active" id="panelLogin">
-          <form id="loginForm" novalidate>
-            <div class="field">
-              <label class="field__label" for="loginEmail">Email Address</label>
-              <div class="field__wrap">
-                <svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                <input id="loginEmail" class="field__input" type="email" placeholder="your.email@example.com" required />
-              </div>
+        <div class="hero__visual">
+          <div class="hero__illustration">
+            <div class="hero__emoji-float hero__emoji-float--1">🎨</div>
+            <div class="hero__emoji-float hero__emoji-float--2">📚</div>
+            <div class="hero__emoji-float hero__emoji-float--3">🎵</div>
+            <div class="hero__emoji-float hero__emoji-float--4">⭐</div>
+            <div class="hero__circle-main">
+              <span style="font-size:6rem">🏫</span>
             </div>
-
-            <div class="field">
-              <label class="field__label" for="loginPassword">Password</label>
-              <div class="field__wrap">
-                <svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <input id="loginPassword" class="field__input field__input--padded-right" type="password" placeholder="••••••••" required />
-                <button type="button" class="field__eye" id="toggleLoginPw" aria-label="Toggle password visibility">
-                  <svg class="eye-icon eye-on" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                  <svg class="eye-icon eye-off hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
-                </button>
-              </div>
-            </div>
-
-            <div class="login-meta">
-              <label class="checkbox-label">
-                <input type="checkbox" class="checkbox" />
-                <span>Remember me</span>
-              </label>
-              <a href="#" class="link-pink">Forgot password?</a>
-            </div>
-
-            <button type="submit" class="btn-submit btn-submit--pink">
-              Sign In
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </button>
-          </form>
-        </div>
-
-        <!-- Register Form -->
-        <div class="tab-panel" id="panelRegister">
-          <form id="registerForm" novalidate>
-            <div class="field">
-              <label class="field__label" for="regName">Full Name</label>
-              <div class="field__wrap">
-                <svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
-                <input id="regName" class="field__input" type="text" placeholder="John Doe" required />
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="field__label" for="regEmail">Email Address</label>
-              <div class="field__wrap">
-                <svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                <input id="regEmail" class="field__input" type="email" placeholder="your.email@example.com" required />
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="field__label" for="regPassword">Password</label>
-              <div class="field__wrap">
-                <svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <input id="regPassword" class="field__input field__input--padded-right" type="password" placeholder="••••••••" required />
-                <button type="button" class="field__eye" id="toggleRegPw" aria-label="Toggle password visibility">
-                  <svg class="eye-icon eye-on" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                  <svg class="eye-icon eye-off hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
-                </button>
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="field__label" for="regConfirm">Confirm Password</label>
-              <div class="field__wrap">
-                <svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <input id="regConfirm" class="field__input" type="password" placeholder="••••••••" required />
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="checkbox-label checkbox-label--start">
-                <input type="checkbox" class="checkbox" id="agreeTerms" required />
-                <span>
-                  I agree to the
-                  <a href="#" class="link-pink">Terms &amp; Conditions</a>
-                  and
-                  <a href="#" class="link-pink">Privacy Policy</a>
-                </span>
-              </label>
-            </div>
-
-            <button type="submit" class="btn-submit btn-submit--blue">
-              Create Account
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </button>
-          </form>
-        </div>
-
-        <div class="login-footer">
-          <p>Need help? <a href="#" class="link-pink">Contact Support</a></p>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Toast notification -->
-    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+    <!-- Features Section -->
+    <section class="features">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">Why Choose Us</span>
+          <h2 class="section-title">A Place Where Kids Love to Learn</h2>
+          <p class="section-desc">We combine play-based learning with structured development to give every child the best start in life.</p>
+        </div>
+        <div class="features__grid">
+          <div class="feature-card">
+            <div class="feature-card__icon">🎨</div>
+            <h3 class="feature-card__title">Creative Arts</h3>
+            <p class="feature-card__desc">Daily art, music, and drama activities that encourage self-expression and build confidence.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon">📚</div>
+            <h3 class="feature-card__title">Early Literacy</h3>
+            <p class="feature-card__desc">Structured phonics and reading programs designed for developing young readers.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon">🌿</div>
+            <h3 class="feature-card__title">Outdoor Learning</h3>
+            <p class="feature-card__desc">Safe, spacious play areas that encourage physical development and nature exploration.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon">🧠</div>
+            <h3 class="feature-card__title">STEM Foundations</h3>
+            <p class="feature-card__desc">Age-appropriate science and math activities that build logical thinking from day one.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon">🤝</div>
+            <h3 class="feature-card__title">Social Skills</h3>
+            <p class="feature-card__desc">Group activities and guided play to nurture empathy, teamwork, and communication.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon">🛡️</div>
+            <h3 class="feature-card__title">Safe Environment</h3>
+            <p class="feature-card__desc">CCTV-monitored, childproofed facilities with trained staff ensuring every child's safety.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Programs Section -->
+    <section class="programs">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">Our Programs</span>
+          <h2 class="section-title">Find the Right Program for Your Child</h2>
+        </div>
+        <div class="programs__grid">
+          <div class="program-card">
+            <div class="program-card__age">Ages 2–3</div>
+            <h3 class="program-card__name">Nursery</h3>
+            <p class="program-card__desc">Gentle, play-focused introduction to structured learning and social interaction.</p>
+            <a href="/enroll" class="program-card__btn">Enroll →</a>
+          </div>
+          <div class="program-card program-card--featured">
+            <div class="program-card__badge">Most Popular</div>
+            <div class="program-card__age">Ages 3–4</div>
+            <h3 class="program-card__name">Kindergarten 1</h3>
+            <p class="program-card__desc">Building foundational literacy, numeracy, and social skills in a warm classroom setting.</p>
+            <a href="/enroll" class="program-card__btn program-card__btn--white">Enroll →</a>
+          </div>
+          <div class="program-card">
+            <div class="program-card__age">Ages 4–5</div>
+            <h3 class="program-card__name">Kindergarten 2</h3>
+            <p class="program-card__desc">Advanced pre-school preparation with a focus on school readiness and independence.</p>
+            <a href="/enroll" class="program-card__btn">Enroll →</a>
+          </div>
+          <div class="program-card">
+            <div class="program-card__age">All Ages</div>
+            <h3 class="program-card__name">After School Care</h3>
+            <p class="program-card__desc">Safe, fun, and supervised after-school activities until 6:00 PM on weekdays.</p>
+            <a href="/enroll" class="program-card__btn">Enroll →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Banner -->
+    <section class="cta-banner">
+      <div class="container cta-banner__inner">
+        <div class="cta-banner__text">
+          <h2 class="cta-banner__title">Ready to give your child the best start?</h2>
+          <p class="cta-banner__desc">Spaces are limited — secure your child's spot today.</p>
+        </div>
+        <div class="cta-banner__actions">
+          <a href="/enroll" class="cta-banner__btn-primary">🌟 Enroll Now</a>
+          <a href="/contact" class="cta-banner__btn-secondary">Contact Us</a>
+        </div>
+      </div>
+    </section>
+
   </main>
 
-    <!-- ══════════════ FOOTER ══════════════ -->
+  <!-- ══════════════ FOOTER ══════════════ -->
   <footer class="footer">
     <div class="container footer__grid">
 
@@ -346,6 +376,6 @@
     </div>
   </footer>
 
-  <script src="login.js"></script>
+  <script src="../scripts/Home.js"></script>
 </body>
 </html>
