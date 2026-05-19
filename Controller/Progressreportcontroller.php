@@ -51,10 +51,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // If no errors, insert the progress report
     if (empty($child_id_err) && empty($observations_err) && empty($ratings_err) && empty($report_status_err)) {
-        include_once '../Model/ProgressReportModel.php';
-        $reportModel = new ProgressReportModel();
+        include_once '../Models/ProgressReport.php';
+        $reportModel = new ProgressReport();
 
-        if ($reportModel->insertReport($child_id, $observations, $ratings, $report_status)) {
+        if ($reportModel->InsertReport($child_id, $observations, $ratings, $report_status)) {
             header("location: ../index.php");
             exit();
         } else {

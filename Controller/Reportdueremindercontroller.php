@@ -9,11 +9,11 @@ if (php_sapi_name() !== 'cli' && $_SERVER['REMOTE_ADDR'] !== '127.0.0.1') {
     exit("Access denied.");
 }
 
-include_once '../Model/ProgressReportModel.php';
-include_once '../Model/NotificationModel.php';
+include_once '../Models/ProgressReport.php';
+include_once '../Models/Notification.php';
 
-$reportModel       = new ProgressReportModel();
-$notificationModel = new NotificationModel();
+$reportModel       = new ProgressReport();
+$notificationModel = new Notification();
 
 $today = date('Y-m-d');
 

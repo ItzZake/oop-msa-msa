@@ -41,8 +41,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // If no errors, save RSVP to MySQL
     if (empty($child_id_err) && empty($event_id_err) && empty($rsvp_response_err)) {
-        include_once '../Model/RsvpModel.php';
-        $rsvpModel = new RsvpModel();
+        include_once '../Models/Rsvp.php';
+        $rsvpModel = new Rsvp();
 
         $timestamp = date("Y-m-d H:i:s");
 

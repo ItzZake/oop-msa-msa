@@ -1,8 +1,8 @@
 <?php
-require_once '/../Models/Database.php';
-require_once '/../Models/Child.php';
-require_once '/../Models/Course.php';
-require_once '/../Models/Parent.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Child.php';
+require_once __DIR__ . '/../Models/Course.php';
+require_once __DIR__ . '/../Models/Parent.php';
 
 $Parent = new Parents();
 if(isset($_GET['name']))
@@ -28,5 +28,6 @@ if (!empty($List)) {
     header("Location: /Courses.php");
     exit();
 }
+
 
 

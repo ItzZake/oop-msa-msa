@@ -234,6 +234,26 @@
         ];
    }
    
+   function GetParentByName($name)
+   {
+        $sql = "SELECT p.* FROM Parent p
+                INNER JOIN User u ON p.userID = u.userID
+                WHERE u.firstName LIKE ? OR u.lastName LIKE ?
+                LIMIT 1";
+        $params = ["%{$name}%", "%{$name}%"];
+        return Database::getInstance()->fetchOne($sql, $params);
+   }
+
+   function GetUserID()
+   {
+        return $this->UserId;
+   }
+
+   function GetId()
+   {
+        return $this->ParentId;
+   }
+   
    function Getprefrences()
    {
         require_once 'Notifiable.php';

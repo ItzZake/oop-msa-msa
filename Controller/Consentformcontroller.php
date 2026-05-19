@@ -57,10 +57,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // If no errors, store consent record and update admin status
     if (empty($child_id_err) && empty($event_id_err) && empty($parent_signature_err) && empty($consent_date_err)) {
-        include_once '../Model/ConsentModel.php';
-        $consentModel = new ConsentModel();
+        include_once '../Models/ConsentForm.php';
+        $consent = new ConsentForm();
 
-        if ($consentModel->insertConsent($child_id, $event_id, $parent_signature, $consent_date)) {
+        if ($consent->InsertConsent($child_id, $event_id, $parent_signature, $consent_date)) {
             header("location: ../index.php");
             exit();
         } else {

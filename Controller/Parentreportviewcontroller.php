@@ -37,20 +37,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (empty($child_id_err)) {
-        include_once '../Model/ProgressReportModel.php';
-        include_once '../Model/ChildModel.php';
+        include_once '../Models/ProgressReport.php';
+        include_once '../Models/Child.php';
 
-        $reportModel = new ProgressReportModel();
-        $childModel  = new ChildModel();
+        $reportModel = new ProgressReport();
+        $childModel  = new Child();
 
         // Verify the child belongs to this parent
-        if (!$childModel->childBelongsToParent($child_id, $session_parent_id)) {
+        if (!$childModel->ChildBelongsToParent($child_id, $session_parent_id)) {
             echo "Access denied: this child is not associated with your account.";
             exit();
         }
 
         // Fetch only Published reports for this child
-        $reportData = $reportModel->getPublishedReportsByChild($child_id);
+        $reportData = $reportModel->GetPublishedReportsByChild($child_id);
 
         if ($reportData === false) {
             echo "Something went wrong while fetching reports. Please try again later.";

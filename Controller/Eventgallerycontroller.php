@@ -65,7 +65,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Verify MIME type from file content (not just extension)
             $finfo    = finfo_open(FILEINFO_MIME_TYPE);
             $mimeType = finfo_file($finfo, $fileTmp);
-            finfo_close($finfo);
 
             if (!in_array($mimeType, $allowedMimeTypes)) {
                 $photo_err = "File " . htmlspecialchars($fileName) . " is not an allowed image type.";
@@ -87,8 +86,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // If no errors, move files and save records to DB
     if (empty($event_id_err) && empty($photo_err) && empty($caption_err) && !empty($uploadedFiles)) {
-        include_once '../Model/GalleryModel.php';
-        $galleryModel = new GalleryModel();
+        include_once '../Models/Event.php';
+        $event = new Event();
 
         foreach ($uploadedFiles as $file) {
             if (!move_uploaded_file($file['tmp'], $file['dest'])) {
@@ -96,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 exit();
             }
 
-            $inserted = $galleryModel->insertPhoto($event_id, $file['safe_name'], $caption);
+            $inserted = $event->InsertGalleryPhoto($event_id, $file['dest'], $caption);
             if (!$inserted) {
                 echo "Photo uploaded but database record failed for: " . htmlspecialchars($file['safe_name']);
                 exit();

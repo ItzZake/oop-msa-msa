@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Payment.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Payment.php';
 
 $parent_id = (int) ($_GET['parent_id'] ?? 0);
 

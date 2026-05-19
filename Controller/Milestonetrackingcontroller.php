@@ -52,11 +52,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // If no errors, insert milestone and notify admin
     if (empty($child_id_err) && empty($milestone_name_err) && empty($milestone_status_err) && empty($milestone_domain_err)) {
-        include_once '../Model/MilestoneModel.php';
-        include_once '../Model/NotificationModel.php';
+        include_once '../Models/Milestones.php';
+        include_once '../Models/Notification.php';
 
-        $milestoneModel    = new MilestoneModel();
-        $notificationModel = new NotificationModel();
+        $milestoneModel    = new Milestones();
+        $notificationModel = new Notification();
 
         $inserted = $milestoneModel->insertMilestone($child_id, $milestone_name, $milestone_status, $milestone_domain);
 

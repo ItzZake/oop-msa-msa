@@ -1,9 +1,9 @@
 <?php
 // Triggered by cron job — no session needed
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Attendance.php';
-require_once '/../Models/Enrollment.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Attendance.php';
+require_once __DIR__ . '/../Models/Enrollment.php';
 
 $Attendance  = new Attendance();
 $Enrollment  = new Enrollment();
