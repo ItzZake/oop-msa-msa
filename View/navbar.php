@@ -34,7 +34,6 @@
             <div class="nav-dropdown__divider"></div>
             <a href="payment.php"      class="nav-dropdown__item" role="menuitem">💳 Payment</a>
             <a href="subscription.php" class="nav-dropdown__item" role="menuitem">⭐ Subscription</a>
-            <a href="excuse.php"       class="nav-dropdown__item" role="menuitem">🙋 Excuse</a>
             <a href="messages.php"     class="nav-dropdown__item" role="menuitem">💬 Messages</a>
             <a href="application.php"  class="nav-dropdown__item" role="menuitem">📄 Application</a>
             <a href="settings.php"     class="nav-dropdown__item" role="menuitem">⚙️ Settings</a>
