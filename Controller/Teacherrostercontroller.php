@@ -22,14 +22,14 @@ if (empty($teacher_id) || !ctype_digit((string)$teacher_id)) {
 $rosterData = [];
 $fetchError = "";
 
-include_once '../Model/CourseAssignmentModel.php';
-include_once '../Model/ChildModel.php';
+include_once '../Models/CourseAssignment.php';
+include_once '../Models/Child.php';
 
-$assignmentModel = new CourseAssignmentModel();
-$childModel      = new ChildModel();
+$assignmentModel = new CourseAssignment();
+$childModel      = new Child();
 
 // Fetch all courses assigned to this teacher
-$courses = $assignmentModel->getCoursesByTeacher($teacher_id);
+$courses = $assignmentModel->GetCoursesByTeacher($teacher_id);
 
 if ($courses === false) {
     $fetchError = "Failed to load course assignments. Please try again later.";
@@ -44,7 +44,7 @@ if ($courses === false) {
         }
 
         // Get all enrolled children for this course with medical profile
-        $children = $childModel->getEnrolledChildrenWithMedical($course_id);
+        $children = $childModel->GetEnrolledChildrenWithMedical($course_id);
 
         if ($children === false) {
             $fetchError = "Failed to load roster for course ID $course_id.";

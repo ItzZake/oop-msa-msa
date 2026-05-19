@@ -6,10 +6,10 @@ class Notifiable
 {
   private $userId;
 
-  public function __construct($userId)
-  {
-    $this->userId = $userId;
-  }
+    public function __construct($userId = null)
+    {
+        $this->userId = $userId;
+    }
 
   function notify($message, $channel)
   {

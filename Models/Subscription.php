@@ -16,6 +16,34 @@ require_once 'Payment.php';
     private $isoverdue;
     private $daysoverdue;
 
+    public function __construct($subscriptionID = null)
+    {
+        if ($subscriptionID) {
+            $this->loadSubscriptionFromDatabase($subscriptionID);
+        }
+    }
+
+    private function loadSubscriptionFromDatabase($subscriptionID)
+    {
+        $sql = "SELECT * FROM Subscription WHERE subscriptionID = ?";
+        $result = Database::getInstance()->fetchOne($sql, [$subscriptionID]);
+        if (!$result) {
+            return false;
+        }
+        $this->subscriptionID = $result['subscriptionID'];
+        $this->parentID = $result['parentID'];
+        $this->childID = $result['childID'];
+        $this->planname = $result['planName'] ?? null;
+        $this->baseprice = $result['basePrice'] ?? 0;
+        $this->startdate = $result['startDate'] ?? null;
+        $this->duedate = $result['dueDate'] ?? null;
+        $this->status = $result['status'] ?? null;
+        $this->billingcycle = $result['billingCycle'] ?? null;
+        $this->isoverdue = (bool) ($result['isOverdue'] ?? false);
+        $this->daysoverdue = $result['daysOverdue'] ?? 0;
+        return true;
+    }
+
     function CalculateNextDue()
     {
         if($this->billingcycle == "Monthly") {
@@ -25,6 +53,11 @@ require_once 'Payment.php';
         } elseif ($this->billingcycle == "Annually") {
             $this->duedate = date("Y-m-d", strtotime($this->startdate . ' +1 year'));
         }
+    }
+
+    function CalculateNextDueDate()
+    {
+        return $this->CalculateNextDue();
     }
 
     function MarkOverdue()
@@ -112,6 +145,119 @@ require_once 'Payment.php';
             'status' => 'error',
             'message' => 'Failed to cancel subscription'
         ];
+    }
+
+    function SaveSubscription($childId, $planId)
+    {
+        $sql = "SELECT parentID FROM Child WHERE childID = ?";
+        $child = Database::getInstance()->fetchOne($sql, [$childId]);
+        if (!$child) {
+            return false;
+        }
+        $parentId = $child['parentID'];
+        $startDate = date('Y-m-d');
+        $dueDate = date('Y-m-d', strtotime('+30 days'));
+        $sql = "INSERT INTO Subscription (parentID, childID, planID, basePrice, startDate, dueDate, status, billingCycle)
+                VALUES (?, ?, ?, ?, ?, ?, 'Active', 'Monthly')";
+        $params = [$parentId, $childId, $planId, 0, $startDate, $dueDate];
+        $stmt = Database::getInstance()->query($sql, $params);
+        return $stmt && $stmt->rowCount() > 0;
+    }
+
+    function GetAll()
+    {
+        $rows = Database::getInstance()->fetchAll("SELECT * FROM Subscription");
+        if (!$rows) {
+            return [];
+        }
+        $subscriptions = [];
+        foreach ($rows as $row) {
+            $subscription = new self();
+            $subscription->loadSubscriptionFromDatabase($row['subscriptionID']);
+            $subscriptions[] = $subscription;
+        }
+        return $subscriptions;
+    }
+
+    function GetOverdue()
+    {
+        $rows = Database::getInstance()->fetchAll("SELECT * FROM Subscription WHERE dueDate < CURDATE() AND status != 'Paid'");
+        if (!$rows) {
+            return [];
+        }
+        $subscriptions = [];
+        foreach ($rows as $row) {
+            $subscription = new self();
+            $subscription->loadSubscriptionFromDatabase($row['subscriptionID']);
+            $subscriptions[] = $subscription;
+        }
+        return $subscriptions;
+    }
+
+    function GetAllActive()
+    {
+        $rows = Database::getInstance()->fetchAll("SELECT * FROM Subscription WHERE status = 'Active'");
+        if (!$rows) {
+            return [];
+        }
+        $subscriptions = [];
+        foreach ($rows as $row) {
+            $subscription = new self();
+            $subscription->loadSubscriptionFromDatabase($row['subscriptionID']);
+            $subscriptions[] = $subscription;
+        }
+        return $subscriptions;
+    }
+
+    function QueueReminder($subscriptionId, $nextDueDate)
+    {
+        if (empty($subscriptionId) || empty($nextDueDate)) {
+            return false;
+        }
+        return true;
+    }
+
+    function UpdateDueDate($subscriptionId, $nextDueDate)
+    {
+        $sql = "UPDATE Subscription SET dueDate = ? WHERE subscriptionID = ?";
+        $stmt = Database::getInstance()->query($sql, [$nextDueDate, $subscriptionId]);
+        return $stmt && $stmt->rowCount() > 0;
+    }
+
+    function FlagAsOverdue($subscriptionId)
+    {
+        $sql = "UPDATE Subscription SET status = 'Overdue', isOverdue = 1 WHERE subscriptionID = ?";
+        $stmt = Database::getInstance()->query($sql, [$subscriptionId]);
+        return $stmt && $stmt->rowCount() > 0;
+    }
+
+    function RestrictAccess($parentId)
+    {
+        $sql = "UPDATE Subscription SET status = 'Restricted' WHERE parentID = ?";
+        $stmt = Database::getInstance()->query($sql, [$parentId]);
+        return $stmt && $stmt->rowCount() > 0;
+    }
+
+    function FlagAsUnpaid($subscriptionId)
+    {
+        $sql = "UPDATE Subscription SET status = 'Unpaid' WHERE subscriptionID = ?";
+        $stmt = Database::getInstance()->query($sql, [$subscriptionId]);
+        return $stmt && $stmt->rowCount() > 0;
+    }
+
+    function GetStartDate()
+    {
+        return $this->startdate;
+    }
+
+    function GetSubscriptionId()
+    {
+        return $this->subscriptionID;
+    }
+
+    function GetParentId()
+    {
+        return $this->parentID;
     }
  }
 ?>

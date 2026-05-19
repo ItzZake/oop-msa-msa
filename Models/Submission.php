@@ -47,6 +47,22 @@ require_once 'Assignment.php';
         return $stmt && $stmt->rowCount() > 0;
     }
 
+    function SaveGrade($submissionId, $grade, $feedback)
+    {
+        $sql = "UPDATE submission SET grade = ?, feedback = ?, gradedAt = ?, status = 'Graded' WHERE submissionID = ?";
+        $params = [$grade, $feedback, date('Y-m-d H:i:s'), $submissionId];
+        $stmt = Database::getInstance()->query($sql, $params);
+        return $stmt && $stmt->rowCount() > 0;
+    }
+
+    function Insert($childId, $assignmentId, $type, $content, $photoPath = null)
+    {
+        $sql = "INSERT INTO submission (childID, assignmentID, type, content, photoPath, submittedAt, status) VALUES (?, ?, ?, ?, ?, ?, 'Submitted')";
+        $params = [$childId, $assignmentId, $type, $content, $photoPath, date('Y-m-d H:i:s')];
+        $stmt = Database::getInstance()->query($sql, $params);
+        return $stmt && $stmt->rowCount() > 0;
+    }
+
     function MarkLate()
     {
         if ($this->IsLate()) {

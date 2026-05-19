@@ -38,11 +38,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (empty($teacher_id_err) && empty($course_id_err)) {
-        include_once '../Model/CourseAssignmentModel.php';
-        $assignmentModel = new CourseAssignmentModel();
+        include_once '../Models/CourseAssignment.php';
+        include_once '../Models/Course.php';
+        $assignmentModel = new CourseAssignment();
+        $courseModel = new Course();
 
         // Check for time slot conflict before assigning
-        $hasConflict = $assignmentModel->hasTimeSlotConflict($teacher_id, $course_id);
+        $hasConflict = $courseModel->HasSchedulingConflict($teacher_id, $course_id);
 
         if ($hasConflict === true) {
             $conflict_err = "Assignment blocked: this teacher has a time slot conflict with the selected course.";

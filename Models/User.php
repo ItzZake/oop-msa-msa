@@ -17,7 +17,7 @@ class User
     private $role;
     private PasswordHasher $hasher;
 
-    public function __construct($userId, $email, $password, $preferredLanguage = null, $createdAt = null, $lastLoginAt = null, $role = null, $firstName = null, $lastName = null, $isActive = true)
+    public function __construct($userId = null, $email = null, $password = null, $preferredLanguage = null, $createdAt = null, $lastLoginAt = null, $role = null, $firstName = null, $lastName = null, $isActive = true)
     {
         $this->userId = $userId;
         $this->firstName = $firstName;
@@ -41,16 +41,21 @@ class User
             $isActive = (bool)$data['IsActive'];
         }
 
+        $password = $data['password'] ?? $data['Password'] ?? $data['passwordHash'] ?? $data['passwordhash'] ?? '';
+        $preferredLanguage = $data['preferredLanguage'] ?? $data['PreferredLanguage'] ?? $data['preferredlanguage'] ?? null;
+        $firstName = $data['firstName'] ?? $data['firstname'] ?? $data['FirstName'] ?? null;
+        $lastName = $data['lastName'] ?? $data['Lastname'] ?? $data['LastName'] ?? null;
+
         return new self(
-            isset($data['userId']) ? $data['userId'] : null,
-            isset($data['email']) ? $data['email'] : '',
-            isset($data['password']) ? $data['password'] : '',
-            isset($data['preferredLanguage']) ? $data['preferredLanguage'] : null,
-            isset($data['createdAt']) ? $data['createdAt'] : null,
-            isset($data['lastLoginAt']) ? $data['lastLoginAt'] : null,
-            isset($data['role']) ? $data['role'] : null,
-            isset($data['firstName']) ? $data['firstName'] : null,
-            isset($data['lastName']) ? $data['lastName'] : null,
+            $data['userId'] ?? $data['UserId'] ?? $data['userID'] ?? null,
+            $data['email'] ?? $data['Email'] ?? '',
+            $password,
+            $preferredLanguage,
+            $data['createdAt'] ?? $data['CreatedAt'] ?? null,
+            $data['lastLoginAt'] ?? $data['LastLoginAt'] ?? null,
+            $data['role'] ?? $data['Role'] ?? null,
+            $firstName,
+            $lastName,
             $isActive
         );
     }

@@ -26,11 +26,11 @@ if (empty($teacher_id) || !ctype_digit((string)$teacher_id)) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" || $_SERVER["REQUEST_METHOD"] == "GET") {
 
-    include_once '../Model/ChildModel.php';
-    $childModel = new ChildModel();
+    include_once '../Models/Child.php';
+    $childModel = new Child();
 
     // Fetch all children assigned to this teacher with their medical profiles
-    $rosterData = $childModel->getChildrenWithMedicalAlerts($teacher_id);
+    $rosterData = $childModel->GetChildrenWithMedicalAlerts($teacher_id);
 
     if ($rosterData === false) {
         echo "Something went wrong while loading the roster. Please try again later.";

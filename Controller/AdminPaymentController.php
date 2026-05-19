@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Subscription.php';
-require_once '/../Models/Payment.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Subscription.php';
+require_once __DIR__ . '/../Models/Payment.php';
 
 $admin_id = (int) ($_GET['admin_id'] ?? 0);
 

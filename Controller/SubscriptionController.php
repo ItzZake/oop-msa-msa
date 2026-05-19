@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Subscription.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Subscription.php';
 
 $plan_id  = (int) ($_POST['plan_id']  ?? 0);
 $child_id = (int) ($_POST['child_id'] ?? 0);

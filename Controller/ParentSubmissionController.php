@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Submission.php';
-require_once '/../Models/Notification.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Submission.php';
+require_once __DIR__ . '/../Models/Notification.php';
 
 $parent_id     = (int) ($_POST['parent_id']     ?? 0);
 $child_id      = (int) ($_POST['child_id']      ?? 0);
