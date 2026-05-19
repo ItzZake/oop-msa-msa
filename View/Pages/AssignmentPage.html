@@ -1,29 +1,10 @@
-<?php
-// Start session and get user role FIRST - before any output
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-$userRole = $_SESSION['user_role'] ?? null;
-
-// Redirect to login if not authenticated - BEFORE any includes
-if (!isset($_SESSION['user_id']) || !$userRole) {
-    header('Location: login.php');
-    exit;
-}
-
-// Now include header and navbar
-include "header.php";
-include "navbar.php";
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Assignment Center</title>
-  <link rel="stylesheet" href="css/Assignment.css" />
-  <link rel="stylesheet" href="css/Home.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -42,6 +23,13 @@ include "navbar.php";
     </div>
   </section>
 
+  <!-- ─── ROLE TABS ─── -->
+  <nav class="role-tabs-bar">
+    <div class="role-tabs-inner" id="role-tabs">
+      <!-- Buttons injected by app.js -->
+    </div>
+  </nav>
+
   <!-- ─── MAIN CONTENT ─── -->
   <main class="content-section">
     <div class="content-inner" id="view-content">
@@ -53,11 +41,7 @@ include "navbar.php";
   <div id="modal-container"></div>
 
   <!-- ─── APP LOGIC ─── -->
-  <script>
-    // Pass user role to JavaScript
-    const currentUserRole = '<?php echo htmlspecialchars($userRole); ?>';
-  </script>
-  <script src="scripts/Assignment.js"></script>
+  <script src="app.js"></script>
+
 </body>
 </html>
-<?php include "footer.php"?>

@@ -23,9 +23,6 @@ include 'header.php';
 include 'navbar.php';
 ?>
 
-  <!-- ══════════════ TOP BAR ══════════════ -->
-  
-  <!-- ══════════════ NAVBAR ══════════════ -->
 
   <!-- ══════════════ MAIN CONTENT ══════════════ -->
   <main class="main-content" id="mainContent">

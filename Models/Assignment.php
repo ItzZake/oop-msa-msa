@@ -300,5 +300,92 @@
         $stmt = Database::getInstance()->query($sql, [$assignmentId]);
         return $stmt && $stmt->rowCount() > 0;
     }
+
+    function GetTeacherAssignments($teacherId)
+    {
+        $sql = "SELECT a.assignmentID, a.teacherID, a.courseID, a.title, a.instructions as description, 
+                a.dueDate, a.wordwallembedcode, a.attachmentpath, a.status, a.createdAt,
+                c.name as courseName,
+                COUNT(DISTINCT s.submissionID) as submitted,
+                COUNT(DISTINCT CASE WHEN s.grade IS NOT NULL THEN s.submissionID END) as graded,
+                (SELECT COUNT(DISTINCT e.childID) FROM enrollment e WHERE e.courseID = a.courseID AND e.status = 'Active') as totalStudents
+                FROM assignment a
+                LEFT JOIN course c ON a.courseID = c.courseID
+                LEFT JOIN submission s ON a.assignmentID = s.assignmentID
+                WHERE a.teacherID = ?
+                GROUP BY a.assignmentID
+                ORDER BY a.dueDate DESC, a.createdAt DESC";
+        
+        return Database::getInstance()->fetchAll($sql, [$teacherId]);
+    }
+
+    function GetAssignmentById($assignmentId)
+    {
+        $sql = "SELECT * FROM assignment WHERE assignmentID = ?";
+        $result = Database::getInstance()->fetchAll($sql, [$assignmentId]);
+        return !empty($result) ? $result[0] : null;
+    }
+
+    function CreateAssignment(array $data): int|false
+    {
+        $sql = "INSERT INTO assignment (teacherID, courseID, title, instructions, dueDate, wordwallembedcode, createdAt, status) 
+                VALUES (?, ?, ?, ?, ?, ?, NOW(), 'Draft')";
+        
+        $params = [
+            $data['teacherId'] ?? 0,
+            $data['courseId'] ?? 0,
+            $data['title'] ?? '',
+            $data['instructions'] ?? '',
+            $data['dueDate'] ?? '',
+            $data['wordwallEmbedCode'] ?? '',
+        ];
+
+        try {
+            $result = Database::getInstance()->query($sql, $params);
+            
+            if ($result && $result->rowCount() > 0) {
+                // Return the last inserted ID
+                return (int) Database::getInstance()->lastInsertId();
+            }
+            
+            return false;
+        } catch (Exception $e) {
+            error_log('CreateAssignment error: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    function UpdateAssignment(int $assignmentId, array $data): bool
+    {
+        $sql = "UPDATE assignment SET 
+                courseID = ?, 
+                title = ?, 
+                instructions = ?, 
+                dueDate = ?, 
+                wordwallembedcode = ? 
+                WHERE assignmentID = ?";
+        
+        $params = [
+            $data['courseId'] ?? 0,
+            $data['title'] ?? '',
+            $data['instructions'] ?? '',
+            $data['dueDate'] ?? '',
+            $data['wordwallEmbedCode'] ?? '',
+            $assignmentId,
+        ];
+
+        try {
+            $result = Database::getInstance()->query($sql, $params);
+            
+            if ($result && $result->rowCount() > 0) {
+                return true;
+            }
+            
+            return false;
+        } catch (Exception $e) {
+            error_log('UpdateAssignment error: ' . $e->getMessage());
+            return false;
+        }
+    }
  }
 ?>
