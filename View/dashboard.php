@@ -12,59 +12,21 @@ $panel = isset($_GET['panel']) ? $_GET['panel'] : 'overview';
 //     exit;
 // }
 
-// Import database models
-require_once '../Models/Database.php';
+// Import DashboardController
+require_once '../Controller/DashboardController.php';
 
-// Initialize variables
-$totalStudents = 248;
-$totalTeachers = 18;
-$attendanceRate = 94;
-$activeAlerts = 3;
-$activeClasses = 12;
-$enrollmentRate = 96;
-$recentStudents = [];
+// Initialize controller and load overview data
+$controller = new DashboardController();
+$data = $controller->loadOverview();
 
-try {
-    $db = Database::getInstance();
-    
-    // Count total students
-    $result = $db->fetchOne("SELECT COUNT(*) as count FROM Child");
-    $totalStudents = $result['count'] ?? 248;
-    
-    // Count total teachers
-    $result = $db->fetchOne("SELECT COUNT(*) as count FROM Teacher");
-    $totalTeachers = $result['count'] ?? 18;
-    
-    // Calculate attendance rate
-    $result = $db->fetchOne("
-        SELECT 
-            ROUND(
-                (COUNT(CASE WHEN status = 'Present' THEN 1 END) / COUNT(*)) * 100
-            ) as rate
-        FROM Attendance
-        WHERE sessionDate >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-    ");
-    $attendanceRate = $result['rate'] ?? 94;
-    
-    // Get recent students
-    $recentStudents = $db->fetchAll("
-        SELECT c.childID, c.name, c.gender, e.status as enrollmentStatus
-        FROM Child c
-        LEFT JOIN Enrollment e ON c.childID = e.childID
-        ORDER BY c.childID DESC
-        LIMIT 5
-    ");
-    
-} catch (Exception $e) {
-    // Use default values if database fails
-    $recentStudents = [
-        ['childID' => 1, 'name' => 'Emma Johnson', 'gender' => 'Female', 'enrollmentStatus' => 'Active'],
-        ['childID' => 2, 'name' => 'Noah Williams', 'gender' => 'Male', 'enrollmentStatus' => 'Active'],
-        ['childID' => 3, 'name' => 'Sophia Brown', 'gender' => 'Female', 'enrollmentStatus' => 'Active'],
-        ['childID' => 4, 'name' => 'Liam Davis', 'gender' => 'Male', 'enrollmentStatus' => 'Active'],
-        ['childID' => 5, 'name' => 'Olivia Wilson', 'gender' => 'Female', 'enrollmentStatus' => 'Active'],
-    ];
-}
+// Extract data with defaults
+$totalStudents = $data['total_students'] ?? 0;
+$totalTeachers = $data['total_teachers'] ?? 0;
+$attendanceRate = $data['attendance_rate'] ?? 0;
+$activeAlerts = $data['active_alerts'] ?? 0;
+$activeClasses = $data['active_classes'] ?? 0;
+$enrollmentRate = $data['enrollment_rate'] ?? 0;
+$recentStudents = $data['students'] ?? [];
 ?>
 
 <!DOCTYPE html>
@@ -321,8 +283,8 @@ try {
           <!-- Student Table -->
           <div class="students-table-card animate-fade-up">
             <div class="students-table-card__head">
-              <h3 class="chart-card__title">Recent Students</h3>
-              <a href="add_user.php" class="btn-add-student">
+              <h3 class="chart-card__title">Recent Users</h3>
+              <a href="add_user.php" class="btn btn-primary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M5 12h14" />
                   <path d="M12 5v14" />
@@ -334,25 +296,38 @@ try {
               <table class="students-table">
                 <thead>
                   <tr>
-                    <th>Student</th>
-                    <th>Class</th>
-                    <th>Attendance</th>
-                    <th>Status</th>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Email</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <?php foreach ($recentStudents as $student): ?>
-                  <tr>
-                    <td><?php echo htmlspecialchars($student['name']); ?></td>
-                    <td>KG1 – Class</td>
-                    <td><span class="attendance-badge">94%</span></td>
-                    <td>
-                      <span class="status-badge <?php echo $student['enrollmentStatus'] === 'Active' ? 'status-badge--active' : 'status-badge--alert'; ?>">
-                        <?php echo $student['enrollmentStatus'] === 'Active' ? '✅ Active' : '⚠️ ' . htmlspecialchars($student['enrollmentStatus']); ?>
-                      </span>
-                    </td>
-                  </tr>
-                  <?php endforeach; ?>
+                  <?php if (!empty($recentStudents)): ?>
+                    <?php foreach ($recentStudents as $student): ?>
+                    <tr>
+                      <td>
+                        <div class="user-cell">
+                          <div class="avatar-small"><?php echo htmlspecialchars(strtoupper(substr($student['name'] ?? '', 0, 1))); ?></div>
+                          <div class="user-meta">
+                            <div class="name"><?php echo htmlspecialchars($student['name'] ?? '—'); ?></div>
+                            <div class="muted"><?php echo htmlspecialchars(date('M j, Y', strtotime($student['createdAt'] ?? ($student['created_at'] ?? 'now')))); ?></div>
+                          </div>
+                        </div>
+                      </td>
+                      <td><?php echo htmlspecialchars($student['role'] ?? '—'); ?></td>
+                      <td><?php echo htmlspecialchars($student['email'] ?? '—'); ?></td>
+                      <td>
+                        <a class="btn btn-sm" href="edit_user.php?id=<?php echo urlencode($student['userID']); ?>">Edit</a>
+                        <a class="btn btn-sm btn-danger" href="delete_user.php?id=<?php echo urlencode($student['userID']); ?>" onclick="return confirm('Delete this user? This action cannot be undone.');">Delete</a>
+                      </td>
+                    </tr>
+                    <?php endforeach; ?>
+                  <?php else: ?>
+                    <tr>
+                      <td colspan="4" style="text-align: center; color: #999; padding: 20px;">No users found</td>
+                    </tr>
+                  <?php endif; ?>
                 </tbody>
               </table>
             </div>
@@ -470,55 +445,6 @@ try {
   </main>
 </div>
 <!-- /dashboard-wrapper -->
-
-<!-- ══════════════ FOOTER ══════════════ -->
-<footer class="footer">
-  <div class="container footer__grid">
-    <div class="footer__col">
-      <div class="footer__brand">
-        <div class="footer__logo-img">
-          <span style="font-size:1.4rem">🌟</span>
-        </div>
-        <div>
-          <div class="footer__brand-name">Wellucation</div>
-          <div class="footer__brand-tagline">Learn. Play. Grow</div>
-        </div>
-      </div>
-      <p class="footer__desc">Nurturing young minds with love, creativity, and excellence in early childhood education.</p>
-    </div>
-    <div class="footer__col">
-      <h4 class="footer__col-title">Quick Links</h4>
-      <nav class="footer__links">
-        <a href="home.php">Home</a>
-        <a href="about.php">About Us</a>
-        <a href="contact.php">Contact</a>
-        <a href="dashboard.php">Dashboard</a>
-      </nav>
-    </div>
-    <div class="footer__col">
-      <h4 class="footer__col-title">Support</h4>
-      <nav class="footer__links">
-        <a href="#">Help Center</a>
-        <a href="#">Documentation</a>
-        <a href="#">FAQ</a>
-        <a href="#">Contact Support</a>
-      </nav>
-    </div>
-    <div class="footer__col">
-      <h4 class="footer__col-title">Legal</h4>
-      <nav class="footer__links">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-        <a href="#">Cookie Policy</a>
-        <a href="#">Disclaimer</a>
-      </nav>
-    </div>
-  </div>
-  <div class="footer__bottom">
-    <p>&copy; 2025 Wellucation. All rights reserved.</p>
-  </div>
-</footer>
-
 </body>
 </html>
 </div>
