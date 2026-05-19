@@ -79,7 +79,8 @@ class AuthService implements Authenticable
 
 		SessionManager::Regenerate();
 		SessionManager::Set('user_id', $user->getId());
-		SessionManager::Set('user_role', $user->getRole());
+		// Normalize role to lowercase for consistent role checks across the app
+		SessionManager::Set('user_role', strtolower((string)$user->getRole()));
 
 		return $user;
 	}

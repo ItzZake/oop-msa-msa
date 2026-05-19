@@ -1,8 +1,9 @@
 <?php
 require_once __DIR__ . '/Database.php';
 require_once __DIR__ . '/User.php';
-// Avoid including higher-level model files (Admin/Teacher/Parent)
-// which may pull in view files and produce output before headers.
+require_once __DIR__ . '/Parent.php';
+require_once __DIR__ . '/Teacher.php';
+require_once __DIR__ . '/Admin.php';
 
 class UserRepository {
     public function findByEmail(string $email): ?User
@@ -23,6 +24,75 @@ class UserRepository {
         }
 
         return $this->mapRowToUser($row);
+    }
+
+    public function findByName(string $fullName): array
+    {
+        $fullName = trim($fullName);
+        if ($fullName === '') {
+            return [];
+        }
+
+        $like = "%{$fullName}%";
+        $queries = [
+            ["SELECT * FROM User WHERE firstname LIKE ? OR Lastname LIKE ? OR CONCAT(firstname, ' ', Lastname) LIKE ?", [$like, $like, $like]],
+            ["SELECT * FROM Users WHERE firstname LIKE ? OR Lastname LIKE ? OR CONCAT(firstname, ' ', Lastname) LIKE ?", [$like, $like, $like]],
+        ];
+
+        $rows = [];
+        foreach ($queries as [$sql, $params]) {
+            try {
+                $fetched = Database::getInstance()->fetchAll($sql, $params);
+                if (is_array($fetched) && count($fetched) > 0) {
+                    $rows = array_merge($rows, $fetched);
+                }
+            } catch (\Throwable $e) {
+                continue;
+            }
+        }
+
+        return array_map([$this, 'mapRowToUser'], $rows);
+    }
+
+    public function findByIdAndName(int $userId, string $fullName): ?User
+    {
+        $fullName = trim($fullName);
+        if ($userId <= 0 || $fullName === '') {
+            return null;
+        }
+
+        $searchTerms = array_filter(preg_split('/\s+/', preg_replace('/[^a-zA-Z0-9]+/', ' ', $fullName)), fn($term) => strlen($term) >= 2);
+        if (empty($searchTerms)) {
+            return null;
+        }
+
+        $nameConditions = array_fill(0, count($searchTerms), '(firstname LIKE ? OR Lastname LIKE ?)');
+        $nameSql = implode(' AND ', $nameConditions);
+        $params = [$userId];
+
+        foreach ($searchTerms as $term) {
+            $like = '%' . $term . '%';
+            $params[] = $like;
+            $params[] = $like;
+        }
+
+        $queries = [
+            ["SELECT * FROM User WHERE userID = ? AND {$nameSql}", $params],
+            ["SELECT * FROM Users WHERE userId = ? AND {$nameSql}", $params],
+        ];
+
+        foreach ($queries as [$sql, $queryParams]) {
+            try {
+                $row = Database::getInstance()->fetchOne($sql, $queryParams);
+                if (!empty($row)) {
+                    return $this->mapRowToUser($row);
+                }
+            } catch (\Throwable $e) {
+                continue;
+            }
+        }
+
+        return null;
     }
 
     private function fetchUserRowByEmail(string $email): ?array

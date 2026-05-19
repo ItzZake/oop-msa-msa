@@ -4,9 +4,11 @@
 // login credentials issued.
 
 session_start();
+require_once __DIR__ . '/../Models/userRepository.php';
 
 // Admin only
-if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+$userRole = $_SESSION['user_role'] ?? $_SESSION['role'] ?? null;
+if ($userRole !== 'admin') {
     http_response_code(403);
     header("location: ../index.php");
     exit("Access denied. Admins only.");
@@ -71,5 +73,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("location: ../index.php");
         exit();
     }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['user_id']) && isset($_GET['name'])) {
+    $userId = filter_var($_GET['user_id'], FILTER_VALIDATE_INT);
+    $fullName = trim($_GET['name']);
+
+    header('Content-Type: application/json');
+
+    if ($userId === false || $userId <= 0 || $fullName === '') {
+        echo json_encode(['success' => false, 'message' => 'Invalid user ID or name.']);
+        exit();
+    }
+
+    $repo = new UserRepository();
+    $user = $repo->findByIdAndName($userId, $fullName);
+
+    if (!$user) {
+        echo json_encode(['success' => false, 'message' => 'Profile not found.']);
+        exit();
+    }
+
+    echo json_encode(['success' => true, 'profile' => $user->toArray()]);
+    exit();
 }
 ?>
