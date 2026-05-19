@@ -23,9 +23,6 @@ include 'header.php';
 include 'navbar.php';
 ?>
 
-  <!-- ══════════════ TOP BAR ══════════════ -->
-  
-  <!-- ══════════════ NAVBAR ══════════════ -->
 
   <!-- ══════════════ MAIN CONTENT ══════════════ -->
   <main class="main-content" id="mainContent">
@@ -49,8 +46,8 @@ include 'navbar.php';
             creativity is sparked, and every child is guided to thrive — academically, socially, and emotionally.
           </p>
           <div class="hero__actions">
-            <a href="/enroll" class="btn-enroll btn-hero-primary">🌟 Enroll Now</a>
-            <a href="/about" class="btn-hero-secondary">Learn More →</a>
+            <a href="../View/enroll.php" class="btn-enroll btn-hero-primary">🌟 Enroll Now</a>
+            <a href="../View/about.php" class="btn-hero-secondary">Learn More →</a>
           </div>
           <div class="hero__stats">
             <div class="hero__stat">

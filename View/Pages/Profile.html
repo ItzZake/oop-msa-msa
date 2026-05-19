@@ -10,6 +10,19 @@
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&display=swap"
       rel="stylesheet"
     />
+    <script>
+      (function () {
+        try {
+          var path = location.pathname;
+          var baseHref = path.substring(0, path.lastIndexOf("/") + 1) || "/";
+          var b = document.createElement("base");
+          b.href = baseHref;
+          document.head.appendChild(b);
+        } catch (e) {
+          /* noop */
+        }
+      })();
+    </script>
   </head>
   <body>
     <!-- ══════════════ TOP BAR ══════════════ -->
@@ -131,7 +144,7 @@
     <nav class="navbar" id="navbar">
       <div class="container navbar__inner">
         <!-- Logo -->
-        <a href="Home.html" class="navbar__logo">
+        <a href="../index.php" class="navbar__logo">
           <div class="navbar__logo-img">
             <img
               src="logo.jpeg"
@@ -151,12 +164,12 @@
 
         <!-- Desktop Links -->
         <div class="navbar__links" id="navLinks">
-          <a href="Home.html" class="nav-link" data-path="/">Home</a>
-          <a href="About.html" class="nav-link" data-path="/about">About Us</a>
-          <a href="contact.html" class="nav-link" data-path="/contact"
+          <a href="../Home.php" class="nav-link" data-path="/">Home</a>
+          <a href="../About.php" class="nav-link" data-path="/about">About Us</a>
+          <a href="../contact.php" class="nav-link" data-path="/contact"
             >Contact Us</a
           >
-          <a href="Login.html" class="nav-link" data-path="/login">Login</a>
+          <a href="../Login.php" class="nav-link" data-path="/login">Login</a>
 
           <!-- More dropdown -->
           <div class="nav-dropdown" id="moreDropdown">
@@ -184,55 +197,40 @@
             </button>
             <div class="nav-dropdown__menu" id="moreMenu" role="menu">
               <a
-                href="profiles.html"
+                href="../profiles.php"
                 class="nav-dropdown__item active"
                 role="menuitem"
                 >👤 Profiles</a
               >
               <a
-                href="dashboard.html"
+                href="../dashboard.php"
                 class="nav-dropdown__item"
                 role="menuitem"
                 >📊 Dashboard</a
               >
-              <a
-                href="attendance.html"
-                class="nav-dropdown__item"
-                role="menuitem"
-                >📅 Attendance</a
-              >
-              <a href="reports.html" class="nav-dropdown__item" role="menuitem"
-                >📋 Reports</a
-              >
-              <a
-                href="assignments.html"
-                class="nav-dropdown__item"
-                role="menuitem"
-                >📝 Assignments</a
-              >
               <div class="nav-dropdown__divider"></div>
-              <a href="payment.html" class="nav-dropdown__item" role="menuitem"
+              <a href="../payment.php" class="nav-dropdown__item" role="menuitem"
                 >💳 Payment</a
               >
               <a
-                href="subscription.html"
+                href="../subscription.php"
                 class="nav-dropdown__item"
                 role="menuitem"
                 >⭐ Subscription</a
               >
-              <a href="excuse.html" class="nav-dropdown__item" role="menuitem"
+              <a href="../excuse.php" class="nav-dropdown__item" role="menuitem"
                 >🙋 Excuse</a
               >
-              <a href="messages.html" class="nav-dropdown__item" role="menuitem"
+              <a href="../messages.php" class="nav-dropdown__item" role="menuitem"
                 >💬 Messages</a
               >
               <a
-                href="application.html"
+                href="../application.php"
                 class="nav-dropdown__item"
                 role="menuitem"
                 >📄 Application</a
               >
-              <a href="settings.html" class="nav-dropdown__item" role="menuitem"
+              <a href="../settings.php" class="nav-dropdown__item" role="menuitem"
                 >⚙️ Settings</a
               >
             </div>
@@ -241,7 +239,7 @@
 
         <!-- Right side -->
         <div class="navbar__right">
-          <a href="/enroll" class="btn-enroll btn-enroll--desktop"
+          <a href="../enroll.php" class="btn-enroll btn-enroll--desktop"
             >🌟 Enroll Now</a
           >
           <button
@@ -287,44 +285,44 @@
 
       <!-- Mobile Menu -->
       <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-        <a href="Home.html" class="nav-link" data-path="/">🏠 Home</a>
-        <a href="About.html" class="nav-link" data-path="/about">ℹ️ About Us</a>
-        <a href="contact.html" class="nav-link" data-path="/contact"
+        <a href="../index.php" class="nav-link" data-path="/">🏠 Home</a>
+        <a href="../About.php" class="nav-link" data-path="/about">ℹ️ About Us</a>
+        <a href="../contact.php" class="nav-link" data-path="/contact"
           >📞 Contact Us</a
         >
-        <a href="profiles.html" class="nav-link active" data-path="/profiles"
+        <a href="../profiles.php" class="nav-link active" data-path="/profiles"
           >👤 Profiles</a
         >
-        <a href="dashboard.html" class="nav-link" data-path="/dashboard"
+        <a href="../dashboard.php" class="nav-link" data-path="/dashboard"
           >📊 Dashboard</a
         >
-        <a href="attendance.html" class="nav-link" data-path="/attendance"
+        <a href="../attendance.php" class="nav-link" data-path="/attendance"
           >📅 Attendance</a
         >
-        <a href="reports.html" class="nav-link" data-path="/reports"
+        <a href="../reports.php" class="nav-link" data-path="/reports"
           >📋 Reports</a
         >
-        <a href="assignments.html" class="nav-link" data-path="/assignments"
+        <a href="assignments.php" class="nav-link" data-path="/assignments"
           >📝 Assignments</a
         >
-        <a href="Login.html" class="nav-link" data-path="/login">🔐 Login</a>
-        <a href="payment.html" class="nav-link" data-path="/payment"
+        <a href="../Login.php" class="nav-link" data-path="/login">🔐 Login</a>
+        <a href="../payment.php" class="nav-link" data-path="/payment"
           >💳 Payment</a
         >
-        <a href="subscription.html" class="nav-link" data-path="/subscription"
+        <a href="../subscription.php" class="nav-link" data-path="/subscription"
           >⭐ Subscription</a
         >
-        <a href="excuse.html" class="nav-link" data-path="/excuse">🙋 Excuse</a>
-        <a href="messages.html" class="nav-link" data-path="/messages"
+        <a href="../excuse.php" class="nav-link" data-path="/excuse">🙋 Excuse</a>
+        <a href="../messages.php" class="nav-link" data-path="/messages"
           >💬 Messages</a
         >
-        <a href="application.html" class="nav-link" data-path="/application"
+        <a href="../application.php" class="nav-link" data-path="/application"
           >📄 Application</a
         >
-        <a href="settings.html" class="nav-link" data-path="/settings"
+        <a href="../settings.php" class="nav-link" data-path="/settings"
           >⚙️ Settings</a
         >
-        <a href="/enroll" class="btn-enroll btn-enroll--mobile"
+        <a href="../enroll.php" class="btn-enroll btn-enroll--mobile"
           >🌟 Enroll Now</a
         >
       </div>
@@ -484,52 +482,52 @@
           <h4 class="footer__heading">Quick Links</h4>
           <ul class="footer__list">
             <li>
-              <a href="Home.html" class="footer__link"
+              <a href="../index.php" class="footer__link"
                 ><span class="footer__arrow">›</span> Home</a
               >
             </li>
             <li>
-              <a href="About.html" class="footer__link"
+              <a href="../About.php" class="footer__link"
                 ><span class="footer__arrow">›</span> About Us</a
               >
             </li>
             <li>
-              <a href="Contact.html" class="footer__link"
+              <a href="../Contact.php" class="footer__link"
                 ><span class="footer__arrow">›</span> Contact Us</a
               >
             </li>
             <li>
-              <a href="Dashboard.html" class="footer__link"
+              <a href="../Dashboard.php" class="footer__link"
                 ><span class="footer__arrow">›</span> Dashboard</a
               >
             </li>
             <li>
-              <a href="Attendance.html" class="footer__link"
+              <a href="../Attendance.php" class="footer__link"
                 ><span class="footer__arrow">›</span> Attendance</a
               >
             </li>
             <li>
-              <a href="Reports.html" class="footer__link"
+              <a href="../Reports.php" class="footer__link"
                 ><span class="footer__arrow">›</span> Reports</a
               >
             </li>
             <li>
-              <a href="Enroll.html" class="footer__link"
+              <a href="../Enroll.php" class="footer__link"
                 ><span class="footer__arrow">›</span> Enroll Now</a
               >
             </li>
             <li>
-              <a href="Login.html" class="footer__link"
+              <a href="../Login.php" class="footer__link"
                 ><span class="footer__arrow">›</span> Login</a
               >
             </li>
             <li>
-              <a href="Messages.html" class="footer__link"
+              <a href="../Messages.php" class="footer__link"
                 ><span class="footer__arrow">›</span> Messages</a
               >
             </li>
             <li>
-              <a href="Settings.html" class="footer__link"
+              <a href="../Settings.php" class="footer__link"
                 ><span class="footer__arrow">›</span> Settings</a
               >
             </li>

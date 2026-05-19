@@ -1,5 +1,8 @@
 <?php
 session_start();
+require_once '../Models/Database.php';
+require_once '../Models/Child.php';
+require_once '../Models/Course.php';
 
 // Check if user is admin (for demo, bypass this check)
 // if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {

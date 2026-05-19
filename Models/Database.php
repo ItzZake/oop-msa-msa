@@ -30,7 +30,7 @@ class Database
 
     public function query($sql, $params = [])
     {
-        if (!$this->IsConnected()) {
+        if (!$this->isConnected()) {
             $this->connect();
         }
 
@@ -48,7 +48,7 @@ class Database
 
     public function connect()
     {
-        if ($this->IsConnected()) {
+        if ($this->isConnected()) {
             return;
         }
 
@@ -312,4 +312,8 @@ class Database
     }
 }
 
-?>
+    public function lastInsertId()
+    {
+        return $this->connection->lastInsertId();
+    }
+}

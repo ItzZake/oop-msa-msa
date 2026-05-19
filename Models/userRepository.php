@@ -212,49 +212,8 @@ class UserRepository {
             'isActive' => $row['isActive'] ?? $row['IsActive'] ?? 1,
         ];
 
-        if ($role === 'teacher') {
-            return new Teacher(
-                $data['userId'],
-                $data['email'],
-                $data['password'],
-                $data['preferredLanguage'],
-                $data['createdAt'],
-                $data['lastLoginAt'],
-                $data['role'],
-                $data['firstName'],
-                $data['lastName']
-            );
-        }
-
-        if ($role === 'parent' || $role === 'parents') {
-            return new Parents(
-                $data['userId'],
-                $data['email'],
-                $data['password'],
-                $data['preferredLanguage'],
-                $data['createdAt'],
-                $data['lastLoginAt'],
-                $data['role'],
-                $data['firstName'],
-                $data['lastName']
-            );
-        }
-
-        if ($role === 'admin') {
-            return new Admin(
-                $data['userId'],
-                $data['email'],
-                $data['password'],
-                $data['preferredLanguage'],
-                $data['createdAt'],
-                $data['lastLoginAt'],
-                $data['role'],
-                $data['firstName'],
-                $data['lastName']
-            );
-        }
-
+        // For the API we return a simple User instance to avoid pulling
+        // in other model classes which may include view files.
         return User::fromArray($data);
     }
 }
-?>`
