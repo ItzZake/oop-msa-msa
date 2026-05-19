@@ -4,6 +4,11 @@ $pageTitle = "Profiles – Wellucation Nursery";
 $currentPage = "profiles";
 $pageCss = 'Profile.css';
 
+$profileRole = strtolower($_SESSION['user_role'] ?? $_SESSION['role'] ?? 'teacher');
+if (!in_array($profileRole, ['teacher', 'admin', 'parent', 'child'], true)) {
+    $profileRole = 'teacher';
+}
+
 include 'header.php';
 include 'navbar.php';
 ?>
@@ -35,7 +40,7 @@ include 'navbar.php';
     </section>
 
     <!-- ROLE SELECTOR -->
-    <section class="role-selector-bar">
+    <section class="role-selector-bar" style="display:none;">
       <div class="container">
         <div class="role-tabs" id="roleTabs">
           <button
@@ -77,6 +82,9 @@ include 'navbar.php';
       </div>
     </section>
 
+    <script>
+      window.CURRENT_PROFILE_ROLE = '<?php echo htmlspecialchars($profileRole, ENT_QUOTES); ?>';
+    </script>
     <script src="../view/Pages/Profile.js"></script>
   </body>
 </html>

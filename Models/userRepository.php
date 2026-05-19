@@ -1,9 +1,8 @@
 <?php
-require_once 'Database.php';
-require_once 'User.php';
-require_once 'Parent.php';
-require_once 'Teacher.php';
-require_once 'Admin.php';
+require_once __DIR__ . '/Database.php';
+require_once __DIR__ . '/User.php';
+// Avoid including higher-level model files (Admin/Teacher/Parent)
+// which may pull in view files and produce output before headers.
 
 class UserRepository {
     public function findByEmail(string $email): ?User
@@ -143,49 +142,8 @@ class UserRepository {
             'isActive' => $row['isActive'] ?? $row['IsActive'] ?? 1,
         ];
 
-        if ($role === 'teacher') {
-            return new Teacher(
-                $data['userId'],
-                $data['email'],
-                $data['password'],
-                $data['preferredLanguage'],
-                $data['createdAt'],
-                $data['lastLoginAt'],
-                $data['role'],
-                $data['firstName'],
-                $data['lastName']
-            );
-        }
-
-        if ($role === 'parent' || $role === 'parents') {
-            return new Parents(
-                $data['userId'],
-                $data['email'],
-                $data['password'],
-                $data['preferredLanguage'],
-                $data['createdAt'],
-                $data['lastLoginAt'],
-                $data['role'],
-                $data['firstName'],
-                $data['lastName']
-            );
-        }
-
-        if ($role === 'admin') {
-            return new Admin(
-                $data['userId'],
-                $data['email'],
-                $data['password'],
-                $data['preferredLanguage'],
-                $data['createdAt'],
-                $data['lastLoginAt'],
-                $data['role'],
-                $data['firstName'],
-                $data['lastName']
-            );
-        }
-
+        // For the API we return a simple User instance to avoid pulling
+        // in other model classes which may include view files.
         return User::fromArray($data);
     }
 }
-?>`

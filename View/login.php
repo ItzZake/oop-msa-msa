@@ -18,6 +18,7 @@ include 'navbar.php';
 	<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Fredoka+One&display=swap"
 		rel="stylesheet" />
 	<link rel="stylesheet" href="../view/css/login.css" />
+	<link rel="stylesheet" href="../view/css/login_strategy_styles.css" />
 </head>
 
 <body>
@@ -141,6 +142,20 @@ include 'navbar.php';
 				<!-- Register Form -->
 				<div class="tab-panel" id="panelRegister">
 					<form id="registerForm" method="POST" action="../Controller/Register.php" novalidate>
+						<!-- Account Type Selection -->
+						<div class="field">
+							<label class="field__label">Account Type <span class="required">*</span></label>
+							<div class="account-type-selector">
+								<button type="button" class="account-btn account-btn--active" data-role="parent">
+									❤️ Parent/Guardian
+								</button>
+								<button type="button" class="account-btn" data-role="teacher">
+									👩‍🏫 Teacher
+								</button>
+							</div>
+							<input type="hidden" name="role" id="selectedRole" value="parent" required />
+						</div>
+
 						<div class="field">
 							<label class="field__label" for="regFirstName">First Name</label>
 							<div class="field__wrap">
@@ -180,6 +195,67 @@ include 'navbar.php';
 								</svg>
 								<input id="regEmail" class="field__input" type="email" name="email"
 									placeholder="your.email@example.com" required />
+							</div>
+						</div>
+
+						<!-- Parent-Specific Fields -->
+						<div id="parentFields" class="role-fields">
+							<div class="field">
+								<label class="field__label" for="regPhoneNumber">Phone Number</label>
+								<div class="field__wrap">
+									<svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+										viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+										stroke-linecap="round" stroke-linejoin="round">
+										<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+									</svg>
+									<input id="regPhoneNumber" class="field__input" type="tel" name="phone_number"
+										placeholder="+1 (555) 000-0000" />
+								</div>
+							</div>
+
+							<div class="field">
+								<label class="field__label" for="regAddress">Address</label>
+								<div class="field__wrap">
+									<svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+										viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+										stroke-linecap="round" stroke-linejoin="round">
+										<path d="M20 10c0 7-7 13-7 13s-7-6-7-13a7 7 0 1 1 14 0z" />
+										<circle cx="12" cy="10" r="3" />
+									</svg>
+									<input id="regAddress" class="field__input" type="text" name="address"
+										placeholder="123 Main St, City, State" />
+								</div>
+							</div>
+						</div>
+
+						<!-- Teacher-Specific Fields -->
+						<div id="teacherFields" class="role-fields" style="display:none;">
+							<div class="field">
+								<label class="field__label" for="regQualifications">Qualifications <span class="required">*</span></label>
+								<div class="field__wrap">
+									<svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+										viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+										stroke-linecap="round" stroke-linejoin="round">
+										<path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+										<path d="M6 12v5c3 3 9 3 12 0v-5" />
+									</svg>
+									<textarea id="regQualifications" class="field__input" name="qualifications"
+										placeholder="e.g., B.S. in Education, TESOL Certification..." required></textarea>
+								</div>
+							</div>
+
+							<div class="field">
+								<label class="field__label" for="regDepartment">Department/Subject Area</label>
+								<div class="field__wrap">
+									<svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+										viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+										stroke-linecap="round" stroke-linejoin="round">
+										<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+										<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+									</svg>
+									<input id="regDepartment" class="field__input" type="text" name="department"
+										placeholder="e.g., Mathematics, English, Science" />
+								</div>
 							</div>
 						</div>
 
@@ -265,6 +341,63 @@ include 'navbar.php';
 	</main>
 
 	<script src="../view/scripts/login.js"></script>
+	<script>
+		// Strategy Pattern Registration - Role Switching
+		document.addEventListener('DOMContentLoaded', function() {
+			const accountBtns = document.querySelectorAll('.account-btn');
+			const parentFields = document.getElementById('parentFields');
+			const teacherFields = document.getElementById('teacherFields');
+			const selectedRoleInput = document.getElementById('selectedRole');
+			const regQualifications = document.getElementById('regQualifications');
+
+			// Handle account type selection
+			accountBtns.forEach(btn => {
+				btn.addEventListener('click', function(e) {
+					e.preventDefault();
+					
+					// Remove active class from all buttons
+					accountBtns.forEach(b => b.classList.remove('account-btn--active'));
+					
+					// Add active class to clicked button
+					this.classList.add('account-btn--active');
+					
+					// Get selected role
+					const role = this.dataset.role;
+					selectedRoleInput.value = role;
+
+					// Show/hide role-specific fields
+					if (role === 'parent') {
+						parentFields.style.display = 'block';
+						teacherFields.style.display = 'none';
+						regQualifications.removeAttribute('required');
+					} else if (role === 'teacher') {
+						parentFields.style.display = 'none';
+						teacherFields.style.display = 'block';
+						regQualifications.setAttribute('required', 'required');
+					}
+				});
+			});
+
+			// Validate required fields based on role
+			const registerForm = document.getElementById('registerForm');
+			registerForm.addEventListener('submit', function(e) {
+				const role = selectedRoleInput.value;
+				
+				if (role === 'teacher') {
+					// Teacher-specific validation
+					if (!regQualifications.value.trim()) {
+						e.preventDefault();
+						alert('Please provide your qualifications.');
+						regQualifications.focus();
+						return false;
+					}
+				}
+				
+				// Let form submit normally if all validations pass
+				return true;
+			});
+		});
+	</script>
 </body>
 
 </html>
