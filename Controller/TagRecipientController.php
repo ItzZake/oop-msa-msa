@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Assignment.php';
-require_once '/../Models/Tag.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Assignment.php';
+require_once __DIR__ . '/../Models/Tag.php';
 
 $assignment_id = (int) ($_POST['assignment_id'] ?? 0);
 $tags          = $_POST['tags'] ?? []; // selected tags array

@@ -33,11 +33,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_SESSION['user_role'] === 'admin') 
 }
 
 if (empty($teacher_id_err) && !empty($teacher_id) && ctype_digit((string)$teacher_id)) {
-    include_once '../Model/CourseAssignmentModel.php';
-    include_once '../Model/EventModel.php';
+    include_once '../Models/CourseAssignment.php';
+    include_once '../Models/Event.php';
 
-    $assignmentModel = new CourseAssignmentModel();
-    $eventModel      = new EventModel();
+    $assignmentModel = new CourseAssignment();
+    $eventModel      = new Event();
 
     // Fetch weekly course schedule for this teacher
     $courseSchedule = $assignmentModel->getWeeklyScheduleByTeacher($teacher_id);

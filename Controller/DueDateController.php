@@ -1,8 +1,8 @@
 <?php
 // Triggered by cron job — no session needed
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Subscription.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Subscription.php';
 
 $Subscription       = new Subscription();
 $activeSubscriptions = $Subscription->GetAllActive();

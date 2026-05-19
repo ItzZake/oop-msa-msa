@@ -1,9 +1,9 @@
 <?php
 // Triggered by cron job — no session needed
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Subscription.php';
-require_once '/../Models/Notification.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Subscription.php';
+require_once __DIR__ . '/../Models/Notification.php';
 
 $Subscription       = new Subscription();
 $overdueSubscriptions = $Subscription->GetOverdue(); // compares due_date vs today

@@ -288,7 +288,7 @@ function renderTeacher() {
             <div class="info-item" style="color:#1565C0"><span class="info-icon">🏆</span> 12 Years Experience</div>
             <div class="info-item" style="color:#1565C0"><span class="info-icon">✉️</span> emily@wellucation.edu</div>
           </div>
-          <button class="btn-primary" style="background:#1565C0">Edit Profile</button>
+          <button class="btn-primary" style="background:#1565C0" onclick="location.href='EditProfile.html'">Edit Profile</button>
         </div>
       </div>
 

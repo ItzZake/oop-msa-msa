@@ -21,7 +21,10 @@ require_once 'Database.php';
     $sql = "UPDATE milestone SET status = ?, teacherNote = ?, achievedAt = ? WHERE milestoneID = ?";
     $params = [$this->Status, $this->TeacherNote, $this->AchivedAt, $this->MilestoneId];
     $stmt = Database::getInstance()->query($sql, $params);
-    return $stmt && $stmt->rowCount() > 0;
+    if ($stmt === false) {
+      return false;
+    }
+    return $stmt->rowCount() > 0;
   }
 
   function MarkinProgress($note)
@@ -31,7 +34,27 @@ require_once 'Database.php';
     $sql = "UPDATE milestone SET status = ?, teacherNote = ? WHERE milestoneID = ?";
     $params = [$this->Status, $this->TeacherNote, $this->MilestoneId];
     $stmt = Database::getInstance()->query($sql, $params);
-    return $stmt && $stmt->rowCount() > 0;
+    if ($stmt === false) {
+      return false;
+    }
+    return $stmt->rowCount() > 0;
+  }
+
+  function InsertMilestone($childId, $name, $status, $domain)
+  {
+    $this->ChildId = $childId;
+    $this->MileStoneTitle = $name;
+    $this->Status = $status;
+    $this->Domain = $domain;
+    $this->AchivedAt = date('Y-m-d H:i:s');
+
+    $sql = "INSERT INTO milestone (childID, milestoneName, status, domain, createdAt) VALUES (?, ?, ?, ?, ?)";
+    $params = [$this->ChildId, $this->MileStoneTitle, $this->Status, $this->Domain, $this->AchivedAt];
+    $stmt = Database::getInstance()->query($sql, $params);
+    if ($stmt === false) {
+      return false;
+    }
+    return $stmt->rowCount() > 0;
   }
 
   function GetByDomain($domain)

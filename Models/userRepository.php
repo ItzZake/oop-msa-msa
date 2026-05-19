@@ -8,7 +8,7 @@ require_once 'Admin.php';
 class UserRepository {
     public function findByEmail(string $email): ?User
     {
-        $row = Database::getInstance()->fetchOne("SELECT * FROM Users WHERE email = ?", [$email]);
+        $row = $this->fetchUserRowByEmail($email);
         if (!$row) {
             return null;
         }
@@ -18,12 +18,48 @@ class UserRepository {
 
     public function findById(int $userId): ?User
     {
-        $row = Database::getInstance()->fetchOne("SELECT * FROM Users WHERE userId = ?", [$userId]);
+        $row = $this->fetchUserRowById($userId);
         if (!$row) {
             return null;
         }
 
         return $this->mapRowToUser($row);
+    }
+
+    private function fetchUserRowByEmail(string $email): ?array
+    {
+        $queries = [
+            ["SELECT * FROM Users WHERE email = ?", [$email]],
+            ["SELECT * FROM User WHERE email = ?", [$email]],
+        ];
+
+        return $this->executeUserRowQueries($queries);
+    }
+
+    private function fetchUserRowById(int $userId): ?array
+    {
+        $queries = [
+            ["SELECT * FROM Users WHERE userId = ?", [$userId]],
+            ["SELECT * FROM User WHERE userID = ?", [$userId]],
+        ];
+
+        return $this->executeUserRowQueries($queries);
+    }
+
+    private function executeUserRowQueries(array $queries): ?array
+    {
+        foreach ($queries as [$sql, $params]) {
+            try {
+                $row = Database::getInstance()->fetchOne($sql, $params);
+                if (!empty($row)) {
+                    return $row;
+                }
+            } catch (\Throwable $e) {
+                continue;
+            }
+        }
+
+        return null;
     }
 
     public function save(User $user): bool
@@ -95,16 +131,16 @@ class UserRepository {
     {
         $role = strtolower($row['role'] ?? $row['Role'] ?? '');
         $data = [
-            'userId' => isset($row['userId']) ? $row['userId'] : (isset($row['UserId']) ? $row['UserId'] : null),
+            'userId' => $row['userId'] ?? $row['UserId'] ?? $row['userID'] ?? null,
             'email' => $row['email'] ?? $row['Email'] ?? '',
-            'password' => $row['password'] ?? $row['Password'] ?? '',
-            'preferredLanguage' => $row['preferredLanguage'] ?? $row['PreferredLanguage'] ?? null,
+            'password' => $row['password'] ?? $row['Password'] ?? $row['passwordHash'] ?? $row['passwordhash'] ?? '',
+            'preferredLanguage' => $row['preferredLanguage'] ?? $row['PreferredLanguage'] ?? $row['preferredlanguage'] ?? null,
             'createdAt' => $row['createdAt'] ?? $row['CreatedAt'] ?? null,
             'lastLoginAt' => $row['lastLoginAt'] ?? $row['LastLoginAt'] ?? null,
             'role' => $row['role'] ?? $row['Role'] ?? null,
-            'firstName' => $row['firstName'] ?? $row['FirstName'] ?? null,
-            'lastName' => $row['lastName'] ?? $row['LastName'] ?? null,
-            'isActive' => $row['isActive'] ?? $row['IsActive'] ?? 1,
+            'firstName' => $row['firstName'] ?? $row['firstname'] ?? $row['FirstName'] ?? null,
+            'lastName' => $row['lastName'] ?? $row['Lastname'] ?? $row['LastName'] ?? null,
+            'isActive' => $row['isActive'] ?? $row['IsActive'] ?? $row['isActive'] ?? 1,
         ];
 
         if ($role === 'teacher') {

@@ -1,21 +1,21 @@
 <?php
 session_start();
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Enrollment.php';
-require_once '/../Models/Payment.php';
-require_once '/../Models/Flags.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Enrollment.php';
+require_once __DIR__ . '/../Models/Payment.php';
+require_once __DIR__ . '/../Models/Flag.php';
 
 $admin_id = (int) ($_GET['admin_id'] ?? 0);
 
 if ($admin_id) {
     $Enrollment = new Enrollment();
     $Payment    = new Payment();
-    $Flags      = new Flags();
+    $Flag      = new Flag();
 
     $enrollmentMetrics = $Enrollment->GetAggregateMetrics();
     $revenueMetrics    = $Payment->GetAggregateRevenue();
-    $activeFlags       = $Flags->GetAllActiveFlags();
+    $activeFlags       = $Flag->GetAllActiveFlags();
 
     if ($enrollmentMetrics && $revenueMetrics) {
         $_SESSION['enrollment_metrics'] = $enrollmentMetrics;

@@ -40,6 +40,21 @@
         return Database::getInstance()->fetchAll($sql, $params);
     }
 
+    function InsertMessage($senderId, $recipientId, $subject, $body)
+    {
+        $content = trim($subject . "\n" . $body);
+        return $this->Send([
+            'SenderID' => $senderId,
+            'RecipientID' => $recipientId,
+            'Content' => $content
+        ]);
+    }
+
+    function GetConversation($userA, $userB)
+    {
+        return $this->GetThread($userA, $userB);
+    }
+
     function GetUnread($userID)
     {
         $sql = "SELECT * FROM message WHERE recipientID = ? AND isRead = 0 ORDER BY sentAt DESC";

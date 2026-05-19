@@ -64,13 +64,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // If no errors, insert event and send notification
     if (empty($event_title_err) && empty($event_date_err) && empty($event_description_err) && empty($target_tag_err)) {
-        include_once '../Model/EventModel.php';
-        include_once '../Model/NotificationModel.php';
+        include_once '../Models/Event.php';
+        include_once '../Models/Notification.php';
 
-        $eventModel        = new EventModel();
-        $notificationModel = new NotificationModel();
+        $event = new Event();
+        $notification = new Notification();
+        $adminId = $_SESSION['user_id'] ?? 0;
 
-        $eventId = $eventModel->insertEvent($event_title, $event_date, $event_description, $target_tag);
+        $eventId = $event->CreateEvent($adminId, $event_title, $event_date, $event_description, $target_tag);
 
         if ($eventId) {
             // Send broadcast notification to targeted recipients

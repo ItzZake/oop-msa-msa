@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Assignment.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Assignment.php';
 
 $teacher_id    = (int) ($_POST['teacher_id']    ?? 0);
 $assignment_id = (int) ($_POST['assignment_id'] ?? 0);
