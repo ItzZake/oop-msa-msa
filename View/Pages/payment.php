@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Secure Payment</title>
-  <link rel="stylesheet" href="../css/Payment.css" />
+  <link rel="stylesheet" href="payment.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
 </head>
@@ -62,6 +62,25 @@
 
           <!-- Card Form -->
           <form id="cardForm" class="card-form" novalidate>
+
+            <!-- Parent & Child IDs (replace with session values once login exists) -->
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label" for="parentID">Parent ID</label>
+                <div class="input-wrap">
+                  <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <input type="number" id="parentID" class="field-input" placeholder="e.g. 1" min="1" required />
+                </div>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="childID">Child ID</label>
+                <div class="input-wrap">
+                  <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <input type="number" id="childID" class="field-input" placeholder="e.g. 1" min="1" required />
+                </div>
+              </div>
+            </div>
+
             <div class="field-group">
               <label class="field-label" for="cardNumber">Card Number</label>
               <div class="input-wrap">
@@ -167,6 +186,6 @@
     Payment processed successfully! Thank you.
   </div>
 
-  <script src="../scripts/Payment.js"></script>
+  <script src="payment.js"></script>
 </body>
 </html>

@@ -9,6 +9,286 @@ const IMAGES = {
 };
 
 const FALLBACK_EMOJI = { staffImg1: "👩‍🏫", staffImg2: "👩‍💼", familyImg: "👩" };
+const API_ENDPOINT = new URL(
+  "../user_api.php",
+  document.currentScript?.src || window.location.href,
+).href;
+let adminUsers = [];
+let adminUsersLoaded = false;
+let adminModalMode = "add";
+let adminModalUserId = null;
+
+function mapApiUser(item) {
+  return {
+    id: Number(item.userId ?? item.userID ?? item.id ?? 0),
+    first: item.firstName ?? item.firstname ?? item.first ?? "",
+    last: item.lastName ?? item.Lastname ?? item.last ?? "",
+    email: item.email ?? "",
+    role: (item.role ?? item.Role ?? "teacher").toLowerCase(),
+    cls: item.cls ?? "",
+    status: (
+      item.status ?? ((item.isActive ?? item.IsActive) ? "active" : "pending")
+    ).toLowerCase(),
+  };
+}
+
+async function apiRequest(method, body = null, queryParams = "") {
+  const url = `${API_ENDPOINT}${queryParams}`;
+  const options = {
+    method,
+    headers: { "Content-Type": "application/json" },
+  };
+  if (body !== null) {
+    options.body = JSON.stringify(body);
+  }
+
+  const response = await fetch(url, options);
+  const text = await response.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error("Invalid server response");
+  }
+  if (!response.ok || !data.success) {
+    throw new Error(data.error || `Request failed (${response.status})`);
+  }
+  return data;
+}
+
+async function loadAdminUsers() {
+  try {
+    const response = await apiRequest("GET");
+    adminUsers = (response.users || []).map(mapApiUser);
+    adminUsersLoaded = true;
+  } catch (error) {
+    adminUsersLoaded = true;
+    adminUsers = [];
+    console.warn("Admin users load failed:", error.message);
+  }
+}
+
+function getRoleEmoji(role) {
+  return (
+    {
+      teacher: "👩‍🏫",
+      admin: "🛡️",
+      parent: "❤️",
+      child: "👶",
+    }[role] || "👤"
+  );
+}
+
+function showAdminError(message) {
+  const modalError = document.getElementById("adminModalError");
+  if (modalError) {
+    modalError.textContent = message;
+    modalError.style.display = "block";
+    return;
+  }
+  alert(message);
+}
+
+function clearAdminError() {
+  const modalError = document.getElementById("adminModalError");
+  if (modalError) {
+    modalError.textContent = "";
+    modalError.style.display = "none";
+  }
+}
+
+function initAdminModal() {
+  if (document.getElementById("adminUserModal")) return;
+
+  document.body.insertAdjacentHTML(
+    "beforeend",
+    `<div class="admin-modal-overlay hidden" id="adminUserModal">
+      <div class="admin-modal">
+        <div class="admin-modal-header">
+          <h3 id="adminModalTitle">Add User</h3>
+          <button type="button" class="admin-modal-close" id="adminModalClose">×</button>
+        </div>
+        <div class="admin-modal-body">
+          <div class="admin-modal-row"><label>First Name</label><input id="adminModalFirst" type="text" /></div>
+          <div class="admin-modal-row"><label>Last Name</label><input id="adminModalLast" type="text" /></div>
+          <div class="admin-modal-row"><label>Email</label><input id="adminModalEmail" type="email" autocomplete="email" /></div>
+          <div class="admin-modal-row"><label>Password</label><input id="adminModalPassword" type="password" autocomplete="new-password" placeholder="Enter a password" /></div>
+          <div class="admin-modal-row"><label>Role</label><select id="adminModalRole"><option value="teacher">Teacher</option><option value="admin">Admin</option><option value="parent">Parent</option><option value="child">Child</option></select></div>
+          <div class="admin-modal-row"><label>Class</label><input id="adminModalClass" type="text" /></div>
+          <div class="admin-modal-row"><label>Status</label><select id="adminModalStatus"><option value="active">Active</option><option value="pending">Pending</option></select></div>
+          <div id="adminModalError" class="admin-modal-error" style="display:none"></div>
+        </div>
+        <div class="admin-modal-footer">
+          <button type="button" class="btn-remove" id="adminModalCancel">Cancel</button>
+          <button type="button" class="btn-add" id="adminModalSave">Save</button>
+        </div>
+      </div>
+    </div>`,
+  );
+
+  document
+    .getElementById("adminModalClose")
+    .addEventListener("click", closeAdminUserModal);
+  document
+    .getElementById("adminModalCancel")
+    .addEventListener("click", closeAdminUserModal);
+  document
+    .getElementById("adminModalSave")
+    .addEventListener("click", saveAdminUserModal);
+}
+
+function showAdminUserModal(mode, userId = null) {
+  const modal = document.getElementById("adminUserModal");
+  if (!modal) return;
+
+  adminModalMode = mode;
+  adminModalUserId = userId;
+  const title = document.getElementById("adminModalTitle");
+  const first = document.getElementById("adminModalFirst");
+  const last = document.getElementById("adminModalLast");
+  const email = document.getElementById("adminModalEmail");
+  const role = document.getElementById("adminModalRole");
+  const cls = document.getElementById("adminModalClass");
+  const status = document.getElementById("adminModalStatus");
+
+  const password = document.getElementById("adminModalPassword");
+
+  if (mode === "edit" && userId !== null) {
+    const user = adminUsers.find((u) => u.id === userId);
+    if (!user) return;
+    title.textContent = "Edit User";
+    first.value = user.first;
+    last.value = user.last;
+    email.value = user.email;
+    password.value = "";
+    role.value = user.role;
+    cls.value = user.cls;
+    status.value = user.status;
+  } else {
+    title.textContent = "Add User";
+    first.value = "";
+    last.value = "";
+    email.value = "";
+    password.value = "";
+    role.value = "teacher";
+    cls.value = "";
+    status.value = "active";
+  }
+
+  clearAdminError();
+  modal.classList.remove("hidden");
+}
+
+function closeAdminUserModal() {
+  const modal = document.getElementById("adminUserModal");
+  if (!modal) return;
+  modal.classList.add("hidden");
+}
+
+async function saveAdminUserModal() {
+  const first = document.getElementById("adminModalFirst").value.trim();
+  const last = document.getElementById("adminModalLast").value.trim();
+  const email = document.getElementById("adminModalEmail").value.trim();
+  const password = document.getElementById("adminModalPassword").value;
+  const role = document.getElementById("adminModalRole").value;
+  const cls = document.getElementById("adminModalClass").value.trim();
+  const status = document.getElementById("adminModalStatus").value;
+
+  if (!first || !last) {
+    showAdminError("First and last name are required.");
+    return;
+  }
+  if (role !== "child" && email && !email.includes("@")) {
+    showAdminError("Please enter a valid email address.");
+    return;
+  }
+
+  if (adminModalMode === "add") {
+    if (!password) {
+      showAdminError("Password is required for new users.");
+      return;
+    }
+    if (password.length < 8) {
+      showAdminError("Password must be at least 8 characters.");
+      return;
+    }
+  }
+
+  if (password && password.length > 0 && password.length < 8) {
+    showAdminError("Password must be at least 8 characters.");
+    return;
+  }
+
+  try {
+    if (adminModalMode === "edit" && adminModalUserId !== null) {
+      const updateBody = {
+        id: adminModalUserId,
+        first,
+        last,
+        email,
+        role,
+        cls,
+        status,
+      };
+      if (password) {
+        updateBody.password = password;
+      }
+      const response = await apiRequest("PUT", updateBody);
+      const updated = mapApiUser(response.user);
+      const index = adminUsers.findIndex((u) => u.id === adminModalUserId);
+      if (index > -1) {
+        adminUsers[index] = updated;
+      }
+    } else {
+      const response = await apiRequest("POST", {
+        first,
+        last,
+        email,
+        password,
+        role,
+        cls,
+        status,
+      });
+      adminUsers.push(mapApiUser(response.user));
+    }
+    closeAdminUserModal();
+    renderAdminTabIfActive();
+  } catch (error) {
+    showAdminError(error.message);
+  }
+}
+
+function openAdminAddUser() {
+  showAdminUserModal("add");
+}
+
+function editAdminUser(id) {
+  showAdminUserModal("edit", id);
+}
+
+async function promptAdminRemoveUser(id) {
+  if (!confirm("Delete this user permanently?")) return;
+  try {
+    await apiRequest("DELETE", null, `?id=${id}`);
+    adminUsers = adminUsers.filter((u) => u.id !== id);
+    renderAdminTabIfActive();
+  } catch (error) {
+    showAdminError(error.message);
+  }
+}
+
+function renderAdminTabIfActive() {
+  const contentEl = document.getElementById("adminTabs-content");
+  if (!contentEl) return;
+  const activeButton = document.querySelector("#adminTabs .tab-btn.active");
+  const activeTab = activeButton?.dataset.tab ?? "overview";
+  contentEl.innerHTML = renderAdminContent(activeTab);
+  animateProgressBars();
+}
+
+window.openAdminAddUser = openAdminAddUser;
+window.editAdminUser = editAdminUser;
+window.promptAdminRemoveUser = promptAdminRemoveUser;
 
 /* ── HELPERS ── */
 function stars(count = 5) {
@@ -82,9 +362,9 @@ function animateProgressBars() {
 
 function getEditProfileUrl() {
   const currentPath = window.location.pathname;
-  const target = currentPath.includes("/Pages/")
-    ? "EditProfile.html"
-    : "Pages/EditProfile.html";
+  const target = currentPath.endsWith("Profile.php")
+    ? "EditProfile.php"
+    : "EditProfile.php";
   return new URL(target, window.location.href).href;
 }
 
@@ -92,14 +372,23 @@ function getEditProfileUrl() {
    TEACHER PROFILE
 ════════════════════════════════════════ */
 function renderTeacherContent(tab) {
-  const students = [
-    { name: "Emma Johnson", age: 4, status: "present", emoji: "👧" },
-    { name: "Noah Williams", age: 4, status: "present", emoji: "👦" },
-    { name: "Sophia Brown", age: 5, status: "absent", emoji: "👧" },
-    { name: "Liam Davis", age: 4, status: "late", emoji: "👦" },
-    { name: "Olivia Miller", age: 4, status: "present", emoji: "👧" },
-    { name: "Mason Wilson", age: 5, status: "present", emoji: "👦" },
-  ];
+  try {
+    console.log('renderTeacherContent called with tab:', tab); // DEBUG
+    // Use actual students from profileData
+    const studentsList = profileData?.studentsList || [];
+    const students = studentsList.map((student, index) => ({
+      name: student.childName || "Unknown",
+      age: student.dateOfBirth ? new Date().getFullYear() - new Date(student.dateOfBirth).getFullYear() : 0,
+      status: "present",
+      emoji: student.gender === 'M' ? "👦" : "👧"
+    }));
+
+    // If no students, show empty state
+    if (students.length === 0) {
+      students.push(
+        { name: "No students enrolled", age: 0, status: "absent", emoji: "📋" }
+      );
+    }
 
   const schedule = [
     {
@@ -164,7 +453,7 @@ function renderTeacherContent(tab) {
   const overviewCards = [
     {
       label: "Total Students",
-      value: 22,
+      value: students.length === 0 ? 0 : studentsList.length,
       icon: "👦",
       color: "#1565C0",
       bg: "#EFF6FF",
@@ -269,14 +558,39 @@ function renderTeacherContent(tab) {
         .join("")}
     </div>`;
   }
-  return "";
+    console.log('renderTeacherContent - no tab matched, returning empty'); // DEBUG
+    return "";
+  } catch (error) {
+    console.error('ERROR in renderTeacherContent:', error); // DEBUG
+    console.error('Stack:', error.stack); // DEBUG
+    return `<div style="color: red; padding: 20px;"><h2>Error rendering content</h2><p>${error.message}</p></div>`;
+  }
 }
 
 function renderTeacher() {
-  const tabs = ["overview", "schedule", "students", "messages"];
-  const defaultTab = "overview";
+  try {
+    console.log('renderTeacher CALLED'); // DEBUG
+    const tabs = ["overview", "schedule", "students", "messages"];
+    const defaultTab = "overview";
+    
+    // Get teacher data from profileData
+    const teacherData = profileData?.teacherData || {};
+    const studentsList = profileData?.studentsList || [];
+    
+    console.log('renderTeacher - teacherData:', teacherData); // DEBUG
+    console.log('renderTeacher - studentsList:', studentsList); // DEBUG
+    
+    const firstName = teacherData.firstname || "Teacher";
+    const lastName = teacherData.Lastname || "";
+    const displayName = firstName + (lastName ? " " + lastName : "");
+    const specialization = teacherData.specialization || "Teacher";
+    const experience = teacherData.exprience || 0;
+    const email = teacherData.email || "";
+    const childrenCount = studentsList.length;
+    
+    console.log('renderTeacher - displayName:', displayName); // DEBUG
 
-  return `<div class="profile-layout">
+    const html = `<div class="profile-layout">
     <!-- LEFT -->
     <div class="left-panel">
       <div class="profile-card">
@@ -285,16 +599,15 @@ function renderTeacher() {
         </div>
         <div class="profile-body">
           <div class="avatar">
-            ${imgWithFallback(IMAGES.staffImg1, "Teacher", "", "👩‍🏫")}
           </div>
-          <h2 style="color:#1f2937">Ms. Emily Watson</h2>
-          <div class="role-label" style="color:#1565C0">KG1 Lead Teacher</div>
+          <h2 style="color:#1f2937">${displayName}</h2>
+          <div class="role-label" style="color:#1565C0">${specialization} Teacher</div>
           <div class="star-row">${stars(5)} <span class="star-score">4.9/5.0</span></div>
           <div class="info-list">
-            <div class="info-item" style="color:#1565C0"><span class="info-icon">📖</span> Sunflower Class (KG1)</div>
-            <div class="info-item" style="color:#1565C0"><span class="info-icon">👥</span> 22 Children</div>
-            <div class="info-item" style="color:#1565C0"><span class="info-icon">🏆</span> 12 Years Experience</div>
-            <div class="info-item" style="color:#1565C0"><span class="info-icon">✉️</span> emily@wellucation.edu</div>
+            <div class="info-item" style="color:#1565C0"><span class="info-icon">📖</span> ${specialization}</div>
+            <div class="info-item" style="color:#1565C0"><span class="info-icon">👥</span> ${childrenCount} Students</div>
+            <div class="info-item" style="color:#1565C0"><span class="info-icon">🏆</span> ${experience} Years Experience</div>
+            <div class="info-item" style="color:#1565C0"><span class="info-icon">✉️</span> ${email}</div>
           </div>
           <button class="btn-primary" style="background:#1565C0" onclick="window.location.href = getEditProfileUrl()">Edit Profile</button>
         </div>
@@ -305,7 +618,6 @@ function renderTeacher() {
         ${[
           { label: "Attendance Rate", value: "94%", color: "#10B981" },
           { label: "Avg. Class Rating", value: "4.9", color: "#F59E0B" },
-          { label: "Reports Filed", value: "22/22", color: "#1565C0" },
         ]
           .map(
             (s) => `
@@ -324,53 +636,86 @@ function renderTeacher() {
       <div id="teacherTabs-content">${renderTeacherContent(defaultTab)}</div>
     </div>
   </div>`;
+    
+    console.log('renderTeacher - HTML length:', html.length); // DEBUG
+    console.log('renderTeacher - returning HTML'); // DEBUG
+    return html;
+  } catch (error) {
+    console.error('ERROR in renderTeacher:', error); // DEBUG
+    console.error('Stack:', error.stack); // DEBUG
+    return `<div style="color: red; padding: 20px;"><h2>Error rendering teacher profile</h2><p>${error.message}</p></div>`;
+  }
 }
 
 /* ════════════════════════════════════════
    ADMIN PROFILE
 ════════════════════════════════════════ */
 function renderAdminContent(tab) {
-  const users = [
+  const defaultAdminUsers = [
     {
+      id: 1,
+      first: "Emily",
+      last: "Watson",
       name: "Ms. Emily Watson",
-      role: "Teacher",
+      role: "teacher",
       cls: "KG1",
       status: "active",
+      email: "emily@wellucation.edu",
       emoji: "👩‍🏫",
     },
     {
+      id: 2,
+      first: "James",
+      last: "Rivera",
       name: "Mr. James Rivera",
-      role: "Teacher",
+      role: "teacher",
       cls: "Arts",
       status: "active",
+      email: "james@wellucation.edu",
       emoji: "🎨",
     },
     {
+      id: 3,
+      first: "Aisha",
+      last: "Malik",
       name: "Ms. Aisha Malik",
-      role: "Teacher",
+      role: "teacher",
       cls: "KG2",
       status: "active",
+      email: "aisha@wellucation.edu",
       emoji: "👩‍🏫",
     },
     {
+      id: 4,
+      first: "Mrs.",
+      last: "Johnson",
       name: "Mrs. Johnson",
-      role: "Parent",
+      role: "parent",
       cls: "KG1",
       status: "active",
+      email: "johnson@email.com",
       emoji: "👩",
     },
     {
+      id: 5,
+      first: "Mr.",
+      last: "Williams",
       name: "Mr. Williams",
-      role: "Parent",
+      role: "parent",
       cls: "Nursery",
       status: "pending",
+      email: "williams@email.com",
       emoji: "👨",
     },
     {
+      id: 6,
+      first: "Dr.",
+      last: "Lee",
       name: "Dr. Lee",
-      role: "Admin",
+      role: "admin",
       cls: "All",
       status: "active",
+      email: "lee@wellucation.edu",
       emoji: "🛡️",
     },
   ];
@@ -477,10 +822,14 @@ function renderAdminContent(tab) {
   }
 
   if (tab === "users") {
+    const users =
+      adminUsersLoaded && adminUsers.length > 0
+        ? adminUsers
+        : defaultAdminUsers;
     return `<div class="users-table-wrap">
       <div class="users-table-head" style="background:#FFF0F7">
         <h4 style="color:#E91E8C">👥 User Management</h4>
-        <button class="btn-add">+ Add User</button>
+        <button class="btn-add" onclick="openAdminAddUser()">+ Add User</button>
       </div>
       <div style="overflow-x:auto">
         <table>
@@ -492,11 +841,19 @@ function renderAdminContent(tab) {
               .map(
                 (u) => `
               <tr>
-                <td><div class="td-user"><span style="font-size:1.25rem">${u.emoji}</span><span class="td-name">${u.name}</span></div></td>
+                <td>
+                  <div class="td-user">
+                    <span style="font-size:1.25rem">${u.emoji || getRoleEmoji(u.role)}</span>
+                    <div>
+                      <span class="td-name">${u.first && u.last ? `${u.first} ${u.last}` : u.name}</span>
+                      <span class="td-meta">${u.email || "No email"}</span>
+                    </div>
+                  </div>
+                </td>
                 <td><span class="td-meta">${u.role}</span></td>
                 <td><span class="td-meta">${u.cls}</span></td>
                 <td>${userStatusBadge(u.status)}</td>
-                <td><div class="td-actions"><button class="btn-edit">Edit</button><button class="btn-remove">Remove</button></div></td>
+                <td><div class="td-actions"><button class="btn-edit" onclick="editAdminUser(${u.id})">Edit</button><button class="btn-remove" onclick="promptAdminRemoveUser(${u.id})">Remove</button></div></td>
               </tr>`,
               )
               .join("")}
@@ -911,48 +1268,185 @@ const RENDERERS = {
 };
 
 function TAB_SETUP(role) {
-  if (role === "teacher") {
+  const normalizedRole = role.toLowerCase();
+  if (normalizedRole === "teacher") {
     attachTabBar("teacherTabs", renderTeacherContent, "#1565C0");
-  } else if (role === "admin") {
+  }
+  if (normalizedRole === "admin") {
     attachTabBar("adminTabs", renderAdminContent, "#E91E8C");
   }
 }
 
 function switchRole(role) {
-  const content = document.getElementById("profileContent");
-  content.style.opacity = "0";
-  content.style.transform = "translateY(16px)";
-  content.style.transition = "opacity 0.15s ease, transform 0.15s ease";
+  try {
+    console.log('switchRole called with:', role); // DEBUG
+    
+    const content = document.getElementById("profileContent");
+    if (!content) {
+      console.error('profileContent div not found!'); // DEBUG
+      return;
+    }
+    
+    // Normalize role to lowercase for RENDERERS lookup
+    const normalizedRole = role.toLowerCase();
+    console.log('RENDERERS:', RENDERERS); // DEBUG
+    console.log('RENDERERS[' + normalizedRole + ']:', RENDERERS[normalizedRole]); // DEBUG
+    
+    if (!RENDERERS[normalizedRole]) {
+      console.error('No renderer found for role:', normalizedRole); // DEBUG
+      return;
+    }
+    
+    content.style.opacity = "0";
+    content.style.transform = "translateY(16px)";
+    content.style.transition = "opacity 0.15s ease, transform 0.15s ease";
 
-  setTimeout(() => {
-    content.innerHTML = RENDERERS[role]();
-    content.style.transition = "opacity 0.25s ease, transform 0.25s ease";
-    content.style.opacity = "1";
-    content.style.transform = "translateY(0)";
+    setTimeout(() => {
+      try {
+        console.log('Calling renderer for role:', normalizedRole); // DEBUG
+        const html = RENDERERS[normalizedRole]();
+        console.log('Renderer returned HTML length:', html?.length); // DEBUG
+        console.log('Setting innerHTML...'); // DEBUG
+        
+        content.innerHTML = html;
+        console.log('innerHTML set successfully'); // DEBUG
+        
+        content.style.transition = "opacity 0.25s ease, transform 0.25s ease";
+        content.style.opacity = "1";
+        content.style.transform = "translateY(0)";
+        
+        console.log('Animation styles set'); // DEBUG
 
-    TAB_SETUP(role);
-    animateProgressBars();
-  }, 150);
+        TAB_SETUP(normalizedRole);
+        animateProgressBars();
+        
+        console.log('switchRole completed successfully'); // DEBUG
+      } catch (error) {
+        console.error('Error in switchRole timeout:', error); // DEBUG
+        console.error('Stack:', error.stack); // DEBUG
+        const errorHtml = `<div style="padding: 40px; background: #ffcccc; border: 2px solid red; border-radius: 8px; margin: 20px;">
+          <h2 style="color: red; margin: 0 0 10px 0;">Error Rendering Profile</h2>
+          <p style="margin: 0; color: #333; font-family: monospace;">${error.message}</p>
+        </div>`;
+        content.innerHTML = errorHtml;
+        content.style.opacity = "1";
+        content.style.transform = "translateY(0)";
+      }
+    }, 150);
+  } catch (error) {
+    console.error('Error in switchRole:', error); // DEBUG
+    console.error('Stack:', error.stack); // DEBUG
+  }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Role tabs
-  const roleTabs = document.getElementById("roleTabs");
-  roleTabs.addEventListener("click", (e) => {
-    const btn = e.target.closest(".role-tab");
-    if (!btn) return;
-    const role = btn.dataset.role;
+// ── Load profile data from controller ──
+async function loadProfileData() {
+  try {
+    const response = await fetch('../Controller/ProfileController.php?action=get', {
+      method: 'GET',
+      credentials: 'include'
+    });
+    
+    const data = await response.json();
+    console.log('Profile API Response:', data); // DEBUG
+    
+    if (data.success && data.data) {
+      console.log('Loaded teacher data:', data.data.teacherData); // DEBUG
+      return data.data;
+    } else {
+      console.error('Failed to load profile data:', data.message);
+      return profileData; // fallback to initial data
+    }
+  } catch (error) {
+    console.error('Error loading profile:', error);
+    return profileData; // fallback to initial data
+  }
+}
 
-    roleTabs
-      .querySelectorAll(".role-tab")
-      .forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    console.log('DOMContentLoaded fired'); // DEBUG
+    console.log('Initial profileData:', profileData); // DEBUG
+    
+    // Load profile data from controller
+    const loadedData = await loadProfileData();
+    console.log('Loaded data:', loadedData); // DEBUG
+    console.log('Current profileData before merge:', profileData); // DEBUG
+    
+    if (loadedData) {
+      Object.assign(profileData, loadedData);
+    }
+    
+    console.log('Final profileData after merge:', profileData); // DEBUG
 
-    switchRole(role);
-  });
 
-  // Initial render
-  switchRole("teacher");
+
+    // Role tabs
+    const roleTabs = document.getElementById("roleTabs");
+    const profileRole = window.CURRENT_PROFILE_ROLE || profileData.userRole || "teacher";
+    
+    console.log('Profile role:', profileRole); // DEBUG
+    console.log('RENDERERS keys:', Object.keys(RENDERERS)); // DEBUG
+
+    if (roleTabs && !window.CURRENT_PROFILE_ROLE) {
+      roleTabs.addEventListener("click", (e) => {
+        const btn = e.target.closest(".role-tab");
+        if (!btn) return;
+        const role = btn.dataset.role;
+
+        roleTabs
+          .querySelectorAll(".role-tab")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        switchRole(role);
+      });
+    }
+
+    // Initial render using the current logged-in user role
+    console.log('Calling switchRole with:', profileRole); // DEBUG
+    switchRole(profileRole);
+    
+    // Safety check - if nothing renders in 2 seconds, show fallback
+    setTimeout(() => {
+      const content = document.getElementById("profileContent");
+      if (content && !content.innerHTML.trim()) {
+        console.warn('No content rendered after 2 seconds, showing fallback'); // DEBUG
+        content.innerHTML = `<div style="padding: 40px; background: #fff3cd; border: 2px solid #ff6b6b; border-radius: 8px; margin: 20px;">
+          <h2 style="color: #ff6b6b; margin: 0 0 10px 0;">Profile Rendering Issue</h2>
+          <p style="margin: 10px 0; color: #333;">The profile data loaded successfully, but there was an issue rendering the display.</p>
+          <p style="margin: 10px 0; color: #333; font-family: monospace; font-size: 12px;">
+            <strong>User:</strong> ${profileData?.teacherData?.firstname || 'Unknown'} ${profileData?.teacherData?.Lastname || ''}<br>
+            <strong>Email:</strong> ${profileData?.teacherData?.email || 'Unknown'}<br>
+            <strong>Students:</strong> ${profileData?.studentsList?.length || 0}
+          </p>
+          <p style="margin: 10px 0; color: #666; font-size: 12px;">Please check the browser console for errors.</p>
+        </div>`;
+        content.style.opacity = "1";
+      }
+    }, 2000);
+    
+    try {
+      loadAdminUsers();
+    } catch (error) {
+      console.error('Error in loadAdminUsers:', error);
+    }
+    
+    try {
+      initAdminModal();
+    } catch (error) {
+      console.error('Error in initAdminModal:', error);
+    }
+  } catch (error) {
+    console.error('ERROR in DOMContentLoaded:', error); // DEBUG
+    console.error('Stack:', error.stack); // DEBUG
+    
+    // Show error on page
+    const errorDiv = document.createElement('div');
+    errorDiv.style.cssText = 'position: fixed; top: 10px; right: 10px; background: #ffcccc; padding: 15px; border: 2px solid red; font-size: 12px; max-width: 350px; z-index: 9999; font-family: monospace;';
+    errorDiv.innerHTML = `<strong style="color: red;">ERROR</strong><br>${error.message}<br><br>${error.stack}`;
+    document.body.appendChild(errorDiv);
+  }
 });
 
 /* ════════════════════════════════════════
