@@ -5,7 +5,7 @@ class Database
     private static $instance;
     private $connection;
     private $host = 'localhost';
-    private $dbname = 'wellucation 2';
+    private $dbname = 'wellucation';
     private $username = 'root';
     private $password = '';
     private $charset = 'utf8mb4';

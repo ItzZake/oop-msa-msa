@@ -333,7 +333,7 @@ $recentStudents = $data['students'] ?? [];
                   <path d="M5 12h14" />
                   <path d="M12 5v14" />
                 </svg>
-                Add Student
+                Add User
               </a>
             </div>
             <div class="table-scroll">
@@ -411,16 +411,7 @@ $recentStudents = $data['students'] ?? [];
               <h4 class="quick-actions__title">Quick Actions</h4>
               <div class="quick-actions__grid">
                 <a href="add_user.php" class="qa-btn" style="--clr: #1565c0; --bg: #eff6ff">
-                  <span class="qa-btn__emoji">👦</span>Add Student
-                </a>
-                <a href="reports.php" class="qa-btn" style="--clr: #e91e8c; --bg: #fff0f7">
-                  <span class="qa-btn__emoji">📄</span>New Report
-                </a>
-                <a href="messages.php" class="qa-btn" style="--clr: #10b981; --bg: #f0fdf4">
-                  <span class="qa-btn__emoji">📢</span>Send Notice
-                </a>
-                <a href="schedule.php" class="qa-btn" style="--clr: #f59e0b; --bg: #fffbeb">
-                  <span class="qa-btn__emoji">📅</span>Schedule
+                  <span class="qa-btn__emoji">👦</span>Add User
                 </a>
               </div>
             </div>
