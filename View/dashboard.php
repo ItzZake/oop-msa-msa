@@ -12,62 +12,6 @@ $panel = isset($_GET['panel']) ? $_GET['panel'] : 'overview';
 //     exit;
 // }
 
-<<<<<<< HEAD
-include 'header.php';
-include 'navbar.php';
-
-// Import database models
-require_once '../Models/Database.php';
-
-// Initialize variables
-$totalStudents = 0;
-$totalTeachers = 0;
-$attendanceRate = 0;
-$recentStudents = [];
-
-try {
-    $db = Database::getInstance();
-    
-    // Count total students
-    $result = $db->fetchOne("SELECT COUNT(*) as count FROM Child");
-    $totalStudents = $result['count'] ?? 0;
-    
-    // Count total teachers
-    $result = $db->fetchOne("SELECT COUNT(*) as count FROM Teacher");
-    $totalTeachers = $result['count'] ?? 0;
-    
-    // Calculate attendance rate
-    $result = $db->fetchOne("
-        SELECT 
-            ROUND(
-                (COUNT(CASE WHEN status = 'Present' THEN 1 END) / COUNT(*)) * 100
-            ) as rate
-        FROM Attendance
-        WHERE sessionDate >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-    ");
-    $attendanceRate = $result['rate'] ?? 94;
-    
-    // Get recent students
-    $recentStudents = $db->fetchAll("
-        SELECT c.childID, c.name, c.gender, e.status as enrollmentStatus
-        FROM Child c
-        LEFT JOIN Enrollment e ON c.childID = e.childID
-        ORDER BY c.childID DESC
-        LIMIT 3
-    ");
-    
-} catch (Exception $e) {
-    // Use default values if database fails
-    $totalStudents = 248;
-    $totalTeachers = 18;
-    $attendanceRate = 94;
-    $recentStudents = [
-        ['childID' => 1, 'name' => 'Emma Johnson', 'gender' => 'Female', 'enrollmentStatus' => 'Active'],
-        ['childID' => 2, 'name' => 'Noah Williams', 'gender' => 'Male', 'enrollmentStatus' => 'Active'],
-        ['childID' => 3, 'name' => 'Sophia Brown', 'gender' => 'Female', 'enrollmentStatus' => 'Active'],
-    ];
-}
-=======
 // Import DashboardController
 require_once '../Controller/DashboardController.php';
 
@@ -83,9 +27,10 @@ $activeAlerts = $data['active_alerts'] ?? 0;
 $activeClasses = $data['active_classes'] ?? 0;
 $enrollmentRate = $data['enrollment_rate'] ?? 0;
 $recentStudents = $data['students'] ?? [];
->>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">

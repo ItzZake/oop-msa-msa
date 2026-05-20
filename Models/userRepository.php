@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__ . '/Database.php';
 require_once __DIR__ . '/User.php';
+require_once __DIR__ . '/Parent.php';
+require_once __DIR__ . '/Teacher.php';
+require_once __DIR__ . '/Admin.php';
 
 class UserRepository {
     public function findByEmail(string $email): ?User
