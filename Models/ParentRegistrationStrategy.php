@@ -96,7 +96,17 @@ class ParentRegistrationStrategy implements IRegistrationStrategy
             $authService = new AuthService();
             
             // Register as parent role (creates User record with role='parent')
-            $authService->register($email, $password, 'parent', $firstName, $lastName);
+            $user = $authService->register($email, $password, 'parent', $firstName, $lastName);
+
+            // Create the Parent profile row for newly registered parent users.
+            $sql = "INSERT INTO Parent (userID, phone, address, notifPreferences) VALUES (?, ?, ?, ?);";
+            $params = [
+                $user->getId(),
+                $this->phoneNumber ?: null,
+                $this->address ?: null,
+                null
+            ];
+            Database::getInstance()->query($sql, $params);
 
             return true;
         } catch (Exception $e) {

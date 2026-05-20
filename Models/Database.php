@@ -312,8 +312,3 @@ class Database
     }
 }
 
-    public function lastInsertId()
-    {
-        return $this->connection->lastInsertId();
-    }
-}
