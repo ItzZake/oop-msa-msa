@@ -346,7 +346,6 @@ select { appearance: none; }
 
 /* Progress bars */
 .progress-section { display: flex; flex-direction: column; gap: 0.5rem; }
-.progress-row { }
 .progress-label-row {
   display: flex;
   justify-content: space-between;
@@ -382,7 +381,6 @@ select { appearance: none; }
   transition: filter 0.15s, transform 0.15s;
 }
 .card-btn:hover { filter: brightness(0.95); transform: scale(1.01); }
-.card-btn.btn-view { }
 .card-btn.btn-edit { background: var(--blue-light); color: var(--blue); }
 
 /* ─── EMPTY STATE ─── */

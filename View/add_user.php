@@ -144,7 +144,7 @@ $pageCss = 'add_user.css';
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title><?php echo htmlspecialchars($pageTitle); ?></title>
-  <link rel="stylesheet" href="../view/css/add_user.css" />
+  <link rel="stylesheet" href="add_user.css" />
   <link rel="stylesheet" href="../view/css/navbar.css" />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
 </head>
