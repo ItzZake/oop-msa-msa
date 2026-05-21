@@ -26,7 +26,7 @@ try {
     }
 
     $userId = $_SESSION['user_id'];
-    $userRole = $_SESSION['user_role'] ?? 'User';
+    $userRole = strtolower($_SESSION['user_role'] ?? 'user');
     $action = $_GET['action'] ?? 'get';
     
     error_log("Proceeding with userId: $userId, userRole: $userRole");
@@ -47,62 +47,112 @@ try {
             $profileData = [
                 'userRole' => $userRole,
                 'userId' => $userId,
+                'userData' => null,
                 'teacherData' => null,
-                'studentsList' => []
+                'parentData' => null,
+                'childData' => null,
+                'adminData' => null,
+                'studentsList' => [],
+                'childrenList' => [],
+                'teacherStats' => [
+                    'totalStudents' => 0,
+                    'presentToday' => 0,
+                    'absentToday' => 0,
+                    'lateToday' => 0,
+                    'attendanceRate' => 0,
+                ],
             ];
 
-            if ($userRole === 'Teacher') {
-                // Get user data first
-                error_log("Fetching user data for userID: $userId");
-                $user = $db->fetchOne("SELECT userID, email, firstname, Lastname FROM `user` WHERE userID = ?", [$userId]);
-                
-                error_log("User data query result: " . json_encode($user));
-                
-                if ($user) {
-                    // Get teacher-specific data
-                    error_log("Fetching teacher data for userID: $userId");
-                    $teacher = $db->fetchOne("SELECT teacherID, exprience, qualifications, specialization, phone FROM `teacher` WHERE userID = ?", [$userId]);
-                    
-                    error_log("Teacher data query result: " . json_encode($teacher));
-                    
-                    // Merge user and teacher data
-                    if ($teacher) {
-                        $profileData['teacherData'] = array_merge($user, $teacher);
-                        // Set default values for null fields
-                        if (!isset($profileData['teacherData']['specialization']) || $profileData['teacherData']['specialization'] === null) {
-                            $profileData['teacherData']['specialization'] = 'General Education';
-                        }
-                        if (!isset($profileData['teacherData']['phone']) || $profileData['teacherData']['phone'] === null) {
-                            $profileData['teacherData']['phone'] = '';
-                        }
-                    } else {
-                        $profileData['teacherData'] = $user;
+            error_log("Fetching user data for userID: $userId");
+            $user = $db->fetchOne("SELECT userID, email, firstname, Lastname, Role FROM `User` WHERE userID = ?", [$userId]);
+            error_log("User data query result: " . json_encode($user));
+            if ($user) {
+                $profileData['userData'] = $user;
+            }
+
+            if ($userRole === 'teacher') {
+                error_log("Fetching teacher data for userID: $userId");
+                $teacher = $db->fetchOne("SELECT teacherID, exprience, qualifications, specialization, phone FROM `Teacher` WHERE userID = ?", [$userId]);
+                error_log("Teacher data query result: " . json_encode($teacher));
+                if ($teacher) {
+                    $profileData['teacherData'] = array_merge($user ?? [], $teacher);
+                    if (!isset($profileData['teacherData']['specialization']) || $profileData['teacherData']['specialization'] === null) {
+                        $profileData['teacherData']['specialization'] = 'General Education';
                     }
-                    
-                    // Fetch enrolled students from courses assigned to this teacher
-                    if ($teacher) {
-                        error_log("Fetching students for userID (assignedTeacherID): " . $userId);
-                        $students = $db->fetchAll(
-                            "SELECT DISTINCT c.name as childName, c.childID, c.dateOfBirth, c.gender
-                             FROM `child` c
-                             JOIN `enrollment` e ON c.childID = e.childID
-                             JOIN `course` co ON e.courseID = co.courseID
-                             WHERE co.assignedTeacherID = ?
-                             ORDER BY c.name",
-                            [$userId]  // Use userID, not teacherID!
-                        );
-                        
-                        $profileData['studentsList'] = $students ?? [];
-                        error_log("Students found: " . count($profileData['studentsList']));
-                    } else {
-                        error_log("No teacher record found for userID: $userId");
-                        $profileData['studentsList'] = [];
+                    if (!isset($profileData['teacherData']['phone']) || $profileData['teacherData']['phone'] === null) {
+                        $profileData['teacherData']['phone'] = '';
                     }
-                } else {
-                    error_log("No user record found for userID $userId");
+
+                    $teacherId = $teacher['teacherID'];
+                    error_log("Fetching students for teacherID or userID: $teacherId / $userId");
+                    $students = $db->fetchAll(
+                        "SELECT DISTINCT c.name AS childName, c.childID, c.dateOfBirth, c.gender
+                         FROM `Child` c
+                         JOIN `Enrollment` e ON c.childID = e.childID
+                         JOIN `Course` co ON e.courseID = co.courseID
+                         WHERE co.assignedTeacherID = ? OR co.assignedTeacherID = ?
+                         ORDER BY c.name",
+                        [$teacherId, $userId]
+                    );
+                    $profileData['studentsList'] = $students ?? [];
+                    error_log("Students found: " . count($profileData['studentsList']));
+
+                    $stats = $db->fetchOne(
+                        "SELECT
+                            COUNT(DISTINCT e.childID) AS totalStudents,
+                            SUM(CASE WHEN a.status = 'Present' AND a.sessionDate = CURDATE() THEN 1 ELSE 0 END) AS presentToday,
+                            SUM(CASE WHEN a.status = 'Absent' AND a.sessionDate = CURDATE() THEN 1 ELSE 0 END) AS absentToday,
+                            SUM(CASE WHEN a.status = 'Late' AND a.sessionDate = CURDATE() THEN 1 ELSE 0 END) AS lateToday,
+                            ROUND(100 * SUM(a.status = 'Present') / NULLIF(COUNT(a.attendanceID), 0), 2) AS attendanceRate
+                         FROM `Course` co
+                         LEFT JOIN `Enrollment` e ON co.courseID = e.courseID AND e.status = 'Active'
+                         LEFT JOIN `Attendance` a ON a.courseID = co.courseID AND a.childID = e.childID
+                         WHERE co.assignedTeacherID IN (?, ?)",
+                        [$teacherId, $userId]
+                    );
+                    if ($stats) {
+                        $profileData['teacherStats'] = [
+                            'totalStudents' => (int) ($stats['totalStudents'] ?? 0),
+                            'presentToday' => (int) ($stats['presentToday'] ?? 0),
+                            'absentToday' => (int) ($stats['absentToday'] ?? 0),
+                            'lateToday' => (int) ($stats['lateToday'] ?? 0),
+                            'attendanceRate' => $stats['attendanceRate'] !== null ? (float) $stats['attendanceRate'] : 0,
+                        ];
+                        error_log("Teacher stats: " . json_encode($profileData['teacherStats']));
+                    }
+                }
+            } elseif ($userRole === 'parent') {
+                error_log("Fetching parent profile for userID: $userId");
+                $parent = $db->fetchOne("SELECT parentID, phone, address, notifPreferences FROM `Parent` WHERE userID = ?", [$userId]);
+                error_log("Parent data query result: " . json_encode($parent));
+                $profileData['parentData'] = array_merge($user ?? [], $parent ?? []);
+                if ($parent) {
+                    $parentId = $parent['parentID'];
+                    error_log("Fetching child profiles for parentID: $parentId");
+                    $children = $db->fetchAll(
+                        "SELECT childID, name, dateOfBirth, gender, allergies, medicalNotes, emergencyContact, enrollmentStatus
+                         FROM `Child`
+                         WHERE parentID = ?
+                         ORDER BY name",
+                        [$parentId]
+                    );
+                    $profileData['childrenList'] = $children ?? [];
+                    error_log("Children found: " . count($profileData['childrenList']));
+                }
+            } elseif ($userRole === 'admin') {
+                error_log("Fetching admin profile for userID: $userId");
+                $admin = $db->fetchOne("SELECT adminID FROM `Admin` WHERE userID = ?", [$userId]);
+                error_log("Admin data query result: " . json_encode($admin));
+                $profileData['adminData'] = array_merge($user ?? [], $admin ?? []);
+            } elseif ($userRole === 'child') {
+                error_log("Fetching child profile for userID: $userId");
+                $child = $db->fetchOne("SELECT childID, parentID, name, dateOfBirth, gender, allergies, medicalNotes, emergencyContact, enrollmentStatus FROM `Child` WHERE childID = ?", [$userId]);
+                error_log("Child data query result: " . json_encode($child));
+                if ($child) {
+                    $profileData['childData'] = array_merge($user ?? [], $child);
                 }
             } else {
-                error_log("User role is not Teacher, role: $userRole");
+                error_log("No specific profile branch for role: $userRole");
             }
 
             echo json_encode([
