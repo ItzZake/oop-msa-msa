@@ -1,11 +1,139 @@
-// Dashboard Navigation Handler
-function setDashNav(btn, section) {
-    document.querySelectorAll('.sidebar-nav-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const topbar = document.querySelector('.dashboard-topbar h2');
-    if (topbar) topbar.textContent = section.charAt(0).toUpperCase() + section.slice(1);
-}
-/* NOTE: Navbar functionality is now handled by navbar.php */
+/* ════════════════════════════════════════════
+   Dashboard.js — Wellucation Admin Dashboard
+════════════════════════════════════════════ */
+
+"use strict";
+
+/* ── DATA ── */
+const weeklyAttendance = [
+  { day: "Mon", present: 230, absent: 10, late: 8 },
+  { day: "Tue", present: 225, absent: 15, late: 8 },
+  { day: "Wed", present: 238, absent: 6, late: 4 },
+  { day: "Thu", present: 222, absent: 18, late: 8 },
+  { day: "Fri", present: 235, absent: 8, late: 5 },
+];
+
+const monthlyEnrollment = [
+  { month: "Jan", students: 215 },
+  { month: "Feb", students: 220 },
+  { month: "Mar", students: 228 },
+  { month: "Apr", students: 232 },
+  { month: "May", students: 235 },
+  { month: "Jun", students: 230 },
+  { month: "Jul", students: 225 },
+  { month: "Aug", students: 238 },
+  { month: "Sep", students: 244 },
+  { month: "Oct", students: 246 },
+  { month: "Nov", students: 247 },
+  { month: "Dec", students: 248 },
+];
+
+const programDist = [
+  { name: "Nursery", value: 75, color: "#E91E8C" },
+  { name: "KG1", value: 90, color: "#1565C0" },
+  { name: "KG2", value: 83, color: "#10B981" },
+];
+
+const recentStudents = [
+  {
+    name: "Emma Johnson",
+    cls: "KG1 – Sunflower",
+    attendance: 92,
+    status: "active",
+    emoji: "👧",
+  },
+  {
+    name: "Noah Williams",
+    cls: "KG2 – Rainbow",
+    attendance: 88,
+    status: "active",
+    emoji: "👦",
+  },
+  {
+    name: "Sophia Brown",
+    cls: "Nursery – Butterfly",
+    attendance: 65,
+    status: "concern",
+    emoji: "👧",
+  },
+  {
+    name: "Liam Davis",
+    cls: "KG1 – Sunflower",
+    attendance: 95,
+    status: "active",
+    emoji: "👦",
+  },
+  {
+    name: "Olivia Miller",
+    cls: "KG2 – Stars",
+    attendance: 78,
+    status: "active",
+    emoji: "👧",
+  },
+];
+
+const alerts = [
+  { icon: "⚠️", text: "Sophia Brown: Attendance below 70%", time: "2h ago" },
+  {
+    icon: "🔔",
+    text: "5 enrollment applications awaiting review",
+    time: "4h ago",
+  },
+  {
+    icon: "📅",
+    text: "Parent-Teacher meeting tomorrow at 4 PM",
+    time: "1d ago",
+  },
+  {
+    icon: "✅",
+    text: "All teachers submitted December reports",
+    time: "1d ago",
+  },
+];
+
+const navLabels = {
+  overview: "Overview",
+  students: "Students",
+  teachers: "Teachers",
+  attendance: "Attendance",
+  analytics: "Analytics",
+  reports: "Reports",
+  notifications: "Notifications",
+  settings: "Settings",
+};
+
+/* ════════════════════════════════════════════
+   NAVBAR / MOBILE MENU / DROPDOWN
+════════════════════════════════════════════ */
+(function initNavbar() {
+  const hamburger = document.getElementById("hamburger");
+  const mobileMenu = document.getElementById("mobileMenu");
+  const menuIcon = hamburger?.querySelector(".icon-menu");
+  const closeIcon = hamburger?.querySelector(".icon-close");
+  const moreBtn = document.getElementById("moreBtn");
+  const moreDropdown = document.getElementById("moreDropdown");
+
+  hamburger?.addEventListener("click", () => {
+    const isOpen = mobileMenu.classList.toggle("open");
+    menuIcon.classList.toggle("hidden", isOpen);
+    closeIcon.classList.toggle("hidden", !isOpen);
+    hamburger.setAttribute("aria-expanded", isOpen);
+    mobileMenu.setAttribute("aria-hidden", !isOpen);
+  });
+
+  moreBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = moreDropdown.classList.toggle("open");
+    moreBtn.setAttribute("aria-expanded", isOpen);
+  });
+
+  document.addEventListener("click", (e) => {
+    if (moreDropdown && !moreDropdown.contains(e.target)) {
+      moreDropdown.classList.remove("open");
+      moreBtn?.setAttribute("aria-expanded", "false");
+    }
+  });
+})();
 
 /* ════════════════════════════════════════════
    SIDEBAR TOGGLE
