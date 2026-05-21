@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'Parent') {
+if (!isset($_SESSION['user_role']) || strtolower($_SESSION['user_role'] ?? '') !== 'parent') {
     $_SESSION['error'] = 'Only parents can submit enrollment applications';
     header('Location: enroll.php');
     exit;
@@ -32,16 +32,31 @@ if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_tok
 }
 
 // Get logged-in parent
-$parentId = $_SESSION['user_id'];
+$parentUserId = $_SESSION['user_id'];
 $db = Database::getInstance();
 
-// Verify parent exists in database
-$parentCheck = $db->fetchOne("SELECT userID FROM parent WHERE userID = ?", [$parentId]);
-if (!$parentCheck) {
+// Verify parent profile exists in database. Create it if missing.
+$parentRow = $db->fetchOne("SELECT parentID FROM Parent WHERE userID = ?", [$parentUserId]);
+if (!$parentRow) {
+    $createParent = $db->query(
+        "INSERT INTO Parent (userID, phone, address, notifPreferences) VALUES (?, ?, ?, ?)",
+        [$parentUserId, null, null, null]
+    );
+    if (!$createParent) {
+        $_SESSION['error'] = 'Parent record not found and could not be created. Please contact support.';
+        header('Location: enroll.php');
+        exit;
+    }
+    $parentRow = $db->fetchOne("SELECT parentID FROM Parent WHERE userID = ?", [$parentUserId]);
+}
+
+if (!$parentRow || empty($parentRow['parentID'])) {
     $_SESSION['error'] = 'Parent record not found. Please contact support.';
     header('Location: enroll.php');
     exit;
 }
+
+$parentId = (int) $parentRow['parentID'];
 
 // Sanitize inputs
 $child_name = htmlspecialchars($_POST['child_name'] ?? '');
@@ -88,7 +103,7 @@ if ($dob >= $start) {
 
 try {
     // Create child record
-    $sql_child = "INSERT INTO child (parentID, name, dateOfBirth, gender, emergencyContact, medicalNotes, enrollmentStatus)
+    $sql_child = "INSERT INTO Child (parentID, name, dateOfBirth, gender, emergencyContact, medicalNotes, enrollmentStatus)
                   VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt_child = $db->query($sql_child, [
         $parentId,
@@ -105,11 +120,14 @@ try {
     }
 
     // Get the newly created child ID
-    $childId = $db->query("SELECT LAST_INSERT_ID() as id", [])->fetch(PDO::FETCH_ASSOC)['id'];
+    $childId = (int) $db->lastInsertId();
+    if ($childId <= 0) {
+        throw new Exception('Failed to obtain new child ID');
+    }
 
     // Submit application for the child
-    $sql_app = "INSERT INTO application (parentID, childID, status, submittedAt, reviewedAt, rejectionReason, documents)
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $sql_app = "INSERT INTO Application (parentID, childID, status, reviewedAt, rejectionReason, documents)
+                VALUES (?, ?, ?, ?, ?, ?)";
     
     $documents = json_encode([
         'program' => $program,
@@ -122,7 +140,6 @@ try {
         $parentId,
         $childId,
         'Pending',
-        date('Y-m-d H:i:s'),
         null,
         null,
         $documents

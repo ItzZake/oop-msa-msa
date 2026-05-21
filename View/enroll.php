@@ -21,7 +21,6 @@ if (empty($_SESSION['csrf_token'])) {
 	<link rel="stylesheet" href="css/footer.css" />
 </head>
 <body>
-<?php include 'navbar.php'; ?>
 <main class="page-shell">
 <body>
 <?php
