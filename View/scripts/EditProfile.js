@@ -120,33 +120,7 @@ function setupEventListeners() {
     deleteBtn.addEventListener('click', handleDeleteAccount);
   }
   
-  // Mobile menu
-  const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
-  if (hamburger && mobileMenu) {
-    hamburger.addEventListener('click', () => {
-      mobileMenu.classList.toggle('active');
-      hamburger.setAttribute('aria-expanded', 
-        hamburger.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
-    });
-  }
-  
-  // More dropdown
-  const moreBtn = document.getElementById('moreBtn');
-  const moreMenu = document.getElementById('moreMenu');
-  if (moreBtn && moreMenu) {
-    moreBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      moreMenu.classList.toggle('active');
-      moreBtn.setAttribute('aria-expanded',
-        moreBtn.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
-    });
-    
-    document.addEventListener('click', () => {
-      moreMenu.classList.remove('active');
-      moreBtn.setAttribute('aria-expanded', 'false');
-    });
-  }
+  // NOTE: Mobile menu and More dropdown are now handled by navbar.php
 }
 
 // ── Tab switching ──

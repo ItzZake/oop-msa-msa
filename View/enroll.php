@@ -23,6 +23,12 @@ if (empty($_SESSION['csrf_token'])) {
 <body>
 <?php include 'navbar.php'; ?>
 <main class="page-shell">
+<body>
+<?php
+include 'header.php';
+include 'navbar.php';
+?>
+<main class="page-shell">
 	<section class="enroll-hero">
 		<div class="container enroll-hero__content text-center">
 			<span class="enroll-badge">🌟 Enrollment</span>

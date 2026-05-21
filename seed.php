@@ -79,8 +79,10 @@ try {
     ];
 
     $courseIds = [];
+    $teacherRecords = $db->fetchAll("SELECT teacherID, userID FROM teacher ORDER BY teacherID");
     foreach ($courses as $index => $course) {
-        $assignedTeacherId = $teacherIds[$index % count($teacherIds)];
+        $teacherRow = $teacherRecords[$index % count($teacherRecords)] ?? null;
+        $assignedTeacherId = $teacherRow ? (int) $teacherRow['teacherID'] : null;
         $sql = "INSERT IGNORE INTO course (name, description, ageMin, ageMax, maxCapacity, assignedTeacherID, price, isActive) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
         $db->query($sql, [
@@ -145,14 +147,22 @@ try {
             $parentID = $parentRecord['parentID'];
             echo "✓ Parent: {$parent['firstname']} {$parent['Lastname']} ({$parent['email']}) - parentID: $parentID\n";
             
-            // Add children
+            // Add children (skip if same name already exists for this parent)
             foreach ($parent['children'] as $child) {
-                $childSql = "INSERT INTO child (parentID, name, dateOfBirth, gender, enrollmentStatus) 
-                             VALUES (?, ?, ?, ?, 'Pending')";
-                $db->query($childSql, [$parentID, $child['name'], $child['dob'], $child['gender']]);
-                
-                $childRecord = $db->fetchOne("SELECT childID FROM child WHERE parentID = ? AND name = ?", 
-                                             [$parentID, $child['name']]);
+                $childRecord = $db->fetchOne(
+                    "SELECT childID FROM child WHERE parentID = ? AND name = ?",
+                    [$parentID, $child['name']]
+                );
+
+                if (!$childRecord) {
+                    $childSql = "INSERT INTO child (parentID, name, dateOfBirth, gender, enrollmentStatus) 
+                                 VALUES (?, ?, ?, ?, 'Pending')";
+                    $db->query($childSql, [$parentID, $child['name'], $child['dob'], $child['gender']]);
+                    $childRecord = $db->fetchOne(
+                        "SELECT childID FROM child WHERE parentID = ? AND name = ?",
+                        [$parentID, $child['name']]
+                    );
+                }
                 if ($childRecord) {
                     $childIds[] = $childRecord['childID'];
                     echo "  └─ Child: {$child['name']}\n";

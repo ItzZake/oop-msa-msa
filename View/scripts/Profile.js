@@ -1343,7 +1343,7 @@ function switchRole(role) {
 async function loadProfileData() {
   try {
     const response = await fetch('../Controller/ProfileController.php?action=get', {
-      method: 'GET',
+      method: 'get',
       credentials: 'include'
     });
     
@@ -1471,28 +1471,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // More dropdown toggle
-  if (moreBtn && moreDropdown) {
-    moreBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const isOpen = moreDropdown.classList.toggle("open");
-      moreBtn.setAttribute("aria-expanded", isOpen);
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener("click", (e) => {
-      if (!moreDropdown.contains(e.target)) {
-        moreDropdown.classList.remove("open");
-        moreBtn.setAttribute("aria-expanded", "false");
-      }
-    });
-
-    // Close dropdown on Escape
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        moreDropdown.classList.remove("open");
-        moreBtn.setAttribute("aria-expanded", "false");
-      }
-    });
-  }
 })();

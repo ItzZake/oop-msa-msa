@@ -4,62 +4,11 @@
    ADD USER PAGE — Main Script
 ══════════════════════════════════════════ */
 
-/* ══════════════════════════════════════════
-   NAVBAR / MENU
-══════════════════════════════════════════ */
+/* NOTE: Navbar functionality is now handled by navbar.php */
 
 document.addEventListener("DOMContentLoaded", function () {
-  initNavbar();
   initForm();
 });
-
-function initNavbar() {
-  const hamburger = document.querySelector(".hamburger");
-  const mobileMenu = document.querySelector(".mobile-menu");
-  const navDropdowns = document.querySelectorAll(".nav-dropdown");
-
-  // Mobile menu toggle
-  if (hamburger && mobileMenu) {
-    hamburger.addEventListener("click", function () {
-      mobileMenu.classList.toggle("open");
-    });
-  }
-
-  // Dropdown menus
-  navDropdowns.forEach((dropdown) => {
-    const trigger = dropdown.querySelector(".nav-dropdown__trigger");
-    if (trigger) {
-      trigger.addEventListener("click", function (e) {
-        e.preventDefault();
-        dropdown.classList.toggle("open");
-
-        // Close other dropdowns
-        navDropdowns.forEach((other) => {
-          if (other !== dropdown) {
-            other.classList.remove("open");
-          }
-        });
-      });
-    }
-  });
-
-  // Close dropdowns when clicking outside
-  document.addEventListener("click", function (e) {
-    navDropdowns.forEach((dropdown) => {
-      if (!dropdown.contains(e.target)) {
-        dropdown.classList.remove("open");
-      }
-    });
-  });
-
-  // Close mobile menu when clicking on a link
-  const mobileMenuLinks = mobileMenu?.querySelectorAll("a");
-  mobileMenuLinks?.forEach((link) => {
-    link.addEventListener("click", function () {
-      mobileMenu.classList.remove("open");
-    });
-  });
-}
 
 /* ══════════════════════════════════════════
    FORM HANDLING

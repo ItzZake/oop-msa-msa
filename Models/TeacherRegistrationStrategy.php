@@ -97,10 +97,38 @@ class TeacherRegistrationStrategy implements IRegistrationStrategy
         try {
             $authService = new AuthService();
             
-            // Register as teacher role (creates User record with role='teacher')
-            $authService->register($email, $password, 'teacher', $firstName, $lastName);
+            // Step 1: Register user in user table with role='teacher'
+            $user = $authService->register($email, $password, 'teacher', $firstName, $lastName);
+            $userId = $user->getId();
+
+            if (!$userId) {
+                throw new RuntimeException("Failed to get user ID after registration.");
+            }
+
+            // Step 2: Add user to teacher table with additional data
+            $db = Database::getInstance();
+            
+            $sql = "INSERT INTO teacher (userID, phone) 
+                    VALUES (?, ?)";
+            $params = [
+                $userId,
+                null  // Phone not required at registration; can be updated later
+            ];
+            
+            try {
+                $result = $db->query($sql, $params);
+                if (!$result) {
+                    // Check PDO error info
+                    $errorInfo = $db->getConnection()->errorInfo();
+                    throw new RuntimeException("Failed to execute teacher profile INSERT: " . ($errorInfo[2] ?? "Unknown error"));
+                }
+            } catch (PDOException $pdoe) {
+                throw new RuntimeException("Database error adding teacher profile: " . $pdoe->getMessage());
+            }
 
             return true;
+        } catch (PDOException $e) {
+            throw new RuntimeException("Teacher registration database error: " . $e->getMessage());
         } catch (Exception $e) {
             throw new RuntimeException("Teacher registration failed: " . $e->getMessage());
         }
