@@ -83,32 +83,6 @@
   /* ─────────────────────────────────────────
      3. "MORE" DROPDOWN — desktop nav
   ───────────────────────────────────────── */
-const moreBtn  = document.getElementById('moreBtn');
-const moreMenu = document.getElementById('moreMenu');
-
-  if (moreBtn && moreDropdown) {
-    moreBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      const isOpen = moreDropdown.classList.toggle('open');
-      moreBtn.setAttribute('aria-expanded', isOpen);
-    });
-
-    /* Close when clicking outside */
-    document.addEventListener('click', function (e) {
-      if (!moreDropdown.contains(e.target)) {
-        moreDropdown.classList.remove('open');
-        moreBtn.setAttribute('aria-expanded', 'false');
-      }
-    });
-
-    /* Close on Escape key */
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') {
-        moreDropdown.classList.remove('open');
-        moreBtn.setAttribute('aria-expanded', 'false');
-      }
-    });
-  }
 
   /* ══════════════════════════════════════════
      ACTIVE LINK — mark the current page
@@ -126,15 +100,7 @@ const moreMenu = document.getElementById('moreMenu');
       }
     });
 
-    /* Dropdown items */
-    document.querySelectorAll('.nav-dropdown__item').forEach(function (item) {
-      const href = item.getAttribute('href');
-      if (href && (href === currentPath || (href !== '/' && currentPath.startsWith(href)))) {
-        item.classList.add('active');
-        /* Highlight the trigger button too */
-        if (moreBtn) moreBtn.classList.add('active');
-      }
-    });
+
   }
 
   setActiveLinks();

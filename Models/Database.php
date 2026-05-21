@@ -36,10 +36,14 @@ class Database
 
         $stmt = $this->connection->prepare($sql);
         if ($stmt === false) {
+            $error = $this->connection->errorInfo();
+            error_log("Database prepare error: " . json_encode($error) . " | SQL: " . $sql);
             return false;
         }
 
         if (!$stmt->execute($params)) {
+            $error = $stmt->errorInfo();
+            error_log("Database execute error: " . json_encode($error) . " | SQL: " . $sql . " | Params: " . json_encode($params));
             return false;
         }
 

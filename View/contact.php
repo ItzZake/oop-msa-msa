@@ -6,9 +6,6 @@ $currentPage = "contact";
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
-
-include 'header.php';
-include 'navbar.php';
 ?>
 
 <!DOCTYPE html>
@@ -21,6 +18,10 @@ include 'navbar.php';
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
 </head>
 <body>
+<?php
+include 'header.php';
+include 'navbar.php';
+?>
 
   <!-- ══════════════ HERO ══════════════ -->
   <section class="hero">

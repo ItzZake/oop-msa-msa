@@ -11,10 +11,6 @@ if (!isset($_SESSION['user_id']) || !$userRole) {
     header('Location: login.php');
     exit;
 }
-
-// Now include header and navbar
-include "header.php";
-include "navbar.php";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,6 +22,10 @@ include "navbar.php";
   <link rel="stylesheet" href="css/Home.css">
 </head>
 <body>
+<?php
+include "header.php";
+include "navbar.php";
+?>
 
   <!-- ─── HERO ─── -->
   <section class="hero">

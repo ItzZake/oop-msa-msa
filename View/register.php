@@ -3,6 +3,19 @@ session_start();
 $pageTitle = "Register – Wellucation Nursery";
 $currentPage = "register";
 $pageCss = 'login.css';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title><?php echo htmlspecialchars($pageTitle); ?></title>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Fredoka+One&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="css/login.css" />
+</head>
+<body>
+<?php
 include 'header.php';
 include 'navbar.php';
 ?>
@@ -58,3 +71,5 @@ include 'navbar.php';
 </div>
 
 <?php include 'footer.php'; ?>
+</body>
+</html>

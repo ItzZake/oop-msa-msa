@@ -1,8 +1,6 @@
 <?php
 // ── Session & Authentication ──
 session_start();
-include "header.php";
-include "navbar.php";
 
 // Only keep session data - data will be fetched from controller via AJAX
 $userRole = $_SESSION['user_role'] ?? 'User';
@@ -43,16 +41,16 @@ $jsProfileData = json_encode([
     </script>
   </head>
 <body>
+<?php
+include "header.php";
+include "navbar.php";
+?>
     <!-- HERO HEADER -->
     <section class="hero-header">
       <div class="hero-bg-icon">👤</div>
       <div class="hero-inner animate-fade-up">
         <span class="pill-badge">👤 User Profiles</span>
-        <h1 class="hero-title">Role-Based Profiles</h1>
-        <p class="hero-sub">
-          Select a role below to view the personalized profile experience for
-          each user type.
-        </p>
+        <h1 class="hero-title">Teacher Profile</h1>
       </div>
     </section>
 
@@ -66,27 +64,6 @@ $jsProfileData = json_encode([
             style="--role-color: #1565c0; --role-bg: #eff6ff"
           >
             🎓 Teacher Profile
-          </button>
-          <button
-            class="role-tab"
-            data-role="admin"
-            style="--role-color: #e91e8c; --role-bg: #fff0f7"
-          >
-            🛡️ Admin Profile
-          </button>
-          <button
-            class="role-tab"
-            data-role="parent"
-            style="--role-color: #10b981; --role-bg: #f0fdf4"
-          >
-            ❤️ Parent Profile
-          </button>
-          <button
-            class="role-tab"
-            data-role="child"
-            style="--role-color: #f59e0b; --role-bg: #fffbeb"
-          >
-            👶 Child Profile
           </button>
         </div>
       </div>

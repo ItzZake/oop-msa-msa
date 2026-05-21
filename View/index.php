@@ -46,7 +46,6 @@ include 'navbar.php';
             creativity is sparked, and every child is guided to thrive — academically, socially, and emotionally.
           </p>
           <div class="hero__actions">
-            <a href="../View/enroll.php" class="btn-enroll btn-hero-primary">🌟 Enroll Now</a>
             <a href="../View/about.php" class="btn-hero-secondary">Learn More →</a>
           </div>
           <div class="hero__stats">
@@ -135,26 +134,26 @@ include 'navbar.php';
             <div class="program-card__age">Ages 2–3</div>
             <h3 class="program-card__name">Nursery</h3>
             <p class="program-card__desc">Gentle, play-focused introduction to structured learning and social interaction.</p>
-            <a href="/enroll" class="program-card__btn">Enroll →</a>
+            <a href="../view/enroll.php" class="program-card__btn">Enroll →</a>
           </div>
           <div class="program-card program-card--featured">
             <div class="program-card__badge">Most Popular</div>
             <div class="program-card__age">Ages 3–4</div>
             <h3 class="program-card__name">Kindergarten 1</h3>
             <p class="program-card__desc">Building foundational literacy, numeracy, and social skills in a warm classroom setting.</p>
-            <a href="/enroll" class="program-card__btn program-card__btn--white">Enroll →</a>
+            <a href="../view/enroll.php" class="program-card__btn program-card__btn--white">Enroll →</a>
           </div>
           <div class="program-card">
             <div class="program-card__age">Ages 4–5</div>
             <h3 class="program-card__name">Kindergarten 2</h3>
             <p class="program-card__desc">Advanced pre-school preparation with a focus on school readiness and independence.</p>
-            <a href="/enroll" class="program-card__btn">Enroll →</a>
+            <a href="../view/enroll.php" class="program-card__btn">Enroll →</a>
           </div>
           <div class="program-card">
             <div class="program-card__age">All Ages</div>
             <h3 class="program-card__name">After School Care</h3>
             <p class="program-card__desc">Safe, fun, and supervised after-school activities until 6:00 PM on weekdays.</p>
-            <a href="/enroll" class="program-card__btn">Enroll →</a>
+            <a href="../view/enroll.php" class="program-card__btn">Enroll →</a>
           </div>
         </div>
       </div>
@@ -168,7 +167,7 @@ include 'navbar.php';
           <p class="cta-banner__desc">Spaces are limited — secure your child's spot today.</p>
         </div>
         <div class="cta-banner__actions">
-          <a href="/enroll" class="cta-banner__btn-primary">🌟 Enroll Now</a>
+          <a href="../view/enroll.php" class="cta-banner__btn-primary">🌟 Enroll Now</a>
           <a href="/contact" class="cta-banner__btn-secondary">Contact Us</a>
         </div>
       </div>

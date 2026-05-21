@@ -5,51 +5,7 @@
 (function () {
   "use strict";
 
-  /* ─────────────────────────────────────────
-     NAVBAR – Hamburger & Dropdown
-  ───────────────────────────────────────── */
-  const hamburger = document.getElementById("hamburger");
-  const mobileMenu = document.getElementById("mobileMenu");
-  const iconMenu = hamburger?.querySelector(".icon-menu");
-  const iconClose = hamburger?.querySelector(".icon-close");
-
-  hamburger?.addEventListener("click", () => {
-    const isOpen = mobileMenu.classList.toggle("open");
-    hamburger.setAttribute("aria-expanded", String(isOpen));
-    iconMenu?.classList.toggle("hidden", isOpen);
-    iconClose?.classList.toggle("hidden", !isOpen);
-    mobileMenu.setAttribute("aria-hidden", String(!isOpen));
-  });
-
-  // "More" dropdown
-  const moreBtn = document.getElementById("moreBtn");
-  const moreDropdown = document.getElementById("moreDropdown");
-
-  moreBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const isOpen = moreDropdown.classList.toggle("open");
-    moreBtn.setAttribute("aria-expanded", String(isOpen));
-  });
-
-  // Close dropdown on outside click
-  document.addEventListener("click", (e) => {
-    if (!moreDropdown?.contains(e.target)) {
-      moreDropdown?.classList.remove("open");
-      moreBtn?.setAttribute("aria-expanded", "false");
-    }
-  });
-
-  // Close dropdown on Escape
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      moreDropdown?.classList.remove("open");
-      moreBtn?.setAttribute("aria-expanded", "false");
-      mobileMenu?.classList.remove("open");
-      hamburger?.setAttribute("aria-expanded", "false");
-      iconMenu?.classList.remove("hidden");
-      iconClose?.classList.add("hidden");
-    }
-  });
+  /* NOTE: Navbar functionality is now handled by navbar.php */
 
   /* ─────────────────────────────────────────
      TABS – Login / Register

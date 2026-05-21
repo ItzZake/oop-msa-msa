@@ -3,8 +3,6 @@ session_start();
 $pageTitle = "Login – Wellucation Nursery";
 $currentPage = "login";
 $pageCss = 'login.css';
-include 'header.php';
-include 'navbar.php';
 ?>
 
 <!DOCTYPE html>
@@ -22,6 +20,10 @@ include 'navbar.php';
 </head>
 
 <body>
+<?php
+include 'header.php';
+include 'navbar.php';
+?>
 	<!-- ══════════════ MAIN LOGIN CONTENT ══════════════ -->
 	<main class="login-hero">
 		<!-- Decorative corner emojis -->

@@ -6,9 +6,6 @@ $currentPage = "application";
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
-
-include 'header.php';
-include 'navbar.php';
 ?>
 
 <!DOCTYPE html>
@@ -23,6 +20,10 @@ include 'navbar.php';
   <link rel="stylesheet" href="../view/css/styles.css" />
 </head>
 <body>
+<?php
+include 'header.php';
+include 'navbar.php';
+?>
 
   <!-- Hero Section -->
   <section class="hero">

@@ -1,8 +1,6 @@
 <?php
 // ── Session & Authentication ──
 session_start();
-include "Header.php";
-include "navbar.php";
 
 // Redirect to login if not authenticated
 if (!isset($_SESSION['user_id'])) {
@@ -61,6 +59,10 @@ $jsUserData = json_encode([
     </script>
   </head>
   <body>
+<?php
+include "header.php";
+include "navbar.php";
+?>
     <!-- ══ HERO ══ -->
     <section class="ep-hero">
       <div class="ep-hero__blob ep-hero__blob--left"></div>

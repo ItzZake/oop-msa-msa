@@ -355,16 +355,7 @@ include 'navbar.php';
     </section>
 
     <!-- ── CTA ── -->
-    <section class="about-cta">
-      <div class="container about-cta__inner reveal">
-        <h2 class="about-cta__title">Come See Us in Person 🏫</h2>
-        <p class="about-cta__desc">Book a free school tour and see why families love Wellucation. We'd love to show you around!</p>
-        <a href="contact.html" class="about-cta__btn">
-          📅 Book a School Tour
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-        </a>
-      </div>
-    </section>
+    
 
   </main>
 

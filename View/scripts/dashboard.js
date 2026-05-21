@@ -5,38 +5,7 @@ function setDashNav(btn, section) {
     const topbar = document.querySelector('.dashboard-topbar h2');
     if (topbar) topbar.textContent = section.charAt(0).toUpperCase() + section.slice(1);
 }
-/* ════════════════════════════════════════════
-   NAVBAR / MOBILE MENU / DROPDOWN
-════════════════════════════════════════════ */
-(function initNavbar() {
-  const hamburger = document.getElementById("hamburger");
-  const mobileMenu = document.getElementById("mobileMenu");
-  const menuIcon = hamburger?.querySelector(".icon-menu");
-  const closeIcon = hamburger?.querySelector(".icon-close");
-  const moreBtn = document.getElementById("moreBtn");
-  const moreDropdown = document.getElementById("moreDropdown");
-
-  hamburger?.addEventListener("click", () => {
-    const isOpen = mobileMenu.classList.toggle("open");
-    menuIcon.classList.toggle("hidden", isOpen);
-    closeIcon.classList.toggle("hidden", !isOpen);
-    hamburger.setAttribute("aria-expanded", isOpen);
-    mobileMenu.setAttribute("aria-hidden", !isOpen);
-  });
-
-  moreBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const isOpen = moreDropdown.classList.toggle("open");
-    moreBtn.setAttribute("aria-expanded", isOpen);
-  });
-
-  document.addEventListener("click", (e) => {
-    if (moreDropdown && !moreDropdown.contains(e.target)) {
-      moreDropdown.classList.remove("open");
-      moreBtn?.setAttribute("aria-expanded", "false");
-    }
-  });
-})();
+/* NOTE: Navbar functionality is now handled by navbar.php */
 
 /* ════════════════════════════════════════════
    SIDEBAR TOGGLE

@@ -3,8 +3,6 @@ session_start();
 $pageTitle = "Subscription – Wellucation Nursery";
 $currentPage = "subscription";
 $pageCss = 'subscription.css';
-include 'header.php';
-include 'navbar.php';
 ?>
 
 <!DOCTYPE html>
@@ -18,6 +16,10 @@ include 'navbar.php';
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700;900&display=swap" rel="stylesheet" />
 </head>
 <body>
+<?php
+include 'header.php';
+include 'navbar.php';
+?>
 
   <!-- ── Hero ─────────────────────────────────────────────────────── -->
   <section class="hero">
@@ -158,4 +160,3 @@ include 'navbar.php';
 </body>
 </html>
 
-</script>

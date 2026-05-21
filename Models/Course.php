@@ -219,17 +219,20 @@
       return false;
    }
 
-   function GetTeacherCourses($teacherId)
+   function GetTeacherCourses($teacherId, $userId = null)
    {
-      $sql = "SELECT c.*, 
-              COUNT(DISTINCT e.childID) as enrolledStudents
+      $userId = $userId ?? $teacherId;
+      $sql = "SELECT c.*,
+              (SELECT COUNT(DISTINCT ch.childID)
+               FROM enrollment e
+               INNER JOIN child ch ON e.childID = ch.childID
+               INNER JOIN parent p ON ch.parentID = p.parentID
+               WHERE e.courseID = c.courseID AND e.status = 'Active') AS enrolledStudents
               FROM course c
-              LEFT JOIN enrollment e ON c.courseID = e.courseID AND e.status = 'Active'
-              WHERE c.assignedTeacherId = ? AND c.isActive = 1
-              GROUP BY c.courseID
+              WHERE c.isActive = 1
+                AND (c.assignedTeacherID = ? OR c.assignedTeacherID = ?)
               ORDER BY c.name ASC";
-      $params = [$teacherId];
-      return Database::getInstance()->fetchAll($sql, $params);
+      return Database::getInstance()->fetchAll($sql, [$teacherId, $userId]);
    }
   }
 ?>

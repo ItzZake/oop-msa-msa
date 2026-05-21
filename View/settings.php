@@ -3,8 +3,6 @@ session_start();
 $pageTitle = "Settings – Wellucation Nursery";
 $currentPage = "settings";
 $pageCss = 'settings.css';
-include 'header.php';
-include 'navbar.php';
 ?>
 
 <!DOCTYPE html>
@@ -18,6 +16,10 @@ include 'navbar.php';
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700;900&display=swap" rel="stylesheet" />
 </head>
 <body>
+<?php
+include 'header.php';
+include 'navbar.php';
+?>
 
   <!-- ── Hero ─────────────────────────────────────────────────────── -->
   <section class="hero">
