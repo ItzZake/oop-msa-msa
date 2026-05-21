@@ -95,10 +95,41 @@ class ParentRegistrationStrategy implements IRegistrationStrategy
         try {
             $authService = new AuthService();
             
-            // Register as parent role (creates User record with role='parent')
-            $authService->register($email, $password, 'parent', $firstName, $lastName);
+            // Step 1: Register user in user table with role='parent'
+            $user = $authService->register($email, $password, 'parent', $firstName, $lastName);
+            $userId = $user->getId();
+
+            if (!$userId) {
+                throw new RuntimeException("Failed to get user ID after registration.");
+            }
+
+            // Step 2: Add user to parent table with additional data
+            $db = Database::getInstance();
+            $notifPreferences = json_encode(['newsletter' => true]);
+            
+            $sql = "INSERT INTO parent (userID, phone, address, notifPreferences) 
+                    VALUES (?, ?, ?, ?)";
+            $params = [
+                $userId,
+                $this->phoneNumber ?: null,
+                $this->address ?: null,
+                $notifPreferences
+            ];
+            
+            try {
+                $result = $db->query($sql, $params);
+                if (!$result) {
+                    // Check PDO error info
+                    $errorInfo = $db->getConnection()->errorInfo();
+                    throw new RuntimeException("Failed to execute parent profile INSERT: " . ($errorInfo[2] ?? "Unknown error"));
+                }
+            } catch (PDOException $pdoe) {
+                throw new RuntimeException("Database error adding parent profile: " . $pdoe->getMessage());
+            }
 
             return true;
+        } catch (PDOException $e) {
+            throw new RuntimeException("Parent registration database error: " . $e->getMessage());
         } catch (Exception $e) {
             throw new RuntimeException("Parent registration failed: " . $e->getMessage());
         }

@@ -1,6 +1,4 @@
-</head>
-	<link rel="stylesheet" href="../view/css/header.css" />
-<body>
+<link rel="stylesheet" href="css/header.css" />
 <div class="topbar" id="topbar">
     <div class="container topbar__inner">
       <div class="topbar__left">

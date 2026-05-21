@@ -41,16 +41,11 @@
           <li><a href="index.php"            class="footer__link"><span class="footer__arrow">›</span> Home</a></li>
           <li><a href="about.php"       class="footer__link"><span class="footer__arrow">›</span> About Us</a></li>
           <li><a href="contact.php"     class="footer__link"><span class="footer__arrow">›</span> Contact Us</a></li>
-          <li><a href="profiles.php"    class="footer__link"><span class="footer__arrow">›</span> Profiles</a></li>
+          <li><a href="profile.php"    class="footer__link"><span class="footer__arrow">›</span> Profiles</a></li>
           <li><a href="dashboard.php"   class="footer__link"><span class="footer__arrow">›</span> Dashboard</a></li>
-          <li><a href="attendance.php"  class="footer__link"><span class="footer__arrow">›</span> Attendance</a></li>
-          <li><a href="reports.php"     class="footer__link"><span class="footer__arrow">›</span> Reports</a></li>
           <li><a href="assignments.php" class="footer__link"><span class="footer__arrow">›</span> Assignments</a></li>
           <li><a href="enroll.php"      class="footer__link"><span class="footer__arrow">›</span> Enroll Now</a></li>
           <li><a href="login.php"       class="footer__link"><span class="footer__arrow">›</span> Login</a></li>
-          <li><a href="payment.php"     class="footer__link"><span class="footer__arrow">›</span> Payment</a></li>
-          <li><a href="messages.php"    class="footer__link"><span class="footer__arrow">›</span> Messages</a></li>
-          <li><a href="settings.php"    class="footer__link"><span class="footer__arrow">›</span> Settings</a></li>
         </ul>
       </div>
 

@@ -107,10 +107,6 @@ body { background: var(--gray-50); color: var(--gray-800); }
 .teacher-btn.active { background: var(--blue); color: var(--white); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 .parent-btn { background: var(--green-light); color: var(--green); }
 .parent-btn.active { background: var(--green); color: var(--white); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-.child-selector-bar {
-  background: var(--white);
-  border-bottom: 1px solid var(--gray-100);
-}
 .admin-btn { background: var(--pink-light); color: var(--pink); }
 .admin-btn.active { background: var(--pink); color: var(--white); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 
@@ -347,34 +343,6 @@ body { background: var(--gray-50); color: var(--gray-800); }
 .cal-absent   { background: var(--red); color: var(--white); }
 .cal-late     { background: var(--amber); color: var(--white); }
 .cal-weekend  { background: var(--gray-100); color: #D1D5DB; }
-.cal-empty    { background: var(--white); color: var(--gray-300); border: 1px dashed var(--gray-200); }
-
-.parent-calendar-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-}
-.parent-month-nav {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.parent-month-input {
-  width: auto;
-  min-width: 10rem;
-  padding: 0.35rem 0.5rem;
-  font-size: 0.875rem;
-}
-.btn-sm { padding: 0.35rem 0.75rem; font-size: 0.875rem; }
-.btn-green-outline {
-  background: var(--white);
-  color: var(--green);
-  border: 2px solid var(--green);
-}
-.btn-green-outline:hover { background: var(--green-light); }
 
 .calendar-legend {
   display: flex;
@@ -450,10 +418,3 @@ body { background: var(--gray-50); color: var(--gray-800); }
 .rate-good { background: var(--green-light); color: var(--green); }
 .rate-mid  { background: var(--amber-light); color: var(--amber); }
 .rate-warn { background: var(--red-light); color: var(--red); }
-
-.empty-list-msg {
-  padding: 1.5rem 1.25rem;
-  text-align: center;
-  color: var(--gray-500);
-  font-size: 0.9rem;
-}

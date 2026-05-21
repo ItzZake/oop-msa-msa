@@ -79,9 +79,25 @@ class Attendance
 
     function GetAttendanceByChildId($childID, $fromDate, $toDate)
     {
-        $sql = "SELECT * FROM Attendance WHERE childID = ? AND sessionDate BETWEEN ? AND ?";
+        $sql = "SELECT * FROM attendance WHERE childID = ? AND sessionDate BETWEEN ? AND ? ORDER BY sessionDate ASC";
         $params = [$childID, $fromDate, $toDate];
         return Database::getInstance()->fetchAll($sql, $params);
+    }
+
+    /**
+     * Attendance rows for a child in a calendar month (one status per day; latest mark wins).
+     */
+    function GetAttendanceByChildForMonth(int $childId, int $year, int $month): array
+    {
+        $start = sprintf('%04d-%02d-01', $year, $month);
+        $end = date('Y-m-t', strtotime($start));
+
+        $sql = "SELECT a.sessionDate, a.status, co.name AS courseName
+                FROM attendance a
+                LEFT JOIN course co ON a.courseID = co.courseID
+                WHERE a.childID = ? AND a.sessionDate BETWEEN ? AND ?
+                ORDER BY a.sessionDate ASC, a.markedAt ASC";
+        return Database::getInstance()->fetchAll($sql, [$childId, $start, $end]);
     }
 
     function GetStreakCount($childID, $courseID)
@@ -241,6 +257,90 @@ class Attendance
                 GROUP BY a.childID, a.courseID
                 HAVING attendanceRate < ?";
         return Database::getInstance()->fetchAll($sql, [$threshold]);
+    }
+
+    /**
+     * Active enrollments for a course — only children linked to a parent.
+     */
+    function GetEnrolledChildrenByCourse(int $courseId): array
+    {
+        $sql = "SELECT DISTINCT c.childID, c.name, c.gender, c.dateOfBirth, c.parentID,
+                       co.name AS courseName
+                FROM child c
+                INNER JOIN enrollment e ON c.childID = e.childID AND e.status = 'Active'
+                INNER JOIN course co ON e.courseID = co.courseID
+                INNER JOIN parent p ON c.parentID = p.parentID
+                WHERE e.courseID = ?
+                ORDER BY c.name ASC";
+        return Database::getInstance()->fetchAll($sql, [$courseId]);
+    }
+
+    /**
+     * Existing marks for a course session (keyed by childID in return).
+     */
+    function GetSessionMarks(int $courseId, string $sessionDate): array
+    {
+        $sql = "SELECT childID, status FROM attendance
+                WHERE courseID = ? AND sessionDate = ?";
+        $rows = Database::getInstance()->fetchAll($sql, [$courseId, $sessionDate]);
+        $marks = [];
+        foreach ($rows as $row) {
+            $marks[(int) $row['childID']] = strtolower((string) $row['status']);
+        }
+        return $marks;
+    }
+
+    /**
+     * Upsert teacher-submitted marks for one course session.
+     *
+     * @param array<int, string> $marks childID => present|absent|late
+     */
+    function SaveSessionMarks(int $courseId, int $teacherId, string $sessionDate, array $marks): int
+    {
+        $statusMap = [
+            'present' => 'Present',
+            'absent'  => 'Absent',
+            'late'    => 'Late',
+            'excused' => 'Excused',
+        ];
+
+        $saved = 0;
+        $db = Database::getInstance();
+        $now = date('Y-m-d H:i:s');
+
+        foreach ($marks as $childId => $status) {
+            $childId = (int) $childId;
+            $normalized = strtolower(trim((string) $status));
+            if ($childId <= 0 || !isset($statusMap[$normalized])) {
+                continue;
+            }
+
+            $dbStatus = $statusMap[$normalized];
+            $existing = $db->fetchOne(
+                "SELECT attendanceID FROM attendance WHERE childID = ? AND courseID = ? AND sessionDate = ?",
+                [$childId, $courseId, $sessionDate]
+            );
+
+            if ($existing) {
+                $stmt = $db->query(
+                    "UPDATE attendance SET status = ?, teacherID = ?, markedAt = ?, source = 'Teacher'
+                     WHERE attendanceID = ?",
+                    [$dbStatus, $teacherId, $now, $existing['attendanceID']]
+                );
+            } else {
+                $stmt = $db->query(
+                    "INSERT INTO attendance (childID, courseID, teacherID, sessionDate, status, markedAt, source)
+                     VALUES (?, ?, ?, ?, ?, ?, 'Teacher')",
+                    [$childId, $courseId, $teacherId, $sessionDate, $dbStatus, $now]
+                );
+            }
+
+            if ($stmt) {
+                $saved++;
+            }
+        }
+
+        return $saved;
     }
 }
 

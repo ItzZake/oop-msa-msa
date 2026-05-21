@@ -53,7 +53,7 @@ if (empty($email_err) && empty($password_err)) {
         } elseif ($role === "admin") {
             header("Location: ../View/dashboard.php");
         } elseif ($role === "teacher") {
-            header("Location: ../View/Profiles.php");
+            header("Location: ../View/Profile.php");
         } else {
             // Parent returning user or other roles
             header("Location: ../View/Index.php");

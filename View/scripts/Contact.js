@@ -1,56 +1,7 @@
 /* ══════════════════════════════════════
    WELLUCATION — CONTACT PAGE SCRIPTS
+   NOTE: Navbar functionality is now handled by navbar.php
    ══════════════════════════════════════ */
-
-/* ── Navbar: sticky shadow ── */
-const navbar = document.getElementById('navbar');
-window.addEventListener('scroll', () => {
-  navbar.style.boxShadow = window.scrollY > 8
-    ? '0 4px 20px rgba(0,0,0,.12)'
-    : '0 2px 12px rgba(0,0,0,.06)';
-});
-
-/* ── Hamburger / mobile menu ── */
-const hamburger   = document.getElementById('hamburger');
-const mobileMenu  = document.getElementById('mobileMenu');
-const iconMenu    = hamburger.querySelector('.icon-menu');
-const iconClose   = hamburger.querySelector('.icon-close');
-
-hamburger.addEventListener('click', () => {
-  const isOpen = mobileMenu.classList.toggle('open');
-  hamburger.setAttribute('aria-expanded', isOpen);
-  mobileMenu.setAttribute('aria-hidden', !isOpen);
-  iconMenu.classList.toggle('hidden', isOpen);
-  iconClose.classList.toggle('hidden', !isOpen);
-});
-
-/* Close mobile menu on outside click */
-document.addEventListener('click', (e) => {
-  if (!navbar.contains(e.target)) {
-    mobileMenu.classList.remove('open');
-    hamburger.setAttribute('aria-expanded', 'false');
-    mobileMenu.setAttribute('aria-hidden', 'true');
-    iconMenu.classList.remove('hidden');
-    iconClose.classList.add('hidden');
-  }
-});
-
-/* ── "More" dropdown ── */
-const moreBtn  = document.getElementById('moreBtn');
-const moreMenu = document.getElementById('moreMenu');
-
-moreBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  const isOpen = moreMenu.classList.toggle('open');
-  moreBtn.setAttribute('aria-expanded', isOpen);
-});
-
-document.addEventListener('click', (e) => {
-  if (!moreMenu.contains(e.target) && e.target !== moreBtn) {
-    moreMenu.classList.remove('open');
-    moreBtn.setAttribute('aria-expanded', 'false');
-  }
-});
 
 /* ── Contact form submission ── */
 const contactForm   = document.getElementById('contactForm');
