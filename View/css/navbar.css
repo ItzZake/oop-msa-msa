@@ -186,11 +186,19 @@
   flex-direction: column;
   gap: 0.125rem;
   z-index: 100;
+<<<<<<< HEAD
   animation: dropdownIn 0.18s ease;
+=======
+  animation: dropdownIn 0.18s ease forwards;
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
 }
 
 .nav-dropdown.open .nav-dropdown__menu {
   display: flex;
+<<<<<<< HEAD
+=======
+  opacity: 1;
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
 }
 
 @keyframes dropdownIn {

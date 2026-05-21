@@ -3,61 +3,300 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<<<<<<<< HEAD:View/Pages/index.php
   <title>Track Your Applications</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/styles.css" />
+========
+  <title>Attendance Tracking System</title>
+  <link rel="stylesheet" href="styles.css" />
+>>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd:View/Pages/index.html
 </head>
 <body>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-blob hero-blob--left"></div>
-    <div class="hero-blob hero-blob--right"></div>
-    <div class="hero-content animate-in">
-      <span class="hero-badge">📋 Applications</span>
-      <h1 class="hero-title">Track Your Applications</h1>
-      <p class="hero-subtitle">Monitor the status of your enrollment applications and complete required steps</p>
+  <!-- HEADER -->
+  <section class="page-header">
+    <div class="header-decoration">📋</div>
+    <div class="header-inner">
+      <span class="header-badge">📋 Attendance Management</span>
+      <h1 class="header-title">Attendance Tracking System</h1>
+      <p class="header-subtitle">Manage and monitor student attendance with real-time tracking, analytics, and smart reports.</p>
     </div>
   </section>
 
-  <!-- Applications List -->
-  <section class="applications-section">
-    <div class="container">
-      <div class="applications-list" id="applications-list">
-        <!-- Cards injected by JS -->
-      </div>
+  <!-- VIEW SELECTOR -->
+  <section class="view-selector-bar">
+    <div class="view-selector-inner">
+      <button class="view-btn teacher-btn active" data-view="teacher">👩‍🏫 Teacher View</button>
+      <button class="view-btn parent-btn" data-view="parent">👨‍👩‍👧 Parent View</button>
+      <button class="view-btn admin-btn" data-view="admin">🛡️ Admin View</button>
+    </div>
+  </section>
 
-      <!-- Info Card -->
-      <div class="info-card animate-in">
-        <div class="info-grid">
-          <div class="info-item">
-            <div class="info-icon" style="background: rgba(233,30,140,0.08);">
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E91E8C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+  <!-- CONTENT -->
+  <section class="content-area">
+    <div class="content-inner">
+
+      <!-- TEACHER VIEW -->
+      <div id="view-teacher" class="view-panel active">
+
+        <!-- Controls -->
+        <div class="card">
+          <h3 class="section-title blue">👩‍🏫 Mark Attendance</h3>
+          <div class="controls-grid">
+            <div>
+              <label class="field-label blue">Select Class</label>
+              <div class="select-wrapper">
+                <select id="teacher-class-select" class="field-select blue-select">
+                  <option>🌻 KG1 – Sunflower</option>
+                  <option>🌈 KG2 – Rainbow</option>
+                  <option>🦋 Nursery – Butterfly</option>
+                  <option>⭐ KG2 – Stars</option>
+                </select>
+                <span class="select-arrow">▾</span>
+              </div>
             </div>
-            <h4>Application Support</h4>
-            <p>Need help with your application? Contact our admissions team.</p>
+            <div>
+              <label class="field-label blue">Date</label>
+              <input type="date" id="teacher-date" class="field-input blue-select" />
+            </div>
+            <div class="quick-mark-col">
+              <label class="field-label blue">Quick Mark</label>
+              <button id="mark-all-present" class="btn btn-green">✅ All Present</button>
+            </div>
           </div>
-          <div class="info-item">
-            <div class="info-icon" style="background: rgba(21,101,192,0.08);">
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            </div>
-            <h4>Processing Time</h4>
-            <p>Applications are typically reviewed within 3–5 business days.</p>
+        </div>
+
+        <!-- Summary mini cards -->
+        <div class="stats-grid-4">
+          <div class="stat-card blue-bg">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value blue" id="stat-total">8</div>
+            <div class="stat-label">Total</div>
           </div>
-          <div class="info-item">
-            <div class="info-icon" style="background: rgba(16,185,129,0.08);">
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            </div>
-            <h4>Document Upload</h4>
-            <p>All documents must be in PDF format and under 5MB.</p>
+          <div class="stat-card green-bg">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value green" id="stat-present">0</div>
+            <div class="stat-label">Present</div>
+          </div>
+          <div class="stat-card red-bg">
+            <div class="stat-icon">❌</div>
+            <div class="stat-value red" id="stat-absent">0</div>
+            <div class="stat-label">Absent</div>
+          </div>
+          <div class="stat-card amber-bg">
+            <div class="stat-icon">⏰</div>
+            <div class="stat-value amber" id="stat-late">0</div>
+            <div class="stat-label">Late</div>
+          </div>
+        </div>
+
+        <!-- Student List -->
+        <div class="card no-padding">
+          <div class="list-header blue-bg-light">
+            <h4 class="list-header-title blue" id="class-header-title">Students – KG1 – Sunflower</h4>
+            <span class="list-header-count" id="marked-count">0/8 marked</span>
+          </div>
+          <div id="student-list" class="student-list"></div>
+          <div class="list-footer">
+            <div id="submit-feedback" class="submit-feedback hidden">✅ Attendance submitted successfully!</div>
+            <div id="footer-count" class="footer-count">0/8 students marked</div>
+            <button id="submit-btn" class="btn btn-blue" disabled>✅ Submit Attendance</button>
           </div>
         </div>
       </div>
+
+      <!-- PARENT VIEW -->
+      <div id="view-parent" class="view-panel">
+
+        <!-- Child info -->
+        <div class="card child-info-card">
+          <div class="child-emoji">👧</div>
+          <div>
+            <h3 class="child-name">Emma Johnson</h3>
+            <div class="child-class blue">KG1 – Sunflower Class · Age 4</div>
+            <div class="child-teacher">Teacher: Ms. Emily Watson</div>
+          </div>
+          <div class="child-rate-box">
+            <div class="child-rate-value green" id="parent-rate-value">87%</div>
+            <div class="child-rate-label">Attendance Rate</div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid-3">
+          <div class="stat-card green-bg">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value green" id="parent-present">22</div>
+            <div class="stat-label">Days Present</div>
+          </div>
+          <div class="stat-card red-bg">
+            <div class="stat-icon">❌</div>
+            <div class="stat-value red" id="parent-absent">2</div>
+            <div class="stat-label">Days Absent</div>
+          </div>
+          <div class="stat-card amber-bg">
+            <div class="stat-icon">⏰</div>
+            <div class="stat-value amber" id="parent-late">2</div>
+            <div class="stat-label">Late Arrivals</div>
+          </div>
+        </div>
+
+        <!-- Calendar -->
+        <div class="card">
+          <h4 class="card-subtitle">📅 Attendance Calendar – December 2025</h4>
+          <div class="calendar-days-header">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+          </div>
+          <div class="calendar-grid" id="calendar-grid"></div>
+          <div class="calendar-legend">
+            <div class="legend-item"><span class="legend-dot green-bg-solid"></span> Present</div>
+            <div class="legend-item"><span class="legend-dot red-bg-solid"></span> Absent</div>
+            <div class="legend-item"><span class="legend-dot amber-bg-solid"></span> Late</div>
+          </div>
+        </div>
+
+        <!-- Attendance notice -->
+        <div class="notice-box" id="attendance-notice">
+          <span class="notice-icon">⚠️</span>
+          <div>
+            <div class="notice-title">Attendance Notice</div>
+            <p class="notice-body">Emma's attendance rate is below 90%. We recommend ensuring regular attendance to support her learning progress. Please contact the school if you need assistance.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN VIEW -->
+      <div id="view-admin" class="view-panel">
+
+        <!-- Filters -->
+        <div class="card">
+          <h3 class="section-title pink">🛠️ Attendance Reports & Analytics</h3>
+          <div class="filters-row">
+            <div class="select-wrapper">
+              <select class="field-select pink-select">
+                <option value="all">All Classes</option>
+                <option>🌻 KG1 – Sunflower</option>
+                <option>🌈 KG2 – Rainbow</option>
+                <option>🦋 Nursery – Butterfly</option>
+                <option>⭐ KG2 – Stars</option>
+              </select>
+              <span class="select-arrow pink">▾</span>
+            </div>
+            <input type="date" class="field-input pink-select" />
+            <button class="btn btn-pink">⚙ Apply Filters</button>
+            <button class="btn btn-pink-outline ml-auto">⬇ Export CSV</button>
+          </div>
+        </div>
+
+        <!-- Admin summary cards -->
+        <div class="stats-grid-4">
+          <div class="stat-card green-bg stat-card-row">
+            <div class="stat-icon">📊</div>
+            <div>
+              <div class="stat-value green">94%</div>
+              <div class="stat-label">School-Wide Rate</div>
+            </div>
+          </div>
+          <div class="stat-card blue-bg stat-card-row">
+            <div class="stat-icon">✅</div>
+            <div>
+              <div class="stat-value blue">234</div>
+              <div class="stat-label">Total Present Today</div>
+            </div>
+          </div>
+          <div class="stat-card red-bg stat-card-row">
+            <div class="stat-icon">❌</div>
+            <div>
+              <div class="stat-value red">10</div>
+              <div class="stat-label">Total Absent Today</div>
+            </div>
+          </div>
+          <div class="stat-card amber-bg stat-card-row">
+            <div class="stat-icon">⚠️</div>
+            <div>
+              <div class="stat-value amber">1</div>
+              <div class="stat-label">Classes Below 85%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+          <div class="card">
+            <h4 class="card-subtitle">Daily Attendance (Dec 2025)</h4>
+            <p class="card-desc">Number of students per day</p>
+            <canvas id="daily-chart" height="200"></canvas>
+          </div>
+          <div class="card">
+            <h4 class="card-subtitle">Monthly Attendance Rate</h4>
+            <p class="card-desc">School-wide attendance % per month</p>
+            <canvas id="monthly-chart" height="200"></canvas>
+          </div>
+        </div>
+
+        <!-- Class Reports Table -->
+        <div class="card no-padding">
+          <div class="list-header pink-bg-light">
+            <h4 class="list-header-title pink">📋 Class Attendance Reports – Today</h4>
+            <span class="list-header-count">December 10, 2025</span>
+          </div>
+          <div class="table-wrapper">
+            <table class="reports-table">
+              <thead>
+                <tr>
+                  <th>Class</th><th>Teacher</th><th>Total</th><th>Present</th><th>Absent</th><th>Late</th><th>Rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="td-bold">🌻 KG1 – Sunflower</td>
+                  <td class="td-muted">Ms. Emily Watson</td>
+                  <td class="td-bold">22</td>
+                  <td><span class="green">20</span></td>
+                  <td><span class="red">1</span></td>
+                  <td><span class="amber">1</span></td>
+                  <td><span class="rate-badge rate-good">91%</span></td>
+                </tr>
+                <tr>
+                  <td class="td-bold">🌈 KG2 – Rainbow</td>
+                  <td class="td-muted">Ms. Aisha Malik</td>
+                  <td class="td-bold">20</td>
+                  <td><span class="green">19</span></td>
+                  <td><span class="red">1</span></td>
+                  <td><span class="amber">0</span></td>
+                  <td><span class="rate-badge rate-good">95%</span></td>
+                </tr>
+                <tr>
+                  <td class="td-bold">🦋 Nursery – Butterfly</td>
+                  <td class="td-muted">Ms. Rose Kim</td>
+                  <td class="td-bold">18</td>
+                  <td><span class="green">15</span></td>
+                  <td><span class="red">2</span></td>
+                  <td><span class="amber">1</span></td>
+                  <td><span class="rate-badge rate-warn">83%</span></td>
+                </tr>
+                <tr>
+                  <td class="td-bold">⭐ KG2 – Stars</td>
+                  <td class="td-muted">Mr. James Rivera</td>
+                  <td class="td-bold">20</td>
+                  <td><span class="green">18</span></td>
+                  <td><span class="red">2</span></td>
+                  <td><span class="amber">0</span></td>
+                  <td><span class="rate-badge rate-good">90%</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- end admin -->
     </div>
   </section>
 
+<<<<<<<< HEAD:View/Pages/index.php
   <!-- Modal Overlay -->
   <div id="modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
     <div class="modal" id="modal">
@@ -70,5 +309,9 @@
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
   <script src="../scripts/app.js"></script>
+========
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js"></script>
+>>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd:View/Pages/index.html
 </body>
 </html>

@@ -1,0 +1,960 @@
+<?php
+// ── Session & Authentication ──
+session_start();
+
+// Redirect to login if not authenticated
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../../Controller/Login.php');
+    exit;
+}
+
+// Fetch user profile data from controller
+$userRole = $_SESSION['user_role'] ?? 'User';
+$userId = $_SESSION['user_id'];
+
+require_once __DIR__ . '/../../Models/Database.php';
+$db = Database::getInstance();
+
+// Get user data
+$userData = $db->fetchOne("SELECT userID, email, firstname, Lastname FROM user WHERE userID = ?", [$userId]);
+
+// Check if user exists
+if (!$userData) {
+    header('Location: ../../Controller/Login.php');
+    exit;
+}
+
+// Get role-specific data
+$roleData = [];
+if ($userRole === 'Teacher') {
+    $teacher = $db->fetchOne("SELECT teacherID, exprience, qualifications, specialization, phone FROM teacher WHERE userID = ?", [$userId]);
+    $roleData = $teacher ?? [];
+} elseif ($userRole === 'Parent') {
+    $parent = $db->fetchOne("SELECT parentID FROM parent WHERE userID = ?", [$userId]);
+    if ($parent) {
+        $childCount = $db->fetchOne("SELECT COUNT(*) as count FROM child WHERE parentID = ?", [$parent['parentID']]);
+        $roleData = ['childrenCount' => $childCount['count'] ?? 0];
+    } else {
+        $roleData = ['childrenCount' => 0];
+    }
+}
+
+// Prepare JS data
+$jsUserData = json_encode([
+    'userID' => $userData['userID'] ?? '',
+    'firstName' => $userData['firstname'] ?? '',
+    'lastName' => $userData['Lastname'] ?? '',
+    'displayName' => ($userData['firstname'] ?? '') . ' ' . ($userData['Lastname'] ?? ''),
+    'email' => $userData['email'] ?? '',
+    'phoneNumber' => $roleData['phone'] ?? '',
+    'role' => $userRole,
+    'status' => 'Active',
+    'experience' => $roleData['exprience'] ?? 0,
+    'qualifications' => $roleData['qualifications'] ?? '',
+    'specialization' => $roleData['specialization'] ?? '',
+    'childrenCount' => $roleData['childrenCount'] ?? 0,
+]);
+?>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Profile – Wellucation</title>
+    <link rel="stylesheet" href="EditProfile.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=DM+Serif+Display&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        try {
+          var path = location.pathname;
+          var baseHref = path.substring(0, path.lastIndexOf("/") + 1) || "/";
+          var b = document.createElement("base");
+          b.href = baseHref;
+          document.head.appendChild(b);
+        } catch (e) {
+          /* noop */
+        }
+      })();
+    </script>
+    <script>
+      // Pass PHP data to JavaScript
+      const userData = <?php echo $jsUserData; ?>;
+    </script>
+  </head>
+  <body>
+    <!-- ══ TOPBAR ══ -->
+    <div class="topbar">
+      <div class="container topbar__inner">
+        <div class="topbar__left">
+          <span class="topbar__item">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.17 3.38 2 2 0 0 1 3.13 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16h1z"
+              />
+            </svg>
+            +1 (555) 123-4567
+          </span>
+          <span class="topbar__item">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect width="20" height="16" x="2" y="4" rx="2" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+            hello@wellucation.edu
+          </span>
+        </div>
+        <div class="topbar__right">
+          <span>Follow us:</span>
+          <a href="#" class="topbar__social" aria-label="Facebook">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+              />
+            </svg>
+          </a>
+          <a href="#" class="topbar__social" aria-label="Instagram">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+              <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ NAVBAR ══ -->
+    <nav class="navbar" id="navbar">
+      <div class="container navbar__inner">
+        <a href="../index.php" class="navbar__logo">
+          <div class="navbar__logo-img">
+            <img
+              src="logo.jpeg"
+              alt="Wellucation"
+              onerror="
+                this.style.display = 'none';
+                this.parentElement.innerHTML =
+                  '<span style=\'font-size:1.5rem\'>🌟</span>';
+              "
+            />
+          </div>
+          <div class="navbar__logo-text">
+            <span class="navbar__logo-name">Wellucation</span>
+            <span class="navbar__logo-tagline">Learn. Play. Grow</span>
+          </div>
+        </a>
+        <div class="navbar__links" id="navLinks">
+          <a href="../index.php" class="nav-link">Home</a>
+          <a href="../about.php" class="nav-link">About Us</a>
+          <a href="../contact.php" class="nav-link">Contact Us</a>
+          <a href="../login.php" class="nav-link">Login</a>
+          <div class="nav-dropdown" id="moreDropdown">
+            <button
+              class="nav-link nav-dropdown__trigger"
+              id="moreBtn"
+              aria-expanded="false"
+              aria-haspopup="true"
+            >
+              More
+              <svg
+                class="nav-dropdown__chevron"
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div class="nav-dropdown__menu" id="moreMenu" role="menu">
+              <a
+                href="profile.html"
+                class="nav-dropdown__item active"
+                role="menuitem"
+                >👤 Profiles</a
+              >
+              <a
+                href="../dashboard.php"
+                class="nav-dropdown__item"
+                role="menuitem"
+                >📊 Dashboard</a
+              >
+              <a
+                href="attendance.html"
+                class="nav-dropdown__item"
+                role="menuitem"
+                >📅 Attendance</a
+              >
+              <a href="reports.html" class="nav-dropdown__item" role="menuitem"
+                >📋 Reports</a
+              >
+              <a
+                href="assignments.html"
+                class="nav-dropdown__item"
+                role="menuitem"
+                >📝 Assignments</a
+              >
+              <div class="nav-dropdown__divider"></div>
+              <a href="payment.html" class="nav-dropdown__item" role="menuitem"
+                >💳 Payment</a
+              >
+              <a
+                href="subscription.html"
+                class="nav-dropdown__item"
+                role="menuitem"
+                >⭐ Subscription</a
+              >
+              <a href="settings.html" class="nav-dropdown__item" role="menuitem"
+                >⚙️ Settings</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="navbar__right">
+          <button
+            class="hamburger"
+            id="hamburger"
+            aria-label="Toggle menu"
+            aria-expanded="false"
+          >
+            <svg
+              class="icon-menu"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="4" x2="20" y1="12" y2="12" />
+              <line x1="4" x2="20" y1="6" y2="6" />
+              <line x1="4" x2="20" y1="18" y2="18" />
+            </svg>
+            <svg
+              class="icon-close hidden"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+        <a href="../view/index.php" class="nav-link">🏠 Home</a>
+        <a href="../about.php" class="nav-link">ℹ️ About Us</a>
+        <a href="../profiles.php" class="nav-link active">👤 Profiles</a>
+        <a href="../login.php" class="nav-link">🔐 Login</a>
+      </div>
+    </nav>
+
+    <!-- ══ HERO ══ -->
+    <section class="ep-hero">
+      <div class="ep-hero__blob ep-hero__blob--left"></div>
+      <div class="ep-hero__blob ep-hero__blob--right"></div>
+      <div class="ep-hero__inner">
+        <a href="profile.html" class="ep-back">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          Back to Profiles
+        </a>
+        <span class="ep-hero__badge">✏️ Edit Profile</span>
+        <h1 class="ep-hero__title">Manage Your Profile</h1>
+        <p class="ep-hero__sub">
+          Update personal info, manage linked users, and keep your account
+          current.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ MAIN ══ -->
+    <main class="ep-main container">
+      <!-- LEFT: profile card + avatar editor -->
+      <aside class="ep-sidebar">
+        <div class="ep-avatar-card">
+          <div class="ep-avatar-banner"></div>
+          <div class="ep-avatar-body">
+            <div class="ep-avatar-ring" id="avatarRing">
+              <img
+                id="avatarImg"
+                src="https://images.unsplash.com/photo-1746513399803-e988cc54e812?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=200"
+                alt="Profile"
+              />
+              <div class="ep-avatar-fallback">👩‍🏫</div>
+              <label
+                class="ep-avatar-overlay"
+                for="avatarUpload"
+                title="Change photo"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+                  />
+                  <circle cx="12" cy="13" r="4" />
+                </svg>
+                Change
+              </label>
+              <input
+                type="file"
+                id="avatarUpload"
+                accept="image/*"
+                class="hidden"
+              />
+            </div>
+            <h2 class="ep-sidebar__name" id="sidebarName"><?php echo htmlspecialchars($userData['firstname'] . ' ' . $userData['Lastname']); ?></h2>
+            <div class="ep-sidebar__role"><?php echo htmlspecialchars($userRole); ?></div>
+            <div class="ep-sidebar__meta">
+              <div class="ep-sidebar__meta-item">✉️ <?php echo htmlspecialchars($userData['email']); ?></div>
+              <?php if ($userRole === 'Teacher' && isset($roleData['experience'])): ?>
+              <div class="ep-sidebar__meta-item">🏆 <?php echo htmlspecialchars($roleData['experience']); ?> Years Experience</div>
+              <?php endif; ?>
+              <?php if ($userRole === 'Parent'): ?>
+              <div class="ep-sidebar__meta-item">👨‍👩‍👧 <?php echo htmlspecialchars($roleData['childrenCount']); ?> Children</div>
+              <?php endif; ?>
+            </div>
+          </div>
+        </div>
+
+        <!-- Danger zone -->
+        <div class="ep-danger-card">
+          <h4 class="ep-danger__title">⚠️ Danger Zone</h4>
+          <p class="ep-danger__desc">
+            Permanently delete this account and all associated data. This action
+            cannot be undone.
+          </p>
+          <button class="ep-danger__btn" id="deleteAccountBtn">
+            🗑️ Delete Account
+          </button>
+        </div>
+      </aside>
+
+      <!-- RIGHT: form panels -->
+      <div class="ep-panels">
+        <!-- Tab bar -->
+        <div class="ep-tab-bar">
+          <button class="ep-tab active" data-tab="personal">
+            👤 Personal Info
+          </button>
+          <button class="ep-tab" data-tab="security">🔒 Security</button>
+          
+          <button class="ep-tab" data-tab="notifications">
+            🔔 Notifications
+          </button>
+        </div>
+
+        <!-- ── PERSONAL INFO ── -->
+        <div class="ep-panel active" id="panel-personal">
+          <div class="ep-panel__header">
+            <h3>Personal Information</h3>
+            <p>Update your display name, contact details, and role info.</p>
+          </div>
+          <div class="ep-form">
+            <div class="ep-field-row">
+              <div class="ep-field">
+                <label>First Name</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  value="<?php echo htmlspecialchars($userData['firstname'] ?? ''); ?>"
+                  placeholder="First name"
+                />
+              </div>
+              <div class="ep-field">
+                <label>Last Name</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  value="<?php echo htmlspecialchars($userData['Lastname'] ?? ''); ?>"
+                  placeholder="Last name"
+                />
+              </div>
+            </div>
+            <div class="ep-field">
+              <label>Display Name</label>
+              <input
+                type="text"
+                id="displayName"
+                value="<?php echo htmlspecialchars($userData['firstname'] . ' ' . $userData['Lastname']); ?>"
+                placeholder="Display name"
+              />
+            </div>
+            <div class="ep-field">
+              <label>Email Address</label>
+              <input
+                type="email"
+                id="email"
+                value="<?php echo htmlspecialchars($userData['email'] ?? ''); ?>"
+                placeholder="Email"
+              />
+            </div>
+            <?php if ($userRole === 'Teacher'): ?>
+            <div class="ep-field">
+              <label>Phone Number</label>
+              <input
+                type="tel"
+                id="phone"
+                value="<?php echo htmlspecialchars($roleData['phone'] ?? ''); ?>"
+                placeholder="Phone number"
+              />
+            </div>
+            <?php endif; ?>
+            <div class="ep-field-row">
+              <div class="ep-field">
+                <label>Role</label>
+                <select id="role">
+                  <option value="teacher" selected>Teacher</option>
+                  <option value="admin">Admin</option>
+                  <option value="parent">Parent</option>
+                </select>
+              </div>
+              <div class="ep-field">
+                <label>Class / Department</label>
+                <input
+                  type="text"
+                  id="classField"
+                  value="<?php echo htmlspecialchars($roleData['specialization'] ?? ''); ?>"
+                  placeholder="Class"
+                />
+              </div>
+            </div>
+            <?php if ($userRole === 'Teacher'): ?>
+            <div class="ep-field">
+              <label>Years of Experience</label>
+              <input
+                type="number"
+                id="experience"
+                value="<?php echo htmlspecialchars($roleData['exprience'] ?? 0); ?>"
+                placeholder="Years"
+                min="0"
+              />
+            </div>
+            <?php endif; ?>
+            <div class="ep-field">
+              <label>Bio</label>
+              <textarea
+                id="bio"
+                rows="3"
+                placeholder="Tell us about yourself..."
+              ><?php echo htmlspecialchars($roleData['qualifications'] ?? ''); ?></textarea
+              >
+            </div>
+            <div class="ep-form-actions">
+              <button
+                class="ep-btn ep-btn--ghost"
+                type="button"
+                onclick="resetPersonal()"
+              >
+                Discard Changes
+              </button>
+              <button
+                class="ep-btn ep-btn--primary"
+                type="button"
+                onclick="savePersonal()"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── SECURITY ── -->
+        <div class="ep-panel" id="panel-security">
+          <div class="ep-panel__header">
+            <h3>Security Settings</h3>
+            <p>Update your password and manage account security preferences.</p>
+          </div>
+          <div class="ep-form">
+            <div class="ep-field">
+              <label>Current Password</label>
+              <div class="ep-pwd-wrap">
+                <input
+                  type="password"
+                  id="currentPwd"
+                  placeholder="Enter current password"
+                />
+                <button
+                  class="ep-pwd-toggle"
+                  type="button"
+                  data-target="currentPwd"
+                >
+                  👁️
+                </button>
+              </div>
+            </div>
+            <div class="ep-field">
+              <label>New Password</label>
+              <div class="ep-pwd-wrap">
+                <input
+                  type="password"
+                  id="newPwd"
+                  placeholder="Min 8 characters"
+                />
+                <button
+                  class="ep-pwd-toggle"
+                  type="button"
+                  data-target="newPwd"
+                >
+                  👁️
+                </button>
+              </div>
+              <div class="ep-pwd-strength" id="pwdStrength">
+                <div class="ep-pwd-strength-bar">
+                  <div class="ep-pwd-strength-fill" id="pwdFill"></div>
+                </div>
+                <span class="ep-pwd-strength-label" id="pwdLabel"
+                  >Enter a password</span
+                >
+              </div>
+            </div>
+            <div class="ep-field">
+              <label>Confirm New Password</label>
+              <div class="ep-pwd-wrap">
+                <input
+                  type="password"
+                  id="confirmPwd"
+                  placeholder="Repeat new password"
+                />
+                <button
+                  class="ep-pwd-toggle"
+                  type="button"
+                  data-target="confirmPwd"
+                >
+                  👁️
+                </button>
+              </div>
+            </div>
+            <div class="ep-divider"></div>
+            <div class="ep-field">
+              <label>Two-Factor Authentication</label>
+              <div class="ep-toggle-row">
+                <div>
+                  <div class="ep-toggle-title">Enable 2FA</div>
+                  <div class="ep-toggle-desc">
+                    Extra security layer via email or authenticator app
+                  </div>
+                </div>
+                <label class="ep-switch">
+                  <input type="checkbox" id="twoFaToggle" />
+                  <span class="ep-switch-track"
+                    ><span class="ep-switch-thumb"></span
+                  ></span>
+                </label>
+              </div>
+            </div>
+            <div class="ep-field">
+              <label>Login Notifications</label>
+              <div class="ep-toggle-row">
+                <div>
+                  <div class="ep-toggle-title">Notify on new login</div>
+                  <div class="ep-toggle-desc">
+                    Get an email whenever a new device logs in
+                  </div>
+                </div>
+                <label class="ep-switch">
+                  <input type="checkbox" checked id="loginNotifToggle" />
+                  <span class="ep-switch-track"
+                    ><span class="ep-switch-thumb"></span
+                  ></span>
+                </label>
+              </div>
+            </div>
+            <div class="ep-form-actions">
+              <button class="ep-btn ep-btn--ghost" type="button">Cancel</button>
+              <button
+                class="ep-btn ep-btn--primary"
+                type="button"
+                onclick="changePassword()"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect width="11" height="11" x="3" y="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                Update Password
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── MANAGE USERS ── -->
+        <div class="ep-panel" id="panel-users">
+          <div class="ep-panel__header">
+            <h3>Manage Users</h3>
+            <p>Add new users or remove existing ones linked to this profile.</p>
+          </div>
+
+          <!-- Search + Add -->
+          <div class="ep-users-toolbar">
+            <div class="ep-search-wrap">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              <input
+                type="text"
+                id="userSearch"
+                placeholder="Search users…"
+                oninput="filterUsers(this.value)"
+              />
+            </div>
+            <button class="ep-btn ep-btn--primary ep-btn--sm" id="openAddModal">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M5 12h14" />
+                <path d="M12 5v14" />
+              </svg>
+              Add User
+            </button>
+          </div>
+
+          <!-- Filter pills -->
+          <div class="ep-filter-pills">
+            <button class="ep-pill active" data-filter="all">All</button>
+            <button class="ep-pill" data-filter="teacher">Teachers</button>
+            <button class="ep-pill" data-filter="admin">Admins</button>
+            <button class="ep-pill" data-filter="parent">Parents</button>
+            <button class="ep-pill" data-filter="child">Children</button>
+          </div>
+
+          <!-- User list -->
+          <div class="ep-user-list" id="userList"></div>
+        </div>
+
+        <!-- ── NOTIFICATIONS ── -->
+        <div class="ep-panel" id="panel-notifications">
+          <div class="ep-panel__header">
+            <h3>Notification Preferences</h3>
+            <p>Choose what you want to be notified about and how.</p>
+          </div>
+          <div class="ep-form">
+            <div class="ep-notif-section">
+              <div class="ep-notif-section-label">📧 Email Notifications</div>
+              <div class="ep-field">
+                <div class="ep-toggle-row">
+                  <div>
+                    <div class="ep-toggle-title">Attendance Alerts</div>
+                    <div class="ep-toggle-desc">
+                      Notify when a child is marked absent or late
+                    </div>
+                  </div>
+                  <label class="ep-switch"
+                    ><input type="checkbox" checked /><span
+                      class="ep-switch-track"
+                      ><span class="ep-switch-thumb"></span></span
+                  ></label>
+                </div>
+              </div>
+              <div class="ep-field">
+                <div class="ep-toggle-row">
+                  <div>
+                    <div class="ep-toggle-title">New Messages</div>
+                    <div class="ep-toggle-desc">
+                      Email when you receive a new message
+                    </div>
+                  </div>
+                  <label class="ep-switch"
+                    ><input type="checkbox" checked /><span
+                      class="ep-switch-track"
+                      ><span class="ep-switch-thumb"></span></span
+                  ></label>
+                </div>
+              </div>
+              <div class="ep-field">
+                <div class="ep-toggle-row">
+                  <div>
+                    <div class="ep-toggle-title">Report Ready</div>
+                    <div class="ep-toggle-desc">
+                      Notify when a new report is available
+                    </div>
+                  </div>
+                  <label class="ep-switch"
+                    ><input type="checkbox" /><span class="ep-switch-track"
+                      ><span class="ep-switch-thumb"></span></span
+                  ></label>
+                </div>
+              </div>
+            </div>
+            <div class="ep-divider"></div>
+            <div class="ep-notif-section">
+              <div class="ep-notif-section-label">📱 Push Notifications</div>
+              <div class="ep-field">
+                <div class="ep-toggle-row">
+                  <div>
+                    <div class="ep-toggle-title">Event Reminders</div>
+                    <div class="ep-toggle-desc">
+                      Reminders for school events and meetings
+                    </div>
+                  </div>
+                  <label class="ep-switch"
+                    ><input type="checkbox" checked /><span
+                      class="ep-switch-track"
+                      ><span class="ep-switch-thumb"></span></span
+                  ></label>
+                </div>
+              </div>
+              <div class="ep-field">
+                <div class="ep-toggle-row">
+                  <div>
+                    <div class="ep-toggle-title">System Alerts</div>
+                    <div class="ep-toggle-desc">
+                      Important system and security notifications
+                    </div>
+                  </div>
+                  <label class="ep-switch"
+                    ><input type="checkbox" checked /><span
+                      class="ep-switch-track"
+                      ><span class="ep-switch-thumb"></span></span
+                  ></label>
+                </div>
+              </div>
+            </div>
+            <div class="ep-form-actions">
+              <button class="ep-btn ep-btn--ghost" type="button">
+                Reset to Defaults
+              </button>
+              <button
+                class="ep-btn ep-btn--primary"
+                type="button"
+                onclick="showToast('✅ Notification preferences saved!')"
+              >
+                Save Preferences
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /ep-panels -->
+    </main>
+
+    <!-- ══ ADD USER MODAL ══ -->
+    <div class="ep-modal-overlay hidden" id="addModal">
+      <div class="ep-modal">
+        <div class="ep-modal__header">
+          <h3>➕ Add New User</h3>
+          <button class="ep-modal__close" id="closeModal">✕</button>
+        </div>
+        <div class="ep-modal__body">
+          <div class="ep-field-row">
+            <div class="ep-field">
+              <label>First Name *</label>
+              <input type="text" id="newFirst" placeholder="First name" />
+            </div>
+            <div class="ep-field">
+              <label>Last Name *</label>
+              <input type="text" id="newLast" placeholder="Last name" />
+            </div>
+          </div>
+          <div class="ep-field">
+            <label>Email Address *</label>
+            <input
+              type="email"
+              id="newEmail"
+              placeholder="email@wellucation.edu"
+            />
+          </div>
+          <div class="ep-field-row">
+            <div class="ep-field">
+              <label>Password *</label>
+              <input
+                type="password"
+                id="newPassword"
+                autocomplete="new-password"
+                placeholder="Enter a password"
+              />
+            </div>
+            <div class="ep-field">
+              <label>Role *</label>
+              <select id="newRole">
+                <option value="teacher">👩‍🏫 Teacher</option>
+                <option value="admin">🛡️ Admin</option>
+                <option value="parent">❤️ Parent</option>
+                <option value="child">👶 Child</option>
+              </select>
+            </div>
+          </div>
+          <div class="ep-field-row">
+            <div class="ep-field">
+              <label>Class</label>
+              <input type="text" id="newClass" placeholder="e.g. KG1" />
+            </div>
+          </div>
+          <div class="ep-field">
+            <label>Status</label>
+            <select id="newStatus">
+              <option value="active">Active</option>
+              <option value="pending">Pending</option>
+            </select>
+          </div>
+        </div>
+        <div class="ep-modal__footer">
+          <button class="ep-btn ep-btn--ghost" id="cancelModal">Cancel</button>
+          <button class="ep-btn ep-btn--primary" id="confirmAdd">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
+            Add User
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ DELETE CONFIRM MODAL ══ -->
+    <div class="ep-modal-overlay hidden" id="deleteModal">
+      <div class="ep-modal ep-modal--sm">
+        <div class="ep-modal__header">
+          <h3>🗑️ Confirm Delete</h3>
+          <button class="ep-modal__close" id="closeDeleteModal">✕</button>
+        </div>
+        <div class="ep-modal__body">
+          <p id="deleteModalMsg">Are you sure you want to remove this user?</p>
+          <p style="margin-top: 0.5rem; font-size: 0.8125rem; color: #9ca3af">
+            This action cannot be undone.
+          </p>
+        </div>
+        <div class="ep-modal__footer">
+          <button class="ep-btn ep-btn--ghost" id="cancelDelete">Cancel</button>
+          <button class="ep-btn ep-btn--danger" id="confirmDelete">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TOAST ══ -->
+    <div class="ep-toast hidden" id="toast"></div>
+
+    <script src="../scripts/EditProfile.js"></script>
+  </body>
+</html>

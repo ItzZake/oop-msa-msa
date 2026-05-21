@@ -61,6 +61,11 @@
       return false;
     // Code to check if seats are available in course
    }
+
+   function Isfull()
+   {
+      return !$this->CheckSeats();
+   }
 	function GetCoursesByAge($age)
   	{
       $sql = "SELECT * FROM course WHERE ageMin <= ? AND ageMax >= ? AND isActive = 1";
@@ -83,10 +88,10 @@
   }
 	function GetScheduleforCourses($courseId)
 	{
-	  $sql = "SELECT schedule FROM course WHERE IsActive = 1 AND courseID = ?";
+	  $sql = "SELECT schedule FROM course WHERE isActive = 1 AND courseID = ?";
 	  $params = [$courseId];
-	  $result = Database::getInstance()->fetchAll($sql, $params);
-	  return json_decode($result['schedule'], true);
+	  $result = Database::getInstance()->fetchOne($sql, $params);
+	  return $result ? json_decode($result['schedule'], true) : [];
 	// Code to retrieve schedule for a specific courses
 	}
    function GetAssignedTeacherId($courseId)
@@ -105,12 +110,70 @@
       return Database::getInstance()->fetchOne($sql, $params);
     // Code to retrieve details of a specific course
   }
-   function Isfull()
+
+   function GetCurrentEnrollment($courseId = null)
    {
-      if($this->CurrentEnrollment >= $this->MaxCapacity)
-        return true;
+      $courseId = $courseId ?? $this->courseId;
+      $sql = "SELECT COUNT(*) as total FROM Enrollment WHERE courseID = ? AND status = 'Active'";
+      $result = Database::getInstance()->fetchOne($sql, [$courseId]);
+      return $result ? (int)$result['total'] : 0;
+   }
+
+   function GetMinAge($courseId = null)
+   {
+      $courseId = $courseId ?? $this->courseId;
+      $sql = "SELECT ageMin FROM course WHERE courseID = ?";
+      $result = Database::getInstance()->fetchOne($sql, [$courseId]);
+      return $result ? (int)$result['ageMin'] : null;
+   }
+
+   function GetMaxAge($courseId = null)
+   {
+      $courseId = $courseId ?? $this->courseId;
+      $sql = "SELECT ageMax FROM course WHERE courseID = ?";
+      $result = Database::getInstance()->fetchOne($sql, [$courseId]);
+      return $result ? (int)$result['ageMax'] : null;
+   }
+
+   function GetMaxCapacity($courseId = null)
+   {
+      $courseId = $courseId ?? $this->courseId;
+      $sql = "SELECT maxCapacity FROM course WHERE courseID = ?";
+      $result = Database::getInstance()->fetchOne($sql, [$courseId]);
+      return $result ? (int)$result['maxCapacity'] : null;
+   }
+
+   function AssignTeacher($teacherId, $courseId)
+   {
+      $sql = "UPDATE course SET assignedTeacherId = ? WHERE courseID = ?";
+      $stmt = Database::getInstance()->query($sql, [$teacherId, $courseId]);
+      return $stmt && $stmt->rowCount() > 0;
+   }
+
+   function HasSchedulingConflict($teacherId, $courseId)
+   {
+      require_once 'CourseAssignment.php';
+      $course = $this->GetCourseById($courseId);
+      if (!$course || empty($course['schedule'])) {
+         return false;
+      }
+      $schedule = json_decode($course['schedule'], true);
+      if (!is_array($schedule)) {
+         return false;
+      }
+      $assignment = new CourseAssignment();
+      foreach ($schedule as $entry) {
+         $day   = $entry['day'] ?? $entry['DayOfWeek'] ?? null;
+         $start = $entry['startTime'] ?? $entry['start'] ?? null;
+         $end   = $entry['endTime'] ?? $entry['end'] ?? null;
+         if (!$day || !$start || !$end) {
+            continue;
+         }
+         if ($assignment->HasConflict($teacherId, $day, $start, $end)) {
+            return true;
+         }
+      }
       return false;
-    // Code to check if course is full
    }
 
    function IsEligible($childAge)
@@ -154,6 +217,22 @@
         return $WaitlistEntry->AssignWaitlist($CourseId, $childID, $ParentID);
       }
       return false;
+   }
+
+   function GetTeacherCourses($teacherId, $userId = null)
+   {
+      $userId = $userId ?? $teacherId;
+      $sql = "SELECT c.*,
+              (SELECT COUNT(DISTINCT ch.childID)
+               FROM enrollment e
+               INNER JOIN child ch ON e.childID = ch.childID
+               INNER JOIN parent p ON ch.parentID = p.parentID
+               WHERE e.courseID = c.courseID AND e.status = 'Active') AS enrolledStudents
+              FROM course c
+              WHERE c.isActive = 1
+                AND (c.assignedTeacherID = ? OR c.assignedTeacherID = ?)
+              ORDER BY c.name ASC";
+      return Database::getInstance()->fetchAll($sql, [$teacherId, $userId]);
    }
   }
 ?>

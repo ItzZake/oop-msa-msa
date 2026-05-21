@@ -1,14 +1,14 @@
 <?php
-require_once 'Database.php';
-require_once 'User.php';
-require_once 'Parent.php';
-require_once 'Teacher.php';
-require_once 'Admin.php';
+require_once __DIR__ . '/Database.php';
+require_once __DIR__ . '/User.php';
+require_once __DIR__ . '/Parent.php';
+require_once __DIR__ . '/Teacher.php';
+require_once __DIR__ . '/Admin.php';
 
 class UserRepository {
     public function findByEmail(string $email): ?User
     {
-        $row = Database::getInstance()->fetchOne("SELECT * FROM Users WHERE email = ?", [$email]);
+        $row = $this->fetchUserRowByEmail($email);
         if (!$row) {
             return null;
         }
@@ -18,12 +18,117 @@ class UserRepository {
 
     public function findById(int $userId): ?User
     {
-        $row = Database::getInstance()->fetchOne("SELECT * FROM Users WHERE userId = ?", [$userId]);
+        $row = $this->fetchUserRowById($userId);
         if (!$row) {
             return null;
         }
 
         return $this->mapRowToUser($row);
+    }
+
+    public function findByName(string $fullName): array
+    {
+        $fullName = trim($fullName);
+        if ($fullName === '') {
+            return [];
+        }
+
+        $like = "%{$fullName}%";
+        $queries = [
+            ["SELECT * FROM User WHERE firstname LIKE ? OR Lastname LIKE ? OR CONCAT(firstname, ' ', Lastname) LIKE ?", [$like, $like, $like]],
+            ["SELECT * FROM Users WHERE firstname LIKE ? OR Lastname LIKE ? OR CONCAT(firstname, ' ', Lastname) LIKE ?", [$like, $like, $like]],
+        ];
+
+        $rows = [];
+        foreach ($queries as [$sql, $params]) {
+            try {
+                $fetched = Database::getInstance()->fetchAll($sql, $params);
+                if (is_array($fetched) && count($fetched) > 0) {
+                    $rows = array_merge($rows, $fetched);
+                }
+            } catch (\Throwable $e) {
+                continue;
+            }
+        }
+
+        return array_map([$this, 'mapRowToUser'], $rows);
+    }
+
+    public function findByIdAndName(int $userId, string $fullName): ?User
+    {
+        $fullName = trim($fullName);
+        if ($userId <= 0 || $fullName === '') {
+            return null;
+        }
+
+        $searchTerms = array_filter(preg_split('/\s+/', preg_replace('/[^a-zA-Z0-9]+/', ' ', $fullName)), fn($term) => strlen($term) >= 2);
+        if (empty($searchTerms)) {
+            return null;
+        }
+
+        $nameConditions = array_fill(0, count($searchTerms), '(firstname LIKE ? OR Lastname LIKE ?)');
+        $nameSql = implode(' AND ', $nameConditions);
+        $params = [$userId];
+
+        foreach ($searchTerms as $term) {
+            $like = '%' . $term . '%';
+            $params[] = $like;
+            $params[] = $like;
+        }
+
+        $queries = [
+            ["SELECT * FROM User WHERE userID = ? AND {$nameSql}", $params],
+            ["SELECT * FROM Users WHERE userId = ? AND {$nameSql}", $params],
+        ];
+
+        foreach ($queries as [$sql, $queryParams]) {
+            try {
+                $row = Database::getInstance()->fetchOne($sql, $queryParams);
+                if (!empty($row)) {
+                    return $this->mapRowToUser($row);
+                }
+            } catch (\Throwable $e) {
+                continue;
+            }
+        }
+
+        return null;
+    }
+
+    private function fetchUserRowByEmail(string $email): ?array
+    {
+        $queries = [
+            ["SELECT * FROM User WHERE email = ?", [$email]],
+            ["SELECT * FROM Users WHERE email = ?", [$email]],
+        ];
+
+        return $this->executeUserRowQueries($queries);
+    }
+
+    private function fetchUserRowById(int $userId): ?array
+    {
+        $queries = [
+            ["SELECT * FROM User WHERE userID = ?", [$userId]],
+            ["SELECT * FROM Users WHERE userId = ?", [$userId]],
+        ];
+
+        return $this->executeUserRowQueries($queries);
+    }
+
+    private function executeUserRowQueries(array $queries): ?array
+    {
+        foreach ($queries as [$sql, $params]) {
+            try {
+                $row = Database::getInstance()->fetchOne($sql, $params);
+                if (!empty($row)) {
+                    return $row;
+                }
+            } catch (\Throwable $e) {
+                continue;
+            }
+        }
+
+        return null;
     }
 
     public function save(User $user): bool
@@ -42,7 +147,7 @@ class UserRepository {
 
     private function insert(User $user): bool
     {
-        $sql = "INSERT INTO Users (email, password, firstName, lastName, preferredLanguage, createdAt, lastLoginAt, role, isActive)
+        $sql = "INSERT INTO User (email, passwordHash, firstname, Lastname, preferredLanguage, createdAt, lastLoginAt, Role, isActive)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $params = [
@@ -53,7 +158,7 @@ class UserRepository {
             $user->getPreferredLanguage(),
             $user->getCreatedAt(),
             $user->getLastLoginAt(),
-            $user->getRole(),
+            ucfirst($user->getRole()),
             $user->isActive() ? 1 : 0
         ];
 
@@ -72,7 +177,7 @@ class UserRepository {
 
     private function update(User $user): bool
     {
-        $sql = "UPDATE Users SET email = ?, password = ?, firstName = ?, lastName = ?, preferredLanguage = ?, createdAt = ?, lastLoginAt = ?, role = ?, isActive = ? WHERE userId = ?";
+        $sql = "UPDATE User SET email = ?, passwordHash = ?, firstname = ?, Lastname = ?, preferredLanguage = ?, createdAt = ?, lastLoginAt = ?, Role = ?, isActive = ? WHERE userID = ?";
 
         $params = [
             $user->getEmail(),
@@ -82,7 +187,7 @@ class UserRepository {
             $user->getPreferredLanguage(),
             $user->getCreatedAt(),
             $user->getLastLoginAt(),
-            $user->getRole(),
+            ucfirst($user->getRole()),
             $user->isActive() ? 1 : 0,
             $user->getId()
         ];
@@ -95,61 +200,20 @@ class UserRepository {
     {
         $role = strtolower($row['role'] ?? $row['Role'] ?? '');
         $data = [
-            'userId' => isset($row['userId']) ? $row['userId'] : (isset($row['UserId']) ? $row['UserId'] : null),
+            'userId' => $row['userId'] ?? $row['UserId'] ?? $row['userID'] ?? null,
             'email' => $row['email'] ?? $row['Email'] ?? '',
-            'password' => $row['password'] ?? $row['Password'] ?? '',
-            'preferredLanguage' => $row['preferredLanguage'] ?? $row['PreferredLanguage'] ?? null,
+            'password' => $row['password'] ?? $row['Password'] ?? $row['passwordHash'] ?? $row['passwordhash'] ?? '',
+            'preferredLanguage' => $row['preferredLanguage'] ?? $row['PreferredLanguage'] ?? $row['preferredlanguage'] ?? null,
             'createdAt' => $row['createdAt'] ?? $row['CreatedAt'] ?? null,
             'lastLoginAt' => $row['lastLoginAt'] ?? $row['LastLoginAt'] ?? null,
-            'role' => $row['role'] ?? $row['Role'] ?? null,
-            'firstName' => $row['firstName'] ?? $row['FirstName'] ?? null,
-            'lastName' => $row['lastName'] ?? $row['LastName'] ?? null,
+            'role' => strtolower($row['role'] ?? $row['Role'] ?? ''),
+            'firstName' => $row['firstName'] ?? $row['firstname'] ?? $row['FirstName'] ?? null,
+            'lastName' => $row['lastName'] ?? $row['Lastname'] ?? $row['LastName'] ?? null,
             'isActive' => $row['isActive'] ?? $row['IsActive'] ?? 1,
         ];
 
-        if ($role === 'teacher') {
-            return new Teacher(
-                $data['userId'],
-                $data['email'],
-                $data['password'],
-                $data['preferredLanguage'],
-                $data['createdAt'],
-                $data['lastLoginAt'],
-                $data['role'],
-                $data['firstName'],
-                $data['lastName']
-            );
-        }
-
-        if ($role === 'parent' || $role === 'parents') {
-            return new Parents(
-                $data['userId'],
-                $data['email'],
-                $data['password'],
-                $data['preferredLanguage'],
-                $data['createdAt'],
-                $data['lastLoginAt'],
-                $data['role'],
-                $data['firstName'],
-                $data['lastName']
-            );
-        }
-
-        if ($role === 'admin') {
-            return new Admin(
-                $data['userId'],
-                $data['email'],
-                $data['password'],
-                $data['preferredLanguage'],
-                $data['createdAt'],
-                $data['lastLoginAt'],
-                $data['role'],
-                $data['firstName'],
-                $data['lastName']
-            );
-        }
-
+        // For the API we return a simple User instance to avoid pulling
+        // in other model classes which may include view files.
         return User::fromArray($data);
     }
 }
-?>`

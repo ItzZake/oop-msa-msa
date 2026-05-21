@@ -1,10 +1,10 @@
 <?php
 session_start();
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Attendance.php';
-require_once '/../Models/Payment.php';
-require_once '/../Models/Enrollment.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Attendance.php';
+require_once __DIR__ . '/../Models/Payment.php';
+require_once __DIR__ . '/../Models/Enrollment.php';
 
 $report_type = htmlspecialchars($_POST['report_type'] ?? '');
 $export_type = htmlspecialchars($_POST['export_type'] ?? ''); // 'csv' or 'pdf'

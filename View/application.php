@@ -6,11 +6,26 @@ $currentPage = "application";
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track Your Applications</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../view/css/styles.css" />
+</head>
+<body>
+<?php
 include 'header.php';
 include 'navbar.php';
 ?>
 
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,6 +50,19 @@ include 'navbar.php';
     </div>
   </section>
 
+=======
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-blob hero-blob--left"></div>
+    <div class="hero-blob hero-blob--right"></div>
+    <div class="hero-content animate-in">
+      <span class="hero-badge">📋 Applications</span>
+      <h1 class="hero-title">Track Your Applications</h1>
+      <p class="hero-subtitle">Monitor the status of your enrollment applications and complete required steps</p>
+    </div>
+  </section>
+
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
   <!-- Applications List -->
   <section class="applications-section">
     <div class="container">

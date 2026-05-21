@@ -1,4 +1,5 @@
 /* ════════════════════════════════════════════
+<<<<<<< HEAD
    WELLUCATION — main.js
 ════════════════════════════════════════════ */
 
@@ -112,3 +113,15 @@
   }
 
 })();
+=======
+   WELLUCATION — home.js
+════════════════════════════════════════════
+   
+   NOTE: Navbar functionality is now handled by navbar.php
+   This file previously contained duplicate navbar code which
+   has been removed to prevent conflicts.
+   
+════════════════════════════════════════════ */
+
+// Home page specific functionality can be added here
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd

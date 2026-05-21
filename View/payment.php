@@ -1,12 +1,20 @@
 <?php
-session_start();
-$pageTitle = "Payment – Wellucation Nursery";
-$currentPage = "payment";
-$pageCss = 'payment.css';
-include 'header.php';
-include 'navbar.php';
+include "header.php";
+include "navbar.php";
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Payment</title>
+  <link rel="stylesheet" href="css/payment.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+</head>
+<body>
 
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,6 +43,24 @@ include 'navbar.php';
     <div class="container">
       <div class="payment-grid">
 
+=======
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="hero-blob hero-blob--left"></div>
+    <div class="hero-blob hero-blob--right"></div>
+    <div class="hero-content">
+      <span class="hero-badge">💳 Payment</span>
+      <h1 class="hero-title">Secure Payment Processing</h1>
+      <p class="hero-subtitle">Complete your payment securely with our encrypted payment system</p>
+    </div>
+  </section>
+
+  <!-- Payment Section -->
+  <section class="payment-section">
+    <div class="container">
+      <div class="payment-grid">
+
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
         <!-- Payment Form -->
         <div class="form-card" id="formCard">
           <h2 class="form-title">
@@ -71,7 +97,36 @@ include 'navbar.php';
 
           <!-- Card Form -->
           <form id="cardForm" class="card-form" novalidate>
+<<<<<<< HEAD
             <div class="field-group">
+              <label class="field-label" for="cardNumber">Card Number</label>
+              <div class="input-wrap">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                <input type="text" id="cardNumber" class="field-input" placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="cc-number" required />
+=======
+
+            <!-- Parent & Child IDs (replace with session values once login exists) -->
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label" for="parentID">Parent ID</label>
+                <div class="input-wrap">
+                  <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <input type="number" id="parentID" class="field-input" placeholder="e.g. 1" min="1" required />
+                </div>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="childID">Child ID</label>
+                <div class="input-wrap">
+                  <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <input type="number" id="childID" class="field-input" placeholder="e.g. 1" min="1" required />
+                </div>
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
+              </div>
+            </div>
+
+            <div class="field-group">
+<<<<<<< HEAD
+=======
               <label class="field-label" for="cardNumber">Card Number</label>
               <div class="input-wrap">
                 <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
@@ -80,6 +135,7 @@ include 'navbar.php';
             </div>
 
             <div class="field-group">
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
               <label class="field-label" for="cardName">Cardholder Name</label>
               <div class="input-wrap">
                 <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -169,6 +225,7 @@ include 'navbar.php';
       </div>
     </div>
   </section>
+<<<<<<< HEAD
 
   <!-- Toast Notification -->
   <div id="toast" class="toast hidden">
@@ -180,5 +237,19 @@ include 'navbar.php';
 </body>
 </html>
 
+=======
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
 
-<?php include 'footer.php'; ?>
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    Payment processed successfully! Thank you.
+  </div>
+
+  <script src="scripts/payment.js"></script>
+</body>
+</html>
+
+<?php
+include "footer.php";	
+?>

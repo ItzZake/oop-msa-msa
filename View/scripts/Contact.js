@@ -1,5 +1,6 @@
 /* ══════════════════════════════════════
    WELLUCATION — CONTACT PAGE SCRIPTS
+<<<<<<< HEAD
    ══════════════════════════════════════ */
 
 /* ── Navbar: sticky shadow ── */
@@ -52,6 +53,11 @@ document.addEventListener('click', (e) => {
   }
 });
 
+=======
+   NOTE: Navbar functionality is now handled by navbar.php
+   ══════════════════════════════════════ */
+
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
 /* ── Contact form submission ── */
 const contactForm   = document.getElementById('contactForm');
 const successBanner = document.getElementById('successBanner');

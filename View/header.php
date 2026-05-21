@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 </head>
 	<link rel="stylesheet" href="../view/css/header.css" />
 <body>
+=======
+<link rel="stylesheet" href="css/header.css" />
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
 <div class="topbar" id="topbar">
     <div class="container topbar__inner">
       <div class="topbar__left">

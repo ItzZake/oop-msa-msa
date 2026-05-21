@@ -33,6 +33,7 @@ class AuthService implements Authenticable
 			throw new RuntimeException('Email is already registered.');
 		}
 
+<<<<<<< HEAD
 		$user = new User(
 			null,
 			$email,
@@ -134,6 +135,115 @@ class AuthService implements Authenticable
 			return null;
 		}
 
+=======
+		// Default to 'en' if no preferred language specified
+		if (empty($preferredLanguage)) {
+			$preferredLanguage = 'en';
+		}
+
+		$user = new User(
+			null,
+			$email,
+			'',
+			$preferredLanguage,
+			date('Y-m-d H:i:s'),
+			null,
+			$role,
+			$firstName,
+			$lastName,
+			true
+		);
+		$user->setPassword($password);
+
+		if (!$this->userRepository->save($user)) {
+			throw new RuntimeException('Unable to save new user.');
+		}
+
+		return $user;
+	}
+
+	public function login(string $email, string $password): ?User
+	{
+		$user = $this->userRepository->findByEmail(trim($email));
+		if (!$user || !$user->isActive()) {
+			return null;
+		}
+
+		if (!$user->verifyPassword($password)) {
+			return null;
+		}
+
+		if ($this->hasher->NeedsReHash($user->getPasswordHash())) {
+			$user->setPassword($password);
+		}
+
+		$user->markLastLogin();
+		$this->userRepository->save($user);
+
+		SessionManager::Regenerate();
+		SessionManager::Set('user_id', $user->getId());
+		// Normalize role to lowercase for consistent role checks across the app
+		SessionManager::Set('user_role', strtolower((string)$user->getRole()));
+
+		return $user;
+	}
+
+	public function logout(): bool
+	{
+		SessionManager::Destroy();
+		return true;
+	}
+
+	public function resetPassword(string $newPassword): bool
+	{
+		if (empty($newPassword) || strlen($newPassword) < 8) {
+			return false;
+		}
+
+		$userId = SessionManager::Get('user_id');
+		if (!$userId) {
+			return false;
+		}
+
+		$user = $this->userRepository->findById((int) $userId);
+		if (!$user) {
+			return false;
+		}
+
+		if (!$user->resetPassword($newPassword)) {
+			return false;
+		}
+
+		return $this->userRepository->save($user);
+	}
+
+	public function changePassword(string $oldPassword, string $newPassword): bool
+	{
+		$userId = SessionManager::Get('user_id');
+		if (!$userId) {
+			return false;
+		}
+
+		$user = $this->userRepository->findById((int) $userId);
+		if (!$user) {
+			return false;
+		}
+
+		if (!$user->changePassword($oldPassword, $newPassword)) {
+			return false;
+		}
+
+		return $this->userRepository->save($user);
+	}
+
+	public function getAuthenticatedUser(): ?User
+	{
+		$userId = SessionManager::Get('user_id');
+		if (!$userId) {
+			return null;
+		}
+
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
 		return $this->userRepository->findById((int) $userId);
 	}
 }

@@ -9,13 +9,13 @@ if (php_sapi_name() !== 'cli' && $_SERVER['REMOTE_ADDR'] !== '127.0.0.1') {
     exit("Access denied.");
 }
 
-include_once '../Model/EventModel.php';
-include_once '../Model/RsvpModel.php';
-include_once '../Model/NotificationModel.php';
+include_once '../Models/Event.php';
+include_once '../Models/Rsvp.php';
+include_once '../Models/Notification.php';
 
-$eventModel        = new EventModel();
-$rsvpModel         = new RsvpModel();
-$notificationModel = new NotificationModel();
+$eventModel        = new Event();
+$rsvpModel         = new Rsvp();
+$notificationModel = new Notification();
 
 $now = new DateTime();
 
@@ -30,7 +30,7 @@ foreach ($reminderWindows as $window) {
     $targetDate = $targetTime->format('Y-m-d');
 
     // Fetch confirmed events on the target date
-    $upcomingEvents = $eventModel->getConfirmedEventsByDate($targetDate);
+    $upcomingEvents = $eventModel->GetConfirmedEventsByDate($targetDate);
 
     if (empty($upcomingEvents)) {
         echo "No events found for {$window['label']} reminder window.\n";
@@ -62,13 +62,13 @@ foreach ($reminderWindows as $window) {
             $parent_id = $rsvp['parent_id'];
 
             // Send email reminder
-            $emailSent = $notificationModel->sendEmailReminder(
+            $emailSent = $notificationModel->SendEmailReminder(
                 $parent_id,
                 "Reminder: $event_title is in {$window['hours']} hours ($event_date)"
             );
 
             // Send in-app notification
-            $inAppSent = $notificationModel->sendInAppNotification(
+            $inAppSent = $notificationModel->SendInAppNotification(
                 $parent_id,
                 "Event Reminder",
                 "$event_title starts on $event_date. Don't forget!"

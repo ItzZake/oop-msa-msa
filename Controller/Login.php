@@ -42,15 +42,21 @@ if (empty($email_err) && empty($password_err)) {
     $user = $authService->login($email, $password);
 
     if ($user) {
-        // FR-03: redirect based on role stored in session by AuthService
+        // FR-03: redirect based on role and login status
         $role = strtolower($_SESSION["user_role"] ?? "");
-
-        if ($role === "admin") {
+        $lastLoginAt = $user->getLastLoginAt();
+        
+        // Check if parent is logging in for the first time
+        if ($role === "parent" && empty($lastLoginAt)) {
+            // First time login for parent - redirect to enroll page
+            header("Location: ../View/Index.php");
+        } elseif ($role === "admin") {
             header("Location: ../View/dashboard.php");
         } elseif ($role === "teacher") {
-            header("Location: ../View/attendance.php");
+            header("Location: ../View/Profile.php");
         } else {
-            header("Location: ../View/profiles.php");
+            // Parent returning user or other roles
+            header("Location: ../View/Index.php");
         }
         exit;
     } else {

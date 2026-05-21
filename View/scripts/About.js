@@ -83,46 +83,27 @@
   /* ─────────────────────────────────────────
      3. "MORE" DROPDOWN — desktop nav
   ───────────────────────────────────────── */
-  const moreDropdown = document.getElementById('moreDropdown');
-  const moreBtn      = document.getElementById('moreBtn');
-  const moreMenu     = document.getElementById('moreMenu');
 
-  function openMoreDropdown() {
-    moreMenu?.classList.add('nav-dropdown__menu--open');
-    moreBtn?.setAttribute('aria-expanded', 'true');
+  /* ══════════════════════════════════════════
+     ACTIVE LINK — mark the current page
+  ══════════════════════════════════════════ */
+  function setActiveLinks() {
+    const currentPath = window.location.pathname;
+
+    /* All nav-link anchors (desktop + mobile) */
+    document.querySelectorAll('a.nav-link[data-path]').forEach(function (link) {
+      const path = link.getAttribute('data-path');
+      if (path === currentPath || (path !== '/' && currentPath.startsWith(path))) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+
+
   }
 
-  function closeMoreDropdown() {
-    moreMenu?.classList.remove('nav-dropdown__menu--open');
-    moreBtn?.setAttribute('aria-expanded', 'false');
-  }
-
-  moreBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isOpen = moreMenu?.classList.contains('nav-dropdown__menu--open');
-    isOpen ? closeMoreDropdown() : openMoreDropdown();
-  });
-
-  // Close dropdown when clicking outside
-  document.addEventListener('click', (e) => {
-    if (moreDropdown && !moreDropdown.contains(e.target)) {
-      closeMoreDropdown();
-    }
-  });
-
-  // Close dropdown when a menu item is clicked
-  moreMenu?.querySelectorAll('.nav-dropdown__item').forEach(item => {
-    item.addEventListener('click', closeMoreDropdown);
-  });
-
-  // Keyboard accessibility for dropdown
-  moreBtn?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      const isOpen = moreMenu?.classList.contains('nav-dropdown__menu--open');
-      isOpen ? closeMoreDropdown() : openMoreDropdown();
-    }
-  });
+  setActiveLinks();
 
 
   /* ─────────────────────────────────────────

@@ -3,10 +3,27 @@ session_start();
 $pageTitle = "Wellucation – Learn. Play. Grow";
 $currentPage = "home";
 $pageCss = 'index.css';
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wellucation – Learn. Play. Grow</title>
+  <link rel="stylesheet" href="../view/css/Home.css" />
+  <link rel="stylesheet" href="../view/css/navbar.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
+</head>
+<body>
+<?php
 include 'header.php';
 include 'navbar.php';
 ?>
 
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,6 +40,8 @@ include 'navbar.php';
   <!-- ══════════════ TOP BAR ══════════════ -->
   
   <!-- ══════════════ NAVBAR ══════════════ -->
+=======
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
 
   <!-- ══════════════ MAIN CONTENT ══════════════ -->
   <main class="main-content" id="mainContent">
@@ -46,8 +65,12 @@ include 'navbar.php';
             creativity is sparked, and every child is guided to thrive — academically, socially, and emotionally.
           </p>
           <div class="hero__actions">
+<<<<<<< HEAD
             <a href="/enroll" class="btn-enroll btn-hero-primary">🌟 Enroll Now</a>
             <a href="/about" class="btn-hero-secondary">Learn More →</a>
+=======
+            <a href="../View/about.php" class="btn-hero-secondary">Learn More →</a>
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
           </div>
           <div class="hero__stats">
             <div class="hero__stat">
@@ -135,26 +158,42 @@ include 'navbar.php';
             <div class="program-card__age">Ages 2–3</div>
             <h3 class="program-card__name">Nursery</h3>
             <p class="program-card__desc">Gentle, play-focused introduction to structured learning and social interaction.</p>
+<<<<<<< HEAD
             <a href="/enroll" class="program-card__btn">Enroll →</a>
+=======
+            <a href="../view/enroll.php" class="program-card__btn">Enroll →</a>
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
           </div>
           <div class="program-card program-card--featured">
             <div class="program-card__badge">Most Popular</div>
             <div class="program-card__age">Ages 3–4</div>
             <h3 class="program-card__name">Kindergarten 1</h3>
             <p class="program-card__desc">Building foundational literacy, numeracy, and social skills in a warm classroom setting.</p>
+<<<<<<< HEAD
             <a href="/enroll" class="program-card__btn program-card__btn--white">Enroll →</a>
+=======
+            <a href="../view/enroll.php" class="program-card__btn program-card__btn--white">Enroll →</a>
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
           </div>
           <div class="program-card">
             <div class="program-card__age">Ages 4–5</div>
             <h3 class="program-card__name">Kindergarten 2</h3>
             <p class="program-card__desc">Advanced pre-school preparation with a focus on school readiness and independence.</p>
+<<<<<<< HEAD
             <a href="/enroll" class="program-card__btn">Enroll →</a>
+=======
+            <a href="../view/enroll.php" class="program-card__btn">Enroll →</a>
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
           </div>
           <div class="program-card">
             <div class="program-card__age">All Ages</div>
             <h3 class="program-card__name">After School Care</h3>
             <p class="program-card__desc">Safe, fun, and supervised after-school activities until 6:00 PM on weekdays.</p>
+<<<<<<< HEAD
             <a href="/enroll" class="program-card__btn">Enroll →</a>
+=======
+            <a href="../view/enroll.php" class="program-card__btn">Enroll →</a>
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
           </div>
         </div>
       </div>
@@ -168,7 +207,11 @@ include 'navbar.php';
           <p class="cta-banner__desc">Spaces are limited — secure your child's spot today.</p>
         </div>
         <div class="cta-banner__actions">
+<<<<<<< HEAD
           <a href="/enroll" class="cta-banner__btn-primary">🌟 Enroll Now</a>
+=======
+          <a href="../view/enroll.php" class="cta-banner__btn-primary">🌟 Enroll Now</a>
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
           <a href="/contact" class="cta-banner__btn-secondary">Contact Us</a>
         </div>
       </div>
@@ -178,7 +221,11 @@ include 'navbar.php';
 
   <!-- ══════════════ FOOTER ══════════════ -->
 
+<<<<<<< HEAD
   <script src="/scripts/Home.js"></script>
+=======
+  <script src="scripts/Home.js"></script>
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
 </body>
 </html>
 

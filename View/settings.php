@@ -3,8 +3,6 @@ session_start();
 $pageTitle = "Settings – Wellucation Nursery";
 $currentPage = "settings";
 $pageCss = 'settings.css';
-include 'header.php';
-include 'navbar.php';
 ?>
 
 <!DOCTYPE html>
@@ -18,7 +16,26 @@ include 'navbar.php';
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700;900&display=swap" rel="stylesheet" />
 </head>
 <body>
+<?php
+include 'header.php';
+include 'navbar.php';
+?>
 
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account Settings</title>
+  <link rel="stylesheet" href="../view/css/settings.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+=======
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
   <!-- ── Hero ─────────────────────────────────────────────────────── -->
   <section class="hero">
     <div class="hero-blob hero-blob--left"></div>

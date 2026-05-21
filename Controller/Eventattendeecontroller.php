@@ -29,11 +29,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (empty($event_id_err)) {
-        include_once '../Model/RsvpModel.php';
-        include_once '../Model/ConsentModel.php';
+        include_once '../Models/Rsvp.php';
 
-        $rsvpModel    = new RsvpModel();
-        $consentModel = new ConsentModel();
+        $rsvpModel = new Rsvp();
 
         // Fetch all attendees with their RSVP + consent status
         $attendeeData = $rsvpModel->getAttendeesWithConsentByEvent($event_id);

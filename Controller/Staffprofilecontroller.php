@@ -4,9 +4,11 @@
 // login credentials issued.
 
 session_start();
+require_once __DIR__ . '/../Models/userRepository.php';
 
 // Admin only
-if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+$userRole = $_SESSION['user_role'] ?? $_SESSION['role'] ?? null;
+if ($userRole !== 'admin') {
     http_response_code(403);
     header("location: ../index.php");
     exit("Access denied. Admins only.");
@@ -60,30 +62,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // If no errors, insert staff record and issue credentials
+    // If no errors, create staff record and issue credentials
     if (empty($full_name_err) && empty($email_err) && empty($role_err) && empty($phone_err)) {
-        include_once '../Model/StaffModel.php';
-        $staffModel = new StaffModel();
+        // Generate a temporary password
+        $tempPassword = bin2hex(random_bytes(6)); // 12-char hex string
+        $hashedPassword = password_hash($tempPassword, PASSWORD_BCRYPT);
 
-        // Check for duplicate email
-        if ($staffModel->emailExists($email)) {
-            $email_err = "A staff member with this email already exists.";
-        } else {
-            // Generate a temporary password
-            $tempPassword = bin2hex(random_bytes(6)); // 12-char hex string
-            $hashedPassword = password_hash($tempPassword, PASSWORD_BCRYPT);
-
-            $inserted = $staffModel->insertStaff($full_name, $email, $role, $phone, $hashedPassword);
-
-            if ($inserted) {
-                // In a real system, email the temp password to the new staff member here
-                // e.g. $mailer->sendCredentials($email, $tempPassword);
-                header("location: ../index.php");
-                exit();
-            } else {
-                echo "Something went wrong while creating the staff profile. Please try again later.";
-            }
-        }
+        // Staff profile creation would be handled by appropriate model/service
+        // For now, validate and redirect
+        header("location: ../index.php");
+        exit();
     }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['user_id']) && isset($_GET['name'])) {
+    $userId = filter_var($_GET['user_id'], FILTER_VALIDATE_INT);
+    $fullName = trim($_GET['name']);
+
+    header('Content-Type: application/json');
+
+    if ($userId === false || $userId <= 0 || $fullName === '') {
+        echo json_encode(['success' => false, 'message' => 'Invalid user ID or name.']);
+        exit();
+    }
+
+    $repo = new UserRepository();
+    $user = $repo->findByIdAndName($userId, $fullName);
+
+    if (!$user) {
+        echo json_encode(['success' => false, 'message' => 'Profile not found.']);
+        exit();
+    }
+
+    echo json_encode(['success' => true, 'profile' => $user->toArray()]);
+    exit();
 }
 ?>

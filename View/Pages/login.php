@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -83,7 +86,6 @@
       </div>
 
       <div class="navbar__right">
-        <a href="enroll.html" class="btn-enroll btn-enroll--desktop">🌟 Enroll Now</a>
         <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
           <svg class="icon-menu" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
           <svg class="icon-close hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -97,17 +99,9 @@
       <a href="contact.html" class="nav-link" data-path="/contact">📞 Contact Us</a>
       <a href="profiles.html" class="nav-link" data-path="/profiles">👤 Profiles</a>
       <a href="dashboard.html" class="nav-link" data-path="/dashboard">📊 Dashboard</a>
-      <a href="attendance.html" class="nav-link" data-path="/attendance">📅 Attendance</a>
-      <a href="reports.html" class="nav-link" data-path="/reports">📋 Reports</a>
-      <a href="assignments.html" class="nav-link" data-path="/assignments">📝 Assignments</a>
       <a href="login.html"  class="nav-link active" data-path="/login">🔐 Login</a>
       <a href="payment.html" class="nav-link" data-path="/payment">💳 Payment</a>
       <a href="subscription.html" class="nav-link" data-path="/subscription">⭐ Subscription</a>
-      <a href="excuse.html" class="nav-link" data-path="/excuse">🙋 Excuse</a>
-      <a href="messages.html" class="nav-link" data-path="/messages">💬 Messages</a>
-      <a href="application.html" class="nav-link" data-path="/application">📄 Application</a>
-      <a href="settings.html" class="nav-link" data-path="/settings">⚙️ Settings</a>
-      <a href="enroll.html" class="btn-enroll btn-enroll--mobile">🌟 Enroll Now</a>
     </div>
   </nav>
 
@@ -122,6 +116,18 @@
       <p class="login-hero__subtitle">Sign in to access your account or create a new one</p>
 
       <div class="login-card">
+        <!-- Message Display -->
+        <?php
+          if (isset($_SESSION['error'])) {
+            echo '<div class="alert alert-error">' . htmlspecialchars($_SESSION['error']) . '</div>';
+            unset($_SESSION['error']);
+          }
+          if (isset($_SESSION['message'])) {
+            echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['message']) . '</div>';
+            unset($_SESSION['message']);
+          }
+        ?>
+
         <!-- Tabs -->
         <div class="tabs">
           <button class="tab-btn tab-btn--active" id="tabLogin" data-tab="login">
@@ -136,12 +142,12 @@
 
         <!-- Login Form -->
         <div class="tab-panel tab-panel--active" id="panelLogin">
-          <form id="loginForm" novalidate>
+          <form id="loginForm" method="POST" action="../../Controller/Login.php" novalidate>
             <div class="field">
               <label class="field__label" for="loginEmail">Email Address</label>
               <div class="field__wrap">
                 <svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                <input id="loginEmail" class="field__input" type="email" placeholder="your.email@example.com" required />
+                <input id="loginEmail" name="email" class="field__input" type="email" placeholder="your.email@example.com" required />
               </div>
             </div>
 
@@ -149,7 +155,7 @@
               <label class="field__label" for="loginPassword">Password</label>
               <div class="field__wrap">
                 <svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <input id="loginPassword" class="field__input field__input--padded-right" type="password" placeholder="••••••••" required />
+                <input id="loginPassword" name="password" class="field__input field__input--padded-right" type="password" placeholder="••••••••" required />
                 <button type="button" class="field__eye" id="toggleLoginPw" aria-label="Toggle password visibility">
                   <svg class="eye-icon eye-on" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                   <svg class="eye-icon eye-off hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
@@ -174,12 +180,20 @@
 
         <!-- Register Form -->
         <div class="tab-panel" id="panelRegister">
-          <form id="registerForm" novalidate>
+          <form id="registerForm" method="POST" action="../../Controller/Register.php" novalidate>
             <div class="field">
-              <label class="field__label" for="regName">Full Name</label>
+              <label class="field__label" for="regFirstName">First Name</label>
               <div class="field__wrap">
                 <svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
-                <input id="regName" class="field__input" type="text" placeholder="John Doe" required />
+                <input id="regFirstName" name="firstName" class="field__input" type="text" placeholder="John" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="regLastName">Last Name</label>
+              <div class="field__wrap">
+                <svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+                <input id="regLastName" name="lastName" class="field__input" type="text" placeholder="Doe" required />
               </div>
             </div>
 
@@ -187,7 +201,20 @@
               <label class="field__label" for="regEmail">Email Address</label>
               <div class="field__wrap">
                 <svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                <input id="regEmail" class="field__input" type="email" placeholder="your.email@example.com" required />
+                <input id="regEmail" name="email" class="field__input" type="email" placeholder="your.email@example.com" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="regRole">Account Type</label>
+              <div class="field__wrap">
+                <svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <select id="regRole" name="role" class="field__input" required>
+                  <option value="">-- Select Role --</option>
+                  <option value="parent">Parent</option>
+                  <option value="teacher">Teacher</option>
+                  <option value="admin">Admin</option>
+                </select>
               </div>
             </div>
 
@@ -195,7 +222,7 @@
               <label class="field__label" for="regPassword">Password</label>
               <div class="field__wrap">
                 <svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <input id="regPassword" class="field__input field__input--padded-right" type="password" placeholder="••••••••" required />
+                <input id="regPassword" name="password" class="field__input field__input--padded-right" type="password" placeholder="••••••••" required />
                 <button type="button" class="field__eye" id="toggleRegPw" aria-label="Toggle password visibility">
                   <svg class="eye-icon eye-on" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                   <svg class="eye-icon eye-off hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
@@ -207,7 +234,7 @@
               <label class="field__label" for="regConfirm">Confirm Password</label>
               <div class="field__wrap">
                 <svg class="field__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <input id="regConfirm" class="field__input" type="password" placeholder="••••••••" required />
+                <input id="regConfirm" name="confirm_password" class="field__input" type="password" placeholder="••••••••" required />
               </div>
             </div>
 

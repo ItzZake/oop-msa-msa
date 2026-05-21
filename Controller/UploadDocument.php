@@ -6,7 +6,7 @@
 // so application.php (FR-05) can attach it when submitting.
 
 $allowed_roles = ["parent"];
-require_once '../Controllers/guard.php';   // FR-03 gate
+require_once __DIR__ . '/Guard.php';   // FR-03 gate
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: ../View/application.php");

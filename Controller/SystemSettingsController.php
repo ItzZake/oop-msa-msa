@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Settings.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Settings.php';
 
 $admin_id = (int) ($_POST['admin_id'] ?? 0);
 $settings = $_POST['settings'] ?? []; // array of ['key' => 'value']

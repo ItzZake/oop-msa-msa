@@ -15,7 +15,7 @@ class Child
   private $enrollmentStatus;
   private $photoPath;
 
-  function __construct($childID, $parentID, $dateOfBirth, $gender, $allergies = null, $medicalNotes = null, $emergencyContact = null, $enrollmentStatus = 'Pending', $photoPath = null, $name = null)
+  function __construct($childID = null, $parentID = null, $dateOfBirth = null, $gender = null, $allergies = null, $medicalNotes = null, $emergencyContact = null, $enrollmentStatus = 'Pending', $photoPath = null, $name = null)
   {
     $this->childID = $childID;
     $this->parentID = $parentID;
@@ -38,6 +38,12 @@ class Child
   {
       return $this->parentID;
   }
+
+  function GetChildId()
+  {
+      return $this->childID;
+  }
+
   function GetChildByID($childID)
   {
     $sql = "SELECT * FROM Child WHERE childID = ?";
@@ -116,6 +122,33 @@ class Child
     return $alerts;
   }
 
+  function GetChildrenWithMedicalAlerts($teacherId)
+  {
+    $sql = "SELECT DISTINCT c.childID, c.parentID, c.name, c.allergies, c.medicalNotes AS medical_conditions, c.emergencyContact, c.enrollmentStatus
+            FROM Child c
+            INNER JOIN Enrollment e ON c.childID = e.childID
+            INNER JOIN CourseAssignments ca ON e.courseID = ca.courseID
+            WHERE ca.TeacherID = ? AND e.status = 'Active'
+              AND ((c.allergies IS NOT NULL AND c.allergies != '') OR (c.medicalNotes IS NOT NULL AND c.medicalNotes != ''))";
+    return Database::getInstance()->fetchAll($sql, [$teacherId]);
+  }
+
+  function ChildBelongsToParent($childId, $parentId)
+  {
+    $sql = "SELECT 1 FROM Child WHERE childID = ? AND parentID = ? LIMIT 1";
+    $result = Database::getInstance()->fetchOne($sql, [$childId, $parentId]);
+    return !empty($result);
+  }
+
+  function GetEnrolledChildrenWithMedical($courseId)
+  {
+    $sql = "SELECT c.childID, c.parentID, c.name, c.allergies, c.medicalNotes AS medical_conditions, c.emergencyContact, c.enrollmentStatus
+            FROM Child c
+            INNER JOIN Enrollment e ON c.childID = e.childID
+            WHERE e.courseID = ? AND e.status = 'Active'";
+    return Database::getInstance()->fetchAll($sql, [$courseId]);
+  }
+
   function UpdateStatus($status)
   {
     $this->enrollmentStatus = $status;
@@ -146,6 +179,31 @@ class Child
 		);
 	  }
 	}
+	return $children;
+}
+
+// Static method to add a child (typically for admin users)
+static function AddChild($data)
+{
+    $sql = "INSERT INTO Child (parentID, name, dateOfBirth, gender, allergies, medicalNotes, emergencyContact, enrollmentStatus, photoPath) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $params = [
+        $data['parentID'] ?? null,
+        $data['Name'] ?? $data['name'] ?? '',
+        $data['DateOfBirth'] ?? $data['dateOfBirth'] ?? '',
+        $data['Gender'] ?? $data['gender'] ?? '',
+        $data['allergies'] ?? null,
+        $data['MedicalNotes'] ?? $data['medicalNotes'] ?? null,
+        $data['EmergencyContact'] ?? $data['emergencyContact'] ?? null,
+        $data['enrollmentStatus'] ?? 'Active',
+        $data['PhotoPath'] ?? $data['photoPath'] ?? null
+    ];
+    
+    $stmt = Database::getInstance()->query($sql, $params);
+    if ($stmt && $stmt->rowCount() > 0) {
+        return Database::getInstance()->getConnection()->lastInsertId();
+    }
+    return false;
 }
 }
 ?>

@@ -27,6 +27,27 @@ class ConsentForm
         return $stmt && $stmt->rowCount() > 0;
     }
 
+    function InsertConsent($childID, $eventID, $parentSignature, $consentDate)
+    {
+        $sql = "SELECT parentID FROM Child WHERE childID = ? LIMIT 1";
+        $result = Database::getInstance()->fetchOne($sql, [$childID]);
+        if (empty($result['parentID'])) {
+            return false;
+        }
+
+        $this->parentID = $result['parentID'];
+        $this->childID = $childID;
+        $this->eventID = $eventID;
+        $this->isSigned = 1;
+        $this->signedAt = $consentDate;
+
+        $sql = "INSERT INTO ConsentForm (eventID, parentID, childID, isSigned, signedAt, parentSignature)
+                VALUES (?, ?, ?, ?, ?, ?)";
+        $params = [$this->eventID, $this->parentID, $this->childID, $this->isSigned, $this->signedAt, $parentSignature];
+        $stmt = Database::getInstance()->query($sql, $params);
+        return $stmt && $stmt->rowCount() > 0;
+    }
+
     function SendReminder()
     {
         $sql = "SELECT parentID, childID, eventID FROM ConsentForm WHERE consentID = ?";

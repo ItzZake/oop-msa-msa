@@ -6,11 +6,34 @@ $currentPage = "about";
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+<<<<<<< HEAD
 
+=======
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Us – Wellucation</title>
+  <link rel="stylesheet" href="../view/css/Home.css" />
+  <link rel="stylesheet" href="../view/css/About.css" />
+  <link rel="stylesheet" href="../view/css/navbar.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
+</head>
+<body>
+<?php
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
 include 'header.php';
 include 'navbar.php';
 ?>
+  <!-- ══════════════ MAIN CONTENT ══════════════ -->
+  <main class="main-content">
 
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,6 +63,21 @@ include 'navbar.php';
       </div>
     </section>
 
+=======
+    <!-- ── HERO ── -->
+    <section class="about-hero">
+      <div class="about-hero__deco about-hero__deco--1">⭐</div>
+      <div class="about-hero__deco about-hero__deco--2">🌈</div>
+      <div class="container about-hero__inner reveal">
+        <span class="section-badge section-badge--white">💙 About Wellucation</span>
+        <h1 class="about-hero__title">Our Story, Our Heart</h1>
+        <p class="about-hero__desc">
+          For over 15 years, we've been shaping young minds and building a community where every child feels loved, safe, and empowered to grow.
+        </p>
+      </div>
+    </section>
+
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
     <!-- ── MISSION & VISION ── -->
     <section class="about-mv">
       <div class="container about-mv__grid">
@@ -353,6 +391,7 @@ include 'navbar.php';
     </section>
 
     <!-- ── CTA ── -->
+<<<<<<< HEAD
     <section class="about-cta">
       <div class="container about-cta__inner reveal">
         <h2 class="about-cta__title">Come See Us in Person 🏫</h2>
@@ -367,6 +406,13 @@ include 'navbar.php';
   </main>
 
   <script src="../view/scripts/About.js"></script>
+=======
+    
+
+  </main>
+
+  <script src="scripts/About.js"></script>
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
 </body>
 </html>
 

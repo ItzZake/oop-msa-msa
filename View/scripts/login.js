@@ -5,51 +5,7 @@
 (function () {
   "use strict";
 
-  /* ─────────────────────────────────────────
-     NAVBAR – Hamburger & Dropdown
-  ───────────────────────────────────────── */
-  const hamburger = document.getElementById("hamburger");
-  const mobileMenu = document.getElementById("mobileMenu");
-  const iconMenu = hamburger?.querySelector(".icon-menu");
-  const iconClose = hamburger?.querySelector(".icon-close");
-
-  hamburger?.addEventListener("click", () => {
-    const isOpen = mobileMenu.classList.toggle("open");
-    hamburger.setAttribute("aria-expanded", String(isOpen));
-    iconMenu?.classList.toggle("hidden", isOpen);
-    iconClose?.classList.toggle("hidden", !isOpen);
-    mobileMenu.setAttribute("aria-hidden", String(!isOpen));
-  });
-
-  // "More" dropdown
-  const moreBtn = document.getElementById("moreBtn");
-  const moreDropdown = document.getElementById("moreDropdown");
-
-  moreBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const isOpen = moreDropdown.classList.toggle("open");
-    moreBtn.setAttribute("aria-expanded", String(isOpen));
-  });
-
-  // Close dropdown on outside click
-  document.addEventListener("click", (e) => {
-    if (!moreDropdown?.contains(e.target)) {
-      moreDropdown?.classList.remove("open");
-      moreBtn?.setAttribute("aria-expanded", "false");
-    }
-  });
-
-  // Close dropdown on Escape
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      moreDropdown?.classList.remove("open");
-      moreBtn?.setAttribute("aria-expanded", "false");
-      mobileMenu?.classList.remove("open");
-      hamburger?.setAttribute("aria-expanded", "false");
-      iconMenu?.classList.remove("hidden");
-      iconClose?.classList.add("hidden");
-    }
-  });
+  /* NOTE: Navbar functionality is now handled by navbar.php */
 
   /* ─────────────────────────────────────────
      TABS – Login / Register
@@ -153,31 +109,32 @@
   const loginForm = document.getElementById("loginForm");
 
   loginForm?.addEventListener("submit", (e) => {
-    e.preventDefault();
-
+    // Validate but allow submission to controller
     const email = document.getElementById("loginEmail");
     const password = document.getElementById("loginPassword");
 
     if (!email.value.trim()) {
+      e.preventDefault();
       setFieldError(email, "Please enter your email address.");
       return;
     }
     if (!isValidEmail(email.value)) {
+      e.preventDefault();
       setFieldError(email, "Please enter a valid email address.");
       return;
     }
     if (!password.value) {
+      e.preventDefault();
       setFieldError(password, "Please enter your password.");
       return;
     }
     if (password.value.length < 6) {
+      e.preventDefault();
       setFieldError(password, "Password must be at least 6 characters.");
       return;
     }
 
-    // Simulate login success
-    showToast("✅ Login successful! Welcome back.", "success");
-    loginForm.reset();
+    // Allow form to submit to server
   });
 
   /* ─────────────────────────────────────────
@@ -186,41 +143,52 @@
   const registerForm = document.getElementById("registerForm");
 
   registerForm?.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById("regName");
+    // Validate but allow submission to controller
+    const firstName = document.getElementById("regFirstName");
+    const lastName = document.getElementById("regLastName");
     const email = document.getElementById("regEmail");
+    const role = document.getElementById("regRole");
     const password = document.getElementById("regPassword");
     const confirm = document.getElementById("regConfirm");
     const agree = document.getElementById("agreeTerms");
 
-    if (!name.value.trim()) {
-      setFieldError(name, "Please enter your full name.");
+    if (!firstName.value.trim()) {
+      e.preventDefault();
+      setFieldError(firstName, "Please enter your first name.");
+      return;
+    }
+    if (!lastName.value.trim()) {
+      e.preventDefault();
+      setFieldError(lastName, "Please enter your last name.");
       return;
     }
     if (!email.value.trim() || !isValidEmail(email.value)) {
+      e.preventDefault();
       setFieldError(email, "Please enter a valid email address.");
       return;
     }
+    if (!role.value) {
+      e.preventDefault();
+      showToast("Please select an account type.", "error");
+      return;
+    }
     if (!password.value || password.value.length < 6) {
+      e.preventDefault();
       setFieldError(password, "Password must be at least 6 characters.");
       return;
     }
     if (password.value !== confirm.value) {
+      e.preventDefault();
       setFieldError(confirm, "Passwords do not match!");
       return;
     }
     if (!agree.checked) {
+      e.preventDefault();
       showToast("Please accept the Terms & Conditions to continue.", "error");
       return;
     }
 
-    // Simulate registration success
-    showToast(
-      "🎉 Account created successfully! Welcome to Wellucation.",
-      "success",
-    );
-    registerForm.reset();
+    // Allow form to submit to server
   });
 
   /* ─────────────────────────────────────────

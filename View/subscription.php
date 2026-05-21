@@ -3,10 +3,25 @@ session_start();
 $pageTitle = "Subscription – Wellucation Nursery";
 $currentPage = "subscription";
 $pageCss = 'subscription.css';
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Subscription Plans</title>
+  <link rel="stylesheet" href="../view/css/subscription.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+<?php
 include 'header.php';
 include 'navbar.php';
 ?>
 
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,6 +43,17 @@ include 'navbar.php';
       <h1 class="hero-title">Choose the Perfect Plan</h1>
       <p class="hero-subtitle">Flexible subscription options designed to meet your family's needs</p>
 
+=======
+  <!-- ── Hero ─────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-blob hero-blob--left"></div>
+    <div class="hero-blob hero-blob--right"></div>
+    <div class="hero-content animate-in">
+      <span class="hero-badge">🎯 Subscription Plans</span>
+      <h1 class="hero-title">Choose the Perfect Plan</h1>
+      <p class="hero-subtitle">Flexible subscription options designed to meet your family's needs</p>
+
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
       <!-- Billing toggle -->
       <div class="billing-toggle">
         <span class="billing-label" id="labelMonthly" data-active="true">Monthly</span>
@@ -158,4 +184,7 @@ include 'navbar.php';
 </body>
 </html>
 
+<<<<<<< HEAD
 </script>
+=======
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd

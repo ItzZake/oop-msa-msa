@@ -16,6 +16,20 @@ require_once 'Database.php';
         return Database::getInstance()->fetchAll($sql, [$this->tagID]);
     }
 
+    function GetChildrenByTags(array $tags)
+    {
+        if (empty($tags)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($tags), '?'));
+        $sql = "SELECT DISTINCT c.* FROM Child c
+                INNER JOIN ChildTags ct ON c.childID = ct.childID
+                INNER JOIN Tag t ON ct.TagID = t.tagID
+                WHERE t.name IN ($placeholders)";
+        return Database::getInstance()->fetchAll($sql, $tags);
+    }
+
     function AddChild($childID)
     {
         $sql = "INSERT INTO ChildTags (TagID, ChildID, AssignedAt) VALUES (?, ?, ?)";

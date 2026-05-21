@@ -9,18 +9,16 @@
   require_once 'Application.php';
   class Parents extends User
   {
-   private $ParentId;
-   private $UserId;
    private $PhoneNumber;
    private $Address;
    private $NotiPreferences; //json	     
 
    public function AddChild ($data)
    {
-     $child = new Child(null, $this->ParentId, $data['DateOfBirth'], $data['Gender'], $data['allergies'] ?? null, $data['MedicalNotes'] ?? null, $data['EmergencyContact'] ?? null, 'Pending', $data['PhotoPath'] ?? null); 
+     $child = new Child(null, $this->getId(), $data['DateOfBirth'], $data['Gender'], $data['allergies'] ?? null, $data['MedicalNotes'] ?? null, $data['EmergencyContact'] ?? null, 'Pending', $data['PhotoPath'] ?? null); 
      $sql = "INSERT INTO Child (parentID, name, dateOfBirth, gender, allergies, medicalNotes, emergencyContact, enrollmentStatus)
       VALUES (?,?,?,?,?,?,?,?)";
-     $params = [$this->ParentId, $data['Name'], $data['DateOfBirth'], $data['Gender'], $data['allergies'] ?? null, $data['MedicalNotes'] ?? null, $data['EmergencyContact'] ?? null, 'Pending'];
+     $params = [$this->getId(), $data['Name'], $data['DateOfBirth'], $data['Gender'], $data['allergies'] ?? null, $data['MedicalNotes'] ?? null, $data['EmergencyContact'] ?? null, 'Pending'];
       $stmt = Database::getInstance()->query($sql, $params);
       if ($stmt && $stmt->rowCount() > 0) {
         return true;
@@ -66,7 +64,7 @@
    {
                $sql = "INSERT INTO Application (parentID, childID, status, reviewedAt, rejectionReason, documents)
                VALUES (?,?,?,?,?,?)";
-               $params = [$this->ParentId, $data['ChildId'], 'Pending', null, null, isset($data['Documents']) ? json_encode($data['Documents']) : null];
+               $params = [$this->getId(), $data['ChildId'], 'Pending', null, null, isset($data['Documents']) ? json_encode($data['Documents']) : null];
                $stmt = Database::getInstance()->query($sql, $params);
                if ($stmt && $stmt->rowCount() > 0) {
                  return true;
@@ -90,7 +88,7 @@
         $paymentData = [
             'amount' => $subscription['basePrice'],
             'subscriptionId' => $subId,
-            'parentId' => $this->ParentId,
+            'parentId' => $this->getId(),
             'customerEmail' => $this->getEmail(),
             'customerPhone' => $this->PhoneNumber,
             'customerName' => $this->getFirstName() . ' ' . $this->getLastName(),
@@ -123,7 +121,7 @@
         
         $sql = "INSERT INTO submission (assignmentID, childID, parentID, type, content, photoPath, submittedAt, status) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        $params = [$assignId, $childId, $this->ParentId, 'Text', $submissionPath, null, date('Y-m-d H:i:s'), 'Submitted'];
+        $params = [$assignId, $childId, $this->getId(), 'Text', $submissionPath, null, date('Y-m-d H:i:s'), 'Submitted'];
         $stmt = Database::getInstance()->query($sql, $params);
         
         if ($stmt && $stmt->rowCount() > 0) {
@@ -145,7 +143,7 @@
         
         $sql = "INSERT INTO Excuse (childID, parentID, sessionDate, reason, status, submittedAt) 
                 VALUES (?, ?, ?, ?, ?, ?)";
-        $params = [$childId, $this->ParentId, $sessionDate, $reason, 'Pending', date('Y-m-d H:i:s')];
+        $params = [$childId, $this->getId(), $sessionDate, $reason, 'Pending', date('Y-m-d H:i:s')];
         $stmt = Database::getInstance()->query($sql, $params);
         
         if ($stmt && $stmt->rowCount() > 0) {
@@ -170,7 +168,7 @@
         $sql = "INSERT INTO EventRSVP (eventID, parentID, childID, response, respondedAt) 
                 VALUES (?, ?, ?, ?, ?)
                 ON DUPLICATE KEY UPDATE response = VALUES(response), respondedAt = VALUES(respondedAt)";
-        $params = [$eventId, $this->ParentId, $childId, $map[$response], date('Y-m-d H:i:s')];
+        $params = [$eventId, $this->getId(), $childId, $map[$response], date('Y-m-d H:i:s')];
         $stmt = Database::getInstance()->query($sql, $params);
 
         if ($stmt && $stmt->rowCount() > 0) {
@@ -183,7 +181,7 @@
    function SignConstentForm ($tripId)
    {
         $sql = "UPDATE ConsentForm SET signedAt = ?, isSigned = 1 WHERE eventID = ? AND parentID = ?";
-        $params = [date('Y-m-d H:i:s'), $tripId, $this->ParentId];
+        $params = [date('Y-m-d H:i:s'), $tripId, $this->getId()];
         $stmt = Database::getInstance()->query($sql, $params);
 
         if ($stmt && $stmt->rowCount() > 0) {
@@ -202,7 +200,7 @@
             $data['medicalNotes'] ?? null,
             $data['emergencyContact'] ?? null,
             $childId,
-            $this->ParentId
+            $this->getId()
         ];
         
         $stmt = Database::getInstance()->query($sql, $params);
@@ -216,7 +214,7 @@
    function DownloadInVoice ($paymentId)
    {
         $sql = "SELECT * FROM Payment WHERE paymentID = ? AND parentID = ?";
-        $payment = Database::getInstance()->fetchOne($sql, [$paymentId, $this->ParentId]);
+        $payment = Database::getInstance()->fetchOne($sql, [$paymentId, $this->getId()]);
 
         if (!$payment) {
             return ['status' => 'error', 'message' => 'Payment not found'];
@@ -234,18 +232,19 @@
         ];
    }
    
-   function Getprefrences()
+   function GetParentByName($name)
    {
-        require_once 'Notifiable.php';
-        $notifiable = new Notifiable($this->UserId);
-        return $notifiable->GetPrefrences();
+        $sql = "SELECT p.* FROM Parent p
+                INNER JOIN User u ON p.userID = u.userID
+                WHERE u.firstName LIKE ? OR u.lastName LIKE ?
+                LIMIT 1";
+        $params = ["%{$name}%", "%{$name}%"];
+        return Database::getInstance()->fetchOne($sql, $params);
    }
 
-   function SetPrefrences($prefs)
+   function GetUserID()
    {
-        require_once 'Notifiable.php';
-        $notifiable = new Notifiable($this->UserId);
-        return $notifiable->SetPrefrences($prefs);
+        return $this->getId();
    }
   }
 ?>

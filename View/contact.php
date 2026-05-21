@@ -6,11 +6,24 @@ $currentPage = "contact";
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us – Wellucation</title>
+  <link rel="stylesheet" href="../view/css/contact.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
+</head>
+<body>
+<?php
 include 'header.php';
 include 'navbar.php';
 ?>
 
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,6 +46,19 @@ include 'navbar.php';
     </div>
   </section>
 
+=======
+  <!-- ══════════════ HERO ══════════════ -->
+  <section class="hero">
+    <span class="hero__float hero__float--right">📬</span>
+    <span class="hero__float hero__float--left">💌</span>
+    <div class="hero__inner animate-fadein">
+      <span class="hero__badge">📬 Get In Touch</span>
+      <h1 class="hero__title">We'd Love to Hear from You!</h1>
+      <p class="hero__sub">Have questions about enrollment, programs, or our facilities? Our friendly team is here to help every step of the way.</p>
+    </div>
+  </section>
+
+>>>>>>> b1b6218c9ee9edc54c7912f2c06d23fc9e9a05bd
   <!-- ══════════════ CONTACT CARDS ══════════════ -->
   <section class="cards-section">
     <div class="container">

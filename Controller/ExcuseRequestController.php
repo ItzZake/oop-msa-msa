@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Excuse.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Excuse.php';
 
 $child_id = (int) ($_POST['child_id'] ?? 0);
 $date     = htmlspecialchars($_POST['date']   ?? '');

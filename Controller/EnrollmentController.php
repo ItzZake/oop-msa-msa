@@ -1,11 +1,11 @@
 <?php
 session_start();
 
-require_once '/../Models/Database.php';
-require_once '/../Models/Child.php';
-require_once '/../Models/Course.php';
-require_once '/../Models/Enrollment.php';
-require_once '/../Models/Waitlist.php';
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/Child.php';
+require_once __DIR__ . '/../Models/Course.php';
+require_once __DIR__ . '/../Models/Enrollment.php';
+require_once __DIR__ . '/../Models/Waitlist.php';
 
 $child_id  = (int) ($_POST['child_id']  ?? 0);
 $course_id = (int) ($_POST['course_id'] ?? 0);

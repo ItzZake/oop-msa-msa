@@ -4,7 +4,7 @@
 // Parent links one or more children: DOB, allergies, medical notes stored in Child table
 
 $allowed_roles = ["parent"];
-require_once '../Controllers/guard.php';   // FR-03 gate
+require_once __DIR__ . '/Guard.php';   // FR-03 gate
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: ../View/profiles.php");

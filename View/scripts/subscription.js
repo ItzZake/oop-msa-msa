@@ -1,9 +1,59 @@
 /* ── SubscriptionPage – subscription.js ────────────────────────────
-   Converted from SubscriptionPage.tsx (React → vanilla JS)
+   On plan selection: saves plan + billing data to sessionStorage,
+   then redirects to index.html (payment page).
    ─────────────────────────────────────────────────────────────── */
 
 (function () {
   'use strict';
+
+  /* ── Plan definitions (prices must match HTML data-monthly/yearly) ── */
+  const PLAN_DATA = {
+    basic: {
+      name: 'Basic',
+      monthly: [
+        { label: 'Monthly Tuition',    amount:  850.00 },
+        { label: 'Registration Fee',   amount:  100.00 },
+        { label: 'Activity Materials', amount:   30.00 },
+        { label: 'Early Bird Discount',amount:  -50.00 }
+      ],
+      yearly: [
+        { label: 'Monthly Tuition',    amount:  708.00 },
+        { label: 'Registration Fee',   amount:  100.00 },
+        { label: 'Activity Materials', amount:   30.00 },
+        { label: 'Early Bird Discount',amount:  -88.00 }
+      ]
+    },
+    premium: {
+      name: 'Premium',
+      monthly: [
+        { label: 'Monthly Tuition',    amount: 1200.00 },
+        { label: 'Registration Fee',   amount:  150.00 },
+        { label: 'Activity Materials', amount:   50.00 },
+        { label: 'Early Bird Discount',amount: -100.00 }
+      ],
+      yearly: [
+        { label: 'Monthly Tuition',    amount: 1000.00 },
+        { label: 'Registration Fee',   amount:  150.00 },
+        { label: 'Activity Materials', amount:   50.00 },
+        { label: 'Early Bird Discount',amount: -100.00 }
+      ]
+    },
+    elite: {
+      name: 'Elite',
+      monthly: [
+        { label: 'Monthly Tuition',    amount: 1650.00 },
+        { label: 'Registration Fee',   amount:  200.00 },
+        { label: 'Activity Materials', amount:   75.00 },
+        { label: 'Early Bird Discount',amount: -125.00 }
+      ],
+      yearly: [
+        { label: 'Monthly Tuition',    amount: 1375.00 },
+        { label: 'Registration Fee',   amount:  200.00 },
+        { label: 'Activity Materials', amount:   75.00 },
+        { label: 'Early Bird Discount',amount: -150.00 }
+      ]
+    }
+  };
 
   /* ── State ─────────────────────────────────────────────────────── */
   let isYearly = false;
@@ -17,25 +67,16 @@
   const billedEls      = document.querySelectorAll('.plan-billed');
 
   function updatePricing() {
-    // Labels
     labelMonthly.dataset.active = String(!isYearly);
     labelYearly.dataset.active  = String(isYearly);
-
-    // Save badge
     saveBadge.classList.toggle('hidden', !isYearly);
 
-    // Prices
     priceEls.forEach(el => {
-      const monthly = parseInt(el.dataset.monthly, 10);
-      const yearly  = parseInt(el.dataset.yearly, 10);
-      const val = isYearly ? yearly : monthly;
+      const val = isYearly ? parseInt(el.dataset.yearly, 10) : parseInt(el.dataset.monthly, 10);
       el.textContent = '$' + val.toLocaleString();
     });
 
-    // "Billed annually" lines
-    billedEls.forEach(el => {
-      el.classList.toggle('hidden', !isYearly);
-    });
+    billedEls.forEach(el => el.classList.toggle('hidden', !isYearly));
   }
 
   billingToggle.addEventListener('change', function () {
@@ -43,20 +84,40 @@
     updatePricing();
   });
 
-  /* ── Plan buttons ──────────────────────────────────────────────── */
+  /* ── Plan buttons → save to sessionStorage + redirect ─────────── */
   document.querySelectorAll('.plan-btn').forEach(btn => {
     btn.addEventListener('click', function () {
-      const card     = this.closest('.plan-card');
-      const planName = card ? card.dataset.plan : 'plan';
-      const label    = planName.charAt(0).toUpperCase() + planName.slice(1);
-      const billing  = isYearly ? 'yearly' : 'monthly';
-      showToast(`${label} plan selected (${billing})!`);
+      const card    = this.closest('.plan-card');
+      const planKey = card ? card.dataset.plan : null;
+
+      if (!planKey || !PLAN_DATA[planKey]) {
+        showToast('Unknown plan selected.');
+        return;
+      }
+
+      const cycle     = isYearly ? 'yearly' : 'monthly';
+      // billingCycle DB ENUM is 'Monthly' or 'Termly'
+      const dbCycle   = isYearly ? 'Termly' : 'Monthly';
+      const lineItems = PLAN_DATA[planKey][cycle];
+      const planName  = PLAN_DATA[planKey].name;
+
+      // Save everything the payment page needs
+      sessionStorage.setItem('selectedPlan', JSON.stringify({
+        planKey,
+        planName,
+        billingCycle: dbCycle,
+        isYearly,
+        lineItems
+      }));
+
+      // Redirect to payment page
+      window.location.href = 'index.html';
     });
   });
 
   /* ── CTA button ─────────────────────────────────────────────────── */
   document.querySelector('.cta-btn').addEventListener('click', () => {
-    showToast('Consultation request sent! We\'ll be in touch soon.');
+    showToast("Consultation request sent! We'll be in touch soon.");
   });
 
   /* ── Toast ─────────────────────────────────────────────────────── */
@@ -71,7 +132,7 @@
     toastTimer = setTimeout(() => toast.classList.add('hidden'), 3500);
   }
 
-  /* ── Entrance animations (IntersectionObserver) ────────────────── */
+  /* ── Entrance animations ────────────────────────────────────────── */
   const animatables = document.querySelectorAll('.animate-in');
 
   if ('IntersectionObserver' in window) {

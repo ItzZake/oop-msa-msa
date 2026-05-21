@@ -48,10 +48,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $safe_content = htmlspecialchars($message_content);
     $timestamp    = date("Y-m-d H:i:s");
 
-    include_once '../Model/MessageModel.php';
-    $messageModel = new MessageModel();
+    include_once '../Models/Message.php';
+    $message = new Message();
 
-    $inserted = $messageModel->insertMessage($sender_id, (int)$recipient_id, $safe_content, $timestamp);
+    $inserted = $message->InsertMessage($sender_id, (int)$recipient_id, '', $safe_content);
 
     if ($inserted) {
         echo json_encode(["success" => true, "message" => "Message sent.", "timestamp" => $timestamp]);
@@ -71,11 +71,11 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         exit();
     }
 
-    include_once '../Model/MessageModel.php';
-    $messageModel = new MessageModel();
+    include_once '../Models/Message.php';
+    $message = new Message();
 
     // Fetch conversation between sender and recipient
-    $messages = $messageModel->getConversation($sender_id, (int)$recipient_id);
+    $messages = $message->GetConversation($sender_id, (int)$recipient_id);
 
     if ($messages === false) {
         echo json_encode(["error" => "Failed to load messages. Please try again."]);
