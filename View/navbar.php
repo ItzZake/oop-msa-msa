@@ -1,30 +1,31 @@
 <link rel="stylesheet" href="css/navbar.css" />
 
 <nav class="navbar" id="navbar">
-    <div class="container navbar__inner">
+  <div class="container navbar__inner">
 
-      <!-- Logo -->
-      <a href="Index.php" class="navbar__logo">
-        <div class="navbar__logo-img">
-          <img src="logo.jpeg" alt="Wellucation" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'font-size:1.5rem\'>🌟</span>';" />
-        </div>
-        <div class="navbar__logo-text">
-          <span class="navbar__logo-name">Wellucation</span>
-          <span class="navbar__logo-tagline">Learn. Play. Grow</span>
-        </div>
-      </a>
+    <!-- Logo -->
+    <a href="index.php" class="navbar__logo">
+      <div class="navbar__logo-img">
+        <img src="logo.jpeg" alt="Wellucation" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'font-size:1.5rem\'>🌟</span>';" />
+      </div>
+      <div class="navbar__logo-text">
+        <span class="navbar__logo-name">Wellucation</span>
+        <span class="navbar__logo-tagline">Learn. Play. Grow</span>
+      </div>
+    </a>
 
-      <!-- Desktop Links: 4 main + dropdown -->
-      <div class="navbar__links" id="navLinks">
-        <a href="index.php" class="nav-link active" data-path="/">Home</a>
-        <a href="about.php" class="nav-link" data-path="/about">About Us</a>
-        <a href="contact.php" class="nav-link" data-path="/contact">Contact Us</a>
-        <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
-        <?php if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])): ?>
-          <a href="logout.php" class="nav-link" data-path="/logout">Logout</a>
-        <?php else: ?>
-          <a href="login.php" class="nav-link" data-path="/login">Login</a>
-        <?php endif; ?>
+    <!-- Desktop Links -->
+    <div class="navbar__links" id="navLinks">
+      <a href="index.php" class="nav-link">Home</a>
+      <a href="about.php" class="nav-link">About Us</a>
+      <a href="contact.php" class="nav-link">Contact Us</a>
+      <a href="enroll.php" class="nav-link active">Enroll</a>
+      <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
+      <?php if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])): ?>
+        <a href="logout.php" class="nav-link">Logout</a>
+      <?php else: ?>
+        <a href="login.php" class="nav-link">Login</a>
+      <?php endif; ?>
 
         <!-- More dropdown -->
         <div class="nav-dropdown" id="moreDropdown">
@@ -44,14 +45,13 @@
         </div>
       </div>
 
-      <!-- Right side -->
-      <div class="navbar__right">
-        <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
-          <svg class="icon-menu" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-          <svg class="icon-close hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-        </button>
-      </div>
+    <div class="navbar__right">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <svg class="icon-menu" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        <svg class="icon-close hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
     </div>
+  </div>
 
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu" aria-hidden="true">

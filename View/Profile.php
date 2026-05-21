@@ -3,15 +3,28 @@
 session_start();
 
 // Only keep session data - data will be fetched from controller via AJAX
-$userRole = $_SESSION['user_role'] ?? 'User';
+$userRole = strtolower($_SESSION['user_role'] ?? 'user');
 $userId = $_SESSION['user_id'] ?? null;
+
+$roleTitles = [
+    'teacher' => 'Teacher Profile',
+    'parent' => 'Parent Profile',
+    'child' => 'Child Profile',
+    'admin' => 'Admin Profile',
+];
+$heroTitle = $roleTitles[$userRole] ?? 'User Profile';
 
 // Initialize empty data structure - will be populated from controller
 $jsProfileData = json_encode([
     'userRole' => $userRole,
     'userId' => $userId,
+    'userData' => null,
     'teacherData' => null,
-    'studentsList' => []
+    'parentData' => null,
+    'childData' => null,
+    'adminData' => null,
+    'studentsList' => [],
+    'childrenList' => []
 ]);
 ?>
 <!doctype html>
@@ -50,7 +63,7 @@ include "navbar.php";
       <div class="hero-bg-icon">👤</div>
       <div class="hero-inner animate-fade-up">
         <span class="pill-badge">👤 User Profiles</span>
-        <h1 class="hero-title">Teacher Profile</h1>
+        <h1 class="hero-title"><?php echo htmlspecialchars($heroTitle); ?></h1>
       </div>
     </section>
 
@@ -60,10 +73,10 @@ include "navbar.php";
         <div class="role-tabs" id="roleTabs">
           <button
             class="role-tab active"
-            data-role="teacher"
+            data-role="<?php echo htmlspecialchars($userRole); ?>"
             style="--role-color: #1565c0; --role-bg: #eff6ff"
           >
-            🎓 Teacher Profile
+            <?php echo htmlspecialchars($heroTitle); ?>
           </button>
         </div>
       </div>

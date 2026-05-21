@@ -93,6 +93,50 @@ include 'navbar.php';
         <div class="dash-avatar">S</div>
       </div>
     </div>
+<<<<<<< HEAD
+    
+    <div class="dashboard-main-inner">
+      <?php if ($panel === 'overview' || $panel === 'students' || $panel === 'teachers' || $panel === 'analytics'): ?>
+      <div class="dashboard-welcome">
+        <div class="dashboard-welcome-title">Welcome to Wellucation Dashboard! 👋</div>
+        <div class="dashboard-welcome-copy">Manage students, attendance, and school operations from one place.</div>
+      </div>
+      
+      <div class="dashboard-stats-grid">
+        <div class="overview-card overview-card--metric"><div><div class="metric-value metric-value--blue"><?php echo htmlspecialchars($totalStudents); ?></div><div class="metric-label">Total Students</div></div></div>
+        <div class="overview-card overview-card--metric"><div><div class="metric-value metric-value--pink"><?php echo htmlspecialchars($totalTeachers); ?></div><div class="metric-label">Total Teachers</div></div></div>
+        <div class="overview-card overview-card--metric"><div><div class="metric-value metric-value--green"><?php echo htmlspecialchars($attendanceRate); ?>%</div><div class="metric-label">Attendance Rate</div></div></div>
+      </div>
+      
+      <div class="dashboard-panel">
+        <h3 class="recent-students-title">Recent Students</h3>
+        <table class="data-table table-full">
+          <thead><tr><th>Student</th><th>Class</th><th>Status</th></tr></thead>
+          <tbody>
+            <?php foreach ($recentStudents as $student): ?>
+            <tr>
+              <td><?php echo htmlspecialchars($student['name']); ?></td>
+              <td>KG1 – Class</td>
+              <td>
+                <span class="status-badge <?php echo $student['enrollmentStatus'] === 'Active' ? 'status-badge--active' : 'status-badge--alert'; ?>">
+                  <?php echo $student['enrollmentStatus'] === 'Active' ? '✅ Active' : '⚠️ ' . htmlspecialchars($student['enrollmentStatus']); ?>
+                </span>
+              </td>
+            </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+      <?php elseif ($panel === 'messages'):
+            include __DIR__ . '/partials/partial_messages.php';
+            elseif ($panel === 'reports'):
+            include __DIR__ . '/partials/partial_reports.php';
+            elseif ($panel === 'attendance'):
+            include __DIR__ . '/partials/partial_attendance.php';
+            elseif ($panel === 'profiles'):
+            include __DIR__ . '/partials/partial_profiles.php';
+          endif; ?>
+=======
 
     <!-- CONTENT AREA -->
     <div class="dash-content" id="dashContent">
@@ -353,15 +397,28 @@ include 'navbar.php';
           <p>User profiles coming soon.</p>
         </div>
       </section>
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
     </div>
     <!-- /dash-content -->
   </main>
 </div>
+<<<<<<< HEAD
+
+<script>
+function setDashNav(btn, section) {
+    document.querySelectorAll('.sidebar-nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const topbar = document.querySelector('.dashboard-topbar h2');
+    if (topbar) topbar.textContent = section.charAt(0).toUpperCase() + section.slice(1);
+}
+</script>
+=======
 <!-- /dashboard-wrapper -->
 </body>
 </html>
 </div>
 
 <script src="scripts/dashboard.js"></script>
+>>>>>>> c728a258de199213fd4202216f70e386cf5b3c3a
 
 <?php include 'footer.php'; ?>

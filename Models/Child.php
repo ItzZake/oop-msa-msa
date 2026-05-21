@@ -44,6 +44,11 @@ class Child
       return $this->childID;
   }
 
+  function GetName()
+  {
+      return $this->name;
+  }
+
   function GetChildByID($childID)
   {
     $sql = "SELECT * FROM Child WHERE childID = ?";

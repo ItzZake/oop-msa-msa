@@ -21,6 +21,8 @@ if (empty($_SESSION['csrf_token'])) {
 	<link rel="stylesheet" href="css/footer.css" />
 </head>
 <body>
+<main class="page-shell">
+<body>
 <?php
 include 'header.php';
 include 'navbar.php';
@@ -170,3 +172,4 @@ include 'navbar.php';
 <?php include 'footer.php'; ?>
 </body>
 </html>
+

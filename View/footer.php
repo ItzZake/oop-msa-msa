@@ -1,6 +1,3 @@
-<head>
-	<link rel="stylesheet" href="../view/css/footer.css" />
-</head>
 <footer class="footer">
     <div class="container footer__grid">
 
